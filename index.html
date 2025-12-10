@@ -7,14 +7,13 @@
 
   <style>
     :root {
-      --bg: #05070a;
-      --card: #10141c;
-      --accent: #37b4ff;
-      --accent-soft: rgba(55, 180, 255, 0.14);
-      --text: #f5f5f7;
-      --muted: #8c93a3;
-      --danger: #ff4b6a;
-      --radius-lg: 18px;
+      --bg: #070b11;
+      --card: #121824;
+      --accent: #38b5ff;
+      --accent-soft: rgba(56, 181, 255, 0.16);
+      --text: #f4f5f7;
+      --muted: #9299aa;
+      --radius: 18px;
     }
 
     * {
@@ -26,7 +25,7 @@
     }
 
     body {
-      background: radial-gradient(circle at top, #151c28 0, #05070a 55%);
+      background: radial-gradient(circle at top, #1a2334 0, #070b11 55%);
       color: var(--text);
       min-height: 100vh;
       padding: 16px 14px 24px;
@@ -37,8 +36,8 @@
       margin: 0 auto;
     }
 
-    /* HEADER */
-    .app-header {
+    /* Header */
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -52,105 +51,89 @@
     }
 
     .brand-logo {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 12px;
-      background: #0c111a;
+      background: #0c1018;
       border: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 17px;
-      letter-spacing: 0.5px;
-      color: #f5f5f7;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      color: var(--text);
       box-shadow:
         0 10px 26px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
-    .brand-text-title {
+    .brand-title {
       font-size: 18px;
       font-weight: 650;
       letter-spacing: 0.02em;
     }
 
-    .brand-text-sub {
+    .brand-sub {
       font-size: 12px;
       color: var(--muted);
     }
 
     .badge {
       font-size: 11px;
-      padding: 4px 9px;
+      padding: 5px 10px;
       border-radius: 999px;
       background: var(--accent-soft);
-      border: 1px solid rgba(55, 180, 255, 0.5);
+      border: 1px solid rgba(56, 181, 255, 0.5);
       color: var(--accent);
+      white-space: nowrap;
     }
 
-    /* CARD */
+    /* Card */
     .card {
-      background: rgba(8, 10, 16, 0.96);
+      background: rgba(12, 16, 26, 0.96);
       border-radius: 20px;
       padding: 16px 16px 18px;
       box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.75),
         0 0 0 1px rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(14px);
-      margin-bottom: 14px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
     }
 
     .card-title {
       font-size: 15px;
       font-weight: 600;
+      margin-bottom: 4px;
     }
 
-    .card-caption {
-      font-size: 11px;
+    .card-sub {
+      font-size: 12px;
       color: var(--muted);
-      margin-top: 3px;
-    }
-
-    .pill {
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: rgba(39, 174, 96, 0.14);
-      color: #4cd484;
+      margin-bottom: 14px;
     }
 
     .section-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-size: 12px;
       color: var(--muted);
       margin-bottom: 6px;
     }
 
     .row {
       display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .field {
       flex: 1;
-      background: rgba(13, 17, 26, 0.96);
+      background: #151b28;
       border-radius: 14px;
-      padding: 8px 9px 8px;
+      padding: 9px 10px 7px;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .field-label {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
       margin-bottom: 3px;
     }
@@ -168,60 +151,48 @@
       -webkit-appearance: none;
     }
 
-    select {
-      padding-right: 16px;
-    }
-
     select option {
-      background: #05070a;
-      color: #f5f5f7;
+      background: #070b11;
+      color: var(--text);
     }
 
-    .field-note {
-      margin-top: 3px;
-      font-size: 10px;
-      color: var(--muted);
+    .field-input::placeholder {
+      color: #4d5668;
     }
 
-    .rate-block {
-      margin-top: 6px;
+    .rate-box {
+      margin-top: 4px;
       margin-bottom: 10px;
-      padding: 9px 11px;
+      padding: 10px 11px;
       border-radius: 14px;
-      background: rgba(9, 12, 21, 0.96);
-      border: 1px solid rgba(55, 180, 255, 0.22);
+      background: #111725;
+      border: 1px solid rgba(56, 181, 255, 0.25);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
     }
 
-    .rate-text {
-      font-size: 11px;
+    .rate-left {
+      font-size: 12px;
       color: var(--muted);
     }
 
     .rate-main {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--accent);
     }
 
-    .rate-extra {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .result-card {
+    .result-box {
       margin-top: 6px;
-      background: rgba(9, 12, 20, 0.96);
+      padding: 11px 11px 9px;
       border-radius: 16px;
-      padding: 10px 11px 9px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      background: #111724;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .result-row {
+    .result-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
@@ -229,80 +200,76 @@
     }
 
     .result-label {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
     }
 
     .result-amount {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 650;
     }
 
     .result-currency {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--muted);
       margin-left: 4px;
     }
 
-    .result-comment {
-      font-size: 10px;
+    .result-note {
+      font-size: 11px;
       color: var(--muted);
     }
 
-    .contact-card {
-      margin-top: 10px;
-      background: rgba(8, 10, 16, 0.96);
-      border-radius: 18px;
-      padding: 10px 11px 11px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+    .contact-box {
+      margin-top: 12px;
     }
 
     .contact-input {
       width: 100%;
-      border-radius: 12px;
-      background: rgba(12, 15, 23, 0.96);
+      border-radius: 14px;
+      background: #151b28;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 9px 10px;
+      padding: 10px 11px;
       color: var(--text);
-      font-size: 13px;
+      font-size: 14px;
       outline: none;
+      margin-bottom: 6px;
     }
 
     .contact-input::placeholder {
-      color: #4c5569;
+      color: #4d5668;
     }
 
-    .footer-note {
-      margin-top: 6px;
-      font-size: 10px;
+    .small-note {
+      font-size: 11px;
       color: var(--muted);
       line-height: 1.4;
     }
 
     .btn-primary {
-      margin-top: 11px;
+      margin-top: 12px;
       width: 100%;
       border-radius: 999px;
       border: none;
-      padding: 11px 14px;
-      font-size: 14px;
+      padding: 12px 16px;
+      font-size: 15px;
       font-weight: 600;
-      color: #020308;
-      background: linear-gradient(135deg, #2dd5ff, #0077ff);
+      color: #05070b;
+      background: linear-gradient(135deg, #33d0ff, #0077ff);
       box-shadow:
-        0 12px 26px rgba(0, 119, 255, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.08);
+        0 12px 26px rgba(0, 119, 255, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .btn-primary:active {
       transform: translateY(1px);
       box-shadow:
-        0 4px 14px rgba(0, 119, 255, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.08);
+        0 5px 16px rgba(0, 119, 255, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
     .toast {
@@ -332,107 +299,140 @@
 </head>
 <body>
 <div class="app">
-  <!-- HEADER -->
-  <header class="app-header">
+  <header class="header">
     <div class="brand">
       <div class="brand-logo">KE</div>
       <div>
-        <div class="brand-text-title">Keks Exchange</div>
-        <div class="brand-text-sub">микро-обменник в Telegram</div>
+        <div class="brand-title">Keks Exchange</div>
+        <div class="brand-sub">обмен через Telegram</div>
       </div>
     </div>
-    <span class="badge">beta · v0.2</span>
+    <span class="badge">online · Кривой Рог</span>
   </header>
 
-  <!-- MAIN CARD -->
   <section class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Обмен крипты → UAH</div>
-        <div class="card-caption">курс берём автоматически, сверху — твоя маржа</div>
-      </div>
-      <div class="pill">P2P · non-custodial</div>
-    </div>
+    <div class="card-title">Создание заявки</div>
+    <div class="card-sub">Выберите направление, сумму и оставьте контакт.</div>
 
     <!-- Направление -->
-    <div class="section-label">Направление обмена</div>
+    <div class="section-label">Отдаю</div>
     <div class="row">
       <div class="field">
-        <div class="field-label">Отдаю</div>
+        <div class="field-label">Криптовалюта</div>
         <select id="fromCrypto" onchange="onPairChange()">
-          <option value="USDT_TRON">USDT · TRC-20</option>
-          <option value="USDT_TON">USDT · TON</option>
-          <option value="BTC">BTC · Bitcoin</option>
-          <option value="ETH">ETH · Ethereum</option>
+          <option value="USDT">USDT</option>
+          <option value="USDC">USDC</option>
+          <option value="BTC">BTC</option>
+          <option value="ETH">ETH</option>
+          <option value="TON">TON</option>
+          <option value="BNB">BNB</option>
+          <option value="SOL">SOL</option>
+          <option value="XRP">XRP</option>
+          <option value="DOGE">DOGE</option>
+          <option value="TRX">TRX</option>
+          <option value="MATIC">MATIC</option>
+          <option value="LTC">LTC</option>
+          <option value="DAI">DAI</option>
+          <option value="TUSD">TUSD</option>
+          <option value="BUSD">BUSD</option>
         </select>
-        <div class="field-note">поддерживаем популярные сети</div>
       </div>
-
       <div class="field">
-        <div class="field-label">Получаю</div>
-        <select id="toMethod" onchange="onPairChange()">
-          <option value="UAH_CARD">UAH · банковская карта</option>
-          <option value="UAH_CASH">UAH · наличные</option>
+        <div class="field-label">Сеть</div>
+        <select id="network">
+          <option value="TON">TON</option>
+          <option value="TRC20">TRC-20</option>
+          <option value="BEP20">BEP-20</option>
         </select>
-        <div class="field-note" id="toNote">Украинский банк, карты Visa/MC</div>
+      </div>
+    </div>
+
+    <div class="section-label">Получаю</div>
+    <div class="row">
+      <div class="field">
+        <div class="field-label">Тип</div>
+        <select id="toType" onchange="onPairChange()">
+          <option value="UAH_CARD">UAH · банковская карта</option>
+          <option value="UAH_CASH_KR">UAH · наличные (Кривой Рог)</option>
+          <option value="CRYPTO">Криптовалюта</option>
+        </select>
+      </div>
+      <div class="field" id="toCryptoField" style="display:none;">
+        <div class="field-label">Криптовалюта получаю</div>
+        <select id="toCrypto" onchange="onPairChange()">
+          <option value="USDT">USDT</option>
+          <option value="USDC">USDC</option>
+          <option value="BTC">BTC</option>
+          <option value="ETH">ETH</option>
+          <option value="TON">TON</option>
+          <option value="BNB">BNB</option>
+          <option value="SOL">SOL</option>
+          <option value="XRP">XRP</option>
+          <option value="DOGE">DOGE</option>
+          <option value="TRX">TRX</option>
+          <option value="MATIC">MATIC</option>
+          <option value="LTC">LTC</option>
+          <option value="DAI">DAI</option>
+          <option value="TUSD">TUSD</option>
+          <option value="BUSD">BUSD</option>
+        </select>
       </div>
     </div>
 
     <!-- Курс -->
-    <div class="rate-block">
-      <div>
-        <div class="rate-text">Курс обмена (с учётом комиссии сервиса)</div>
-        <div class="rate-extra" id="rate-extra">Загрузка курса…</div>
+    <div class="rate-box">
+      <div class="rate-left">
+        <div>Курс обмена (с учётом комиссии сервиса)</div>
+        <div id="rateExtra" style="margin-top:2px;"></div>
       </div>
-      <div class="rate-main" id="rate-main">—</div>
+      <div class="rate-main" id="rateMain">Загрузка…</div>
     </div>
 
-    <!-- Сумма / результат -->
+    <!-- Сумма -->
     <div class="section-label">Сумма</div>
     <div class="row">
       <div class="field">
         <div class="field-label">Сколько отдаёте</div>
         <input
-          id="amount"
+          id="amountFrom"
           type="number"
           min="0"
-          step="0.01"
+          step="0.0001"
           class="field-input"
           placeholder="0.00"
           oninput="recalculate()"
         />
-        <div class="field-note" id="amount-note">Минимальная сумма — по договорённости</div>
       </div>
     </div>
 
-    <div class="result-card">
-      <div class="result-row">
-        <div class="result-label">Вы получите ориентировочно</div>
+    <!-- Результат -->
+    <div class="result-box">
+      <div class="result-top">
+        <div class="result-label">Ориентировочно получите</div>
         <div>
-          <span class="result-amount" id="result-value">0.00</span>
-          <span class="result-currency" id="result-currency">UAH на карту</span>
+          <span class="result-amount" id="resultAmount">0.00</span>
+          <span class="result-currency" id="resultCurrency">UAH</span>
         </div>
       </div>
-      <div class="result-comment">
-        Итоговый курс и сумма подтверждаются оператором перед переводом.
+      <div class="result-note" id="resultNote">
+        Итоговый курс и сумма подтверждаются оператором перед обменом.
       </div>
     </div>
 
     <!-- Контакт -->
-    <div class="contact-card">
-      <div class="section-label">Контакты</div>
+    <div class="contact-box">
+      <div class="section-label">Контакт</div>
       <input
         id="contact"
         type="text"
         class="contact-input"
         placeholder="@username или номер телефона"
       />
-      <p class="footer-note">
-        После отправки заявки оператор свяжется с вами в Telegram для подтверждения
-        курса, реквизитов и деталей обмена.
-      </p>
+      <div class="small-note">
+        Оператор напишет вам в Telegram, чтобы согласовать курс, реквизиты и время.
+      </div>
       <button class="btn-primary" onclick="submitForm()">
-        <span>Создать заявку</span> →
+        <span>Отправить заявку</span> →
       </button>
     </div>
   </section>
@@ -445,27 +445,44 @@
   const tg = window.Telegram?.WebApp;
   if (tg) tg.expand();
 
-  const COMMISSION_PERCENT = 1.5; // твоя маржа: 1.5% — мягко и честно
+  // Комиссия сервиса (твой процент)
+  const COMMISSION_PERCENT = 1.5; // можно менять
 
-  // соответствие нашей крипты → CoinGecko id
+  // Соответствие монет → CoinGecko ID
   const COINGECKO_IDS = {
-    "USDT_TRON": "tether",
-    "USDT_TON": "tether",
+    "USDT": "tether",
+    "USDC": "usd-coin",
     "BTC": "bitcoin",
     "ETH": "ethereum",
+    "TON": "toncoin",
+    "BNB": "binancecoin",
+    "SOL": "solana",
+    "XRP": "ripple",
+    "DOGE": "dogecoin",
+    "TRX": "tron",
+    "MATIC": "matic-network",
+    "LTC": "litecoin",
+    "DAI": "dai",
+    "TUSD": "true-usd",
+    "BUSD": "binance-usd"
   };
 
-  let rawRate = 0;
-  let finalRate = 0;
+  let rawRate = 0;   // базовый курс (в UAH или через кросс)
+  let finalRate = 0; // курс с комиссией
+  let currentMode = "FIAT"; // FIAT или CRYPTO
 
   const fromCryptoEl = document.getElementById("fromCrypto");
-  const toMethodEl = document.getElementById("toMethod");
-  const toNoteEl = document.getElementById("toNote");
-  const rateMainEl = document.getElementById("rate-main");
-  const rateExtraEl = document.getElementById("rate-extra");
-  const amountEl = document.getElementById("amount");
-  const resultValueEl = document.getElementById("result-value");
-  const resultCurrencyEl = document.getElementById("result-currency");
+  const networkEl = document.getElementById("network");
+  const toTypeEl = document.getElementById("toType");
+  const toCryptoFieldEl = document.getElementById("toCryptoField");
+  const toCryptoEl = document.getElementById("toCrypto");
+
+  const rateMainEl = document.getElementById("rateMain");
+  const rateExtraEl = document.getElementById("rateExtra");
+  const amountFromEl = document.getElementById("amountFrom");
+  const resultAmountEl = document.getElementById("resultAmount");
+  const resultCurrencyEl = document.getElementById("resultCurrency");
+  const resultNoteEl = document.getElementById("resultNote");
   const toastEl = document.getElementById("toast");
 
   function showToast(text) {
@@ -474,10 +491,9 @@
     setTimeout(() => toastEl.classList.remove("show"), 2200);
   }
 
-  async function loadRate() {
-    const fromValue = fromCryptoEl.value;
-    const cgId = COINGECKO_IDS[fromValue];
-
+  async function loadFiatRate() {
+    const from = fromCryptoEl.value;
+    const cgId = COINGECKO_IDS[from];
     if (!cgId) {
       rateMainEl.textContent = "—";
       rateExtraEl.textContent = "Пара не поддерживается";
@@ -485,7 +501,9 @@
     }
 
     try {
-      rateExtraEl.textContent = "Загрузка курса…";
+      rateMainEl.textContent = "Загрузка…";
+      rateExtraEl.textContent = "";
+
       const res = await fetch(
         "https://api.coingecko.com/api/v3/simple/price?ids=" +
           cgId +
@@ -493,59 +511,116 @@
       );
       const data = await res.json();
       rawRate = data[cgId].uah;
-
       finalRate = rawRate * (1 - COMMISSION_PERCENT / 100);
 
-      const labelFrom = fromCryptoEl.options[fromCryptoEl.selectedIndex].text.split("·")[0].trim();
-
       rateMainEl.textContent =
-        "1 " + labelFrom + " = " + finalRate.toFixed(2) + " UAH";
-
+        "1 " + from + " = " + finalRate.toFixed(2) + " UAH";
       rateExtraEl.textContent =
-        "Включена комиссия сервиса " + COMMISSION_PERCENT.toFixed(1) + "%";
-
+        "Комиссия сервиса " + COMMISSION_PERCENT.toFixed(1) + "% уже учтена";
+      resultCurrencyEl.textContent =
+        toTypeEl.value === "UAH_CASH_KR" ? "UAH (наличными)" : "UAH";
+      resultNoteEl.textContent =
+        "Сумма рассчитана ориентировочно по текущему курсу обменника.";
+      currentMode = "FIAT";
       recalculate();
     } catch (e) {
       console.error(e);
       rateMainEl.textContent = "—";
-      rateExtraEl.textContent = "Не удалось получить курс, попробуйте позже";
+      rateExtraEl.textContent = "Ошибка загрузки курса, попробуйте позже.";
+    }
+  }
+
+  async function loadCryptoToCryptoRate() {
+    const from = fromCryptoEl.value;
+    const to = toCryptoEl.value;
+    const fromId = COINGECKO_IDS[from];
+    const toId = COINGECKO_IDS[to];
+
+    if (!fromId || !toId) {
+      rateMainEl.textContent = "—";
+      rateExtraEl.textContent = "Пара не поддерживается";
+      return;
+    }
+
+    try {
+      rateMainEl.textContent = "Загрузка…";
+      rateExtraEl.textContent = "";
+
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=" +
+          fromId +
+          "," +
+          toId +
+          "&vs_currencies=uah"
+      );
+      const data = await res.json();
+      const fromUAH = data[fromId].uah;
+      const toUAH = data[toId].uah;
+
+      // базовый кросс-курс from→to по UAH
+      const baseRate = fromUAH / toUAH;
+      rawRate = baseRate;
+      finalRate = baseRate * (1 - COMMISSION_PERCENT / 100);
+
+      rateMainEl.textContent =
+        "1 " + from + " ≈ " + finalRate.toFixed(6) + " " + to;
+      rateExtraEl.textContent =
+        "Кросс-курс по рынку + комиссия " + COMMISSION_PERCENT.toFixed(1) + "%";
+
+      resultCurrencyEl.textContent = to;
+      resultNoteEl.textContent =
+        "Точная сумма и курс фиксируются оператором перед обменом.";
+      currentMode = "CRYPTO";
+      recalculate();
+    } catch (e) {
+      console.error(e);
+      rateMainEl.textContent = "—";
+      rateExtraEl.textContent = "Ошибка загрузки курса, попробуйте позже.";
     }
   }
 
   function onPairChange() {
-    const toValue = toMethodEl.value;
-    if (toValue === "UAH_CARD") {
-      toNoteEl.textContent = "Любая украинская карта, уточним банк перед обменом";
-      resultCurrencyEl.textContent = "UAH на карту";
-    } else if (toValue === "UAH_CASH") {
-      toNoteEl.textContent = "Наличные UAH, город и место оговариваются с оператором";
-      resultCurrencyEl.textContent = "UAH наличными";
-    }
+    const toType = toTypeEl.value;
 
-    loadRate();
+    if (toType === "CRYPTO") {
+      toCryptoFieldEl.style.display = "block";
+      loadCryptoToCryptoRate();
+    } else {
+      toCryptoFieldEl.style.display = "none";
+      loadFiatRate();
+    }
   }
 
   function recalculate() {
     if (!finalRate) return;
 
-    const amount = parseFloat(amountEl.value || "0");
-    const result = amount * finalRate;
+    const amount = parseFloat(amountFromEl.value || "0");
+    if (!amount || amount <= 0) {
+      resultAmountEl.textContent = "0.00";
+      return;
+    }
 
-    resultValueEl.textContent = isNaN(result)
+    const result = amount * finalRate;
+    resultAmountEl.textContent = isNaN(result)
       ? "0.00"
-      : result.toFixed(2);
+      : (currentMode === "FIAT"
+          ? result.toFixed(2)
+          : result.toFixed(6));
   }
 
   function submitForm() {
-    const amount = parseFloat(amountEl.value || "0");
+    const amount = parseFloat(amountFromEl.value || "0");
     const contact = document.getElementById("contact").value.trim();
+    const from = fromCryptoEl.value;
+    const toType = toTypeEl.value;
+    const network = networkEl.value;
 
     if (!amount || amount <= 0) {
-      showToast("Укажи сумму, которую отдаёшь");
+      showToast("Укажи сумму для обмена");
       return;
     }
     if (!contact) {
-      showToast("Укажи контакт для связи");
+      showToast("Укажи Telegram @username или номер");
       return;
     }
     if (!finalRate) {
@@ -553,26 +628,44 @@
       return;
     }
 
+    let toLabel = "";
+    let toTarget = "";
+    let toCoin = null;
+
+    if (toType === "UAH_CARD") {
+      toLabel = "UAH · банковская карта";
+      toTarget = "UAH_CARD";
+    } else if (toType === "UAH_CASH_KR") {
+      toLabel = "UAH · наличные (Кривой Рог)";
+      toTarget = "UAH_CASH_KR";
+    } else {
+      toCoin = toCryptoEl.value;
+      toLabel = "Криптовалюта " + toCoin;
+      toTarget = "CRYPTO";
+    }
+
+    const estimated = amount * finalRate;
+
     const payload = {
       type: "exchange_request",
-      from: fromCryptoEl.value,
-      from_label: fromCryptoEl.options[fromCryptoEl.selectedIndex].text,
-      to: toMethodEl.value,
-      to_label: toMethodEl.options[toMethodEl.selectedIndex].text,
+      from_coin: from,
+      from_network: network,
+      to_type: toTarget,
+      to_coin: toCoin,
       amount_from: amount,
       rate: finalRate,
-      amount_to_estimate: amount * finalRate,
+      amount_to_estimate: estimated,
       commission_percent: COMMISSION_PERCENT,
       contact: contact,
-      ts: Date.now(),
+      ts: Date.now()
     };
 
     if (tg && tg.sendData) {
       tg.sendData(JSON.stringify(payload));
       showToast("Заявка отправлена в бота");
-      setTimeout(() => tg.close && tg.close(), 700);
+      setTimeout(() => tg.close && tg.close(), 750);
     } else {
-      showToast("Открой через Telegram-бота, а не браузер");
+      showToast("Открой мини-апп через Telegram-бота");
     }
   }
 
