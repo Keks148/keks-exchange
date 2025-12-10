@@ -2,842 +2,618 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Keks Exchange</title>
+  <title>KeksSwap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
+    /* ===== БАЗА / ФОН ===== */
     :root {
-      --bg: #070b11;
-      --card: #121824;
-      --accent: #33c2ff;
-      --accent-soft: rgba(51, 194, 255, 0.16);
-      --text: #f4f5f7;
-      --muted: #9299aa;
+      --bg: #e3effa;
+      --bg-gradient-top: #e3effa;
+      --bg-gradient-bottom: #dff7e7;
+      --card: #ffffff;
+      --black: #111111;
+      --text-secondary: #5a6472;
+      --accent: #00b894;      /* акцент (можно поменять) */
+      --accent-soft: #e4faf3;
+      --danger: #ff5b5b;
+      --radius-xl: 24px;
+      --radius-l: 18px;
+      --radius-m: 12px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Roboto", "Segoe UI", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(145deg, var(--bg-gradient-top), var(--bg-gradient-bottom));
+      color: var(--black);
     }
 
     body {
-      background: radial-gradient(circle at top, #1a2334 0, #070b11 55%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 16px 14px 24px;
+      display: flex;
+      justify-content: center;
     }
 
     .app {
-      max-width: 520px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      padding: 16px 16px 24px;
+      position: relative;
     }
 
-    /* HEADER */
+    /* ===== SPLASH / ЗАСТАВКА ===== */
+    #splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, var(--bg-gradient-top), var(--bg-gradient-bottom));
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    .splash-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 32px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+      overflow: hidden;
+    }
+
+    .splash-logo img {
+      width: 80px;
+      height: 80px;
+      animation: spin 1.4s ease-in-out forwards;
+    }
+
+    .splash-text {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #000;
+      opacity: 0;
+      animation: fadeInText 0.8s ease-out 0.9s forwards;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg) scale(0.8); opacity: 0; }
+      40%  { opacity: 1; }
+      100% { transform: rotate(360deg) scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HEADER ===== */
     .header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 18px;
+      margin-top: 4px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      background: #0c1018;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+    .header-back {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 22px;
       font-weight: 700;
-      font-size: 18px;
-      letter-spacing: 0.04em;
-      color: var(--text);
-      box-shadow:
-        0 10px 26px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
-    }
-
-    .brand-title {
-      font-size: 18px;
-      font-weight: 650;
-      letter-spacing: 0.02em;
-    }
-
-    .brand-sub {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .badge {
-      font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      border: 1px solid rgba(51, 194, 255, 0.5);
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    /* CARD */
-    .card {
-      background: rgba(12, 16, 26, 0.97);
-      border-radius: 20px;
-      padding: 16px 16px 18px;
-      box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.75),
-        0 0 0 1px rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(14px);
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .card-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .section-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .row {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .field {
-      flex: 1;
-      background: #151b28;
-      border-radius: 14px;
-      padding: 9px 10px 7px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .field-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 3px;
-    }
-
-    select,
-    .field-input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 3px 0;
-      -webkit-appearance: none;
-    }
-
-    select option {
-      background: #070b11;
-      color: var(--text);
-    }
-
-    .field-input::placeholder {
-      color: #4d5668;
-    }
-
-    .rate-box {
-      margin-top: 4px;
-      margin-bottom: 10px;
-      padding: 10px 11px;
-      border-radius: 14px;
-      background: #111725;
-      border: 1px solid rgba(51, 194, 255, 0.25);
-      display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 8px;
     }
 
-    .rate-left {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .rate-main {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--accent);
-      text-align: right;
-    }
-
-    .result-box {
-      margin-top: 6px;
-      padding: 11px 11px 9px;
-      border-radius: 16px;
-      background: #111724;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .result-top {
+    .header-logo-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: #000;
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 4px;
-    }
-
-    .result-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .result-amount {
-      font-size: 19px;
-      font-weight: 650;
-    }
-
-    .result-currency {
-      font-size: 13px;
-      color: var(--muted);
-      margin-left: 4px;
-    }
-
-    .result-note {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .wallet-box {
-      margin-top: 12px;
-      padding: 10px 11px 11px;
-      border-radius: 16px;
-      background: #121828;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .wallet-row {
-      display: flex;
-      gap: 10px;
       align-items: center;
-      margin-bottom: 8px;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    .wallet-text {
-      flex: 1;
-      font-size: 13px;
-      word-break: break-all;
-    }
-
-    .wallet-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 3px;
-    }
-
-    .wallet-copy {
-      font-size: 11px;
-      color: var(--accent);
-      margin-top: 2px;
-    }
-
-    .wallet-qr {
-      width: 80px;
-      height: 80px;
-      border-radius: 10px;
-      background: #0b101a;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .header-logo-dot img {
+      width: 18px;
+      height: 18px;
       object-fit: contain;
     }
 
-    .contact-box {
-      margin-top: 12px;
+    /* ===== КАРТОЧКА ОСНОВНАЯ ===== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      padding: 18px 16px 16px;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.06);
     }
 
-    .contact-input {
-      width: 100%;
-      border-radius: 14px;
-      background: #151b28;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 10px 11px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 6px;
+    .card + .card {
+      margin-top: 16px;
     }
 
-    .contact-input::placeholder {
-      color: #4d5668;
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .small-note {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
     }
 
-    .btn-primary {
-      margin-top: 12px;
+    /* ===== SELECT ТИПА ОБМЕНА ===== */
+    .swap-type-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-m);
+      background: #f2f4f7;
+      margin-bottom: 10px;
+    }
+
+    .swap-type-row label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .swap-type-row select {
       width: 100%;
       border-radius: 999px;
       border: none;
-      padding: 12px 16px;
-      font-size: 15px;
+      padding: 6px 12px;
+      background: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    /* ===== БЛОКИ "ОТДАЮ / ПОЛУЧАЮ" ===== */
+    .section-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      margin-bottom: 6px;
+    }
+
+    .field-block {
+      background: #f5f7fb;
+      border-radius: var(--radius-l);
+      padding: 10px 12px 8px;
+      margin-bottom: 10px;
+    }
+
+    .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .pill-label {
       font-weight: 600;
-      color: #05070b;
-      background: linear-gradient(135deg, #33d0ff, #0077ff);
-      box-shadow:
-        0 12px 26px rgba(0, 119, 255, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .pill-secondary {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .field-input-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
+      gap: 10px;
+    }
+
+    .currency-select {
+      min-width: 110px;
+    }
+
+    .currency-select select,
+    .network-select select,
+    .receiver-select select {
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 6px 10px;
+      background: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .amount-input {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .amount-input input {
+      width: 100%;
+      text-align: right;
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .amount-input span {
+      margin-left: 4px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .network-select {
+      margin-top: 8px;
+    }
+
+    /* ===== ИТОГО / КУРС ===== */
+    .rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .rate-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ===== КНОПКА ===== */
+    .btn-primary {
+      margin-top: 14px;
+      width: 100%;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+      padding: 12px 16px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.25);
     }
 
     .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 5px 16px rgba(0, 119, 255, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
+      transform: scale(0.98);
     }
 
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 14px;
-      transform: translateX(-50%);
-      min-width: 220px;
-      max-width: 90%;
-      padding: 10px 14px;
+    /* ===== ПОДКАРТОЧКА С ПОДСКАЗКОЙ ===== */
+    .hint-card {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-l);
+      background: rgba(0,0,0,0.04);
       font-size: 12px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.9);
-      color: var(--text);
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      z-index: 50;
+      color: var(--text-secondary);
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-4px);
+    .hint-card strong {
+      color: var(--black);
     }
   </style>
 </head>
 <body>
-<div class="app">
-  <header class="header">
-    <div class="brand">
-      <div class="brand-logo">KE</div>
-      <div>
-        <div class="brand-title">Keks Exchange</div>
-        <div class="brand-sub">обмен через Telegram</div>
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <!-- сюда твой кекс с зелёным ₮ -->
+        <img src="keksswap-logo.png" alt="KeksSwap logo" />
       </div>
+      <div class="splash-text">KeksSwap</div>
     </div>
-    <span class="badge">Кривой Рог · online</span>
-  </header>
+  </div>
 
-  <section class="card">
-    <div class="card-title">Создание заявки</div>
-    <div class="card-sub">Выберите направление, сумму и оставьте контакт.</div>
+  <!-- APP -->
+  <div class="app">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-back">←</div>
+      <div class="header-title">
+        <div class="header-logo-dot">
+          <img src="keksswap-logo.png" alt="KS" />
+        </div>
+        KeksSwap
+      </div>
+    </header>
 
-    <!-- НАПРАВЛЕНИЕ -->
-    <div class="section-label">Отдаю</div>
-    <div class="row">
-      <div class="field">
-        <div class="field-label">Криптовалюта</div>
-        <select id="fromCrypto" onchange="onPairChange()">
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-          <option value="BTC">BTC</option>
-          <option value="ETH">ETH</option>
-          <option value="TON">TON</option>
-          <option value="BNB">BNB</option>
-          <option value="SOL">SOL</option>
-          <option value="XRP">XRP</option>
-          <option value="DOGE">DOGE</option>
-          <option value="TRX">TRX</option>
-          <option value="MATIC">MATIC</option>
-          <option value="LTC">LTC</option>
-          <option value="DAI">DAI</option>
-          <option value="TUSD">TUSD</option>
-          <option value="BUSD">BUSD</option>
+    <!-- MAIN CARD -->
+    <section class="card">
+      <div class="card-title">Быстрый обмен</div>
+      <div class="card-subtitle">
+        Выберите тип обмена, валюту и сеть. Заявка придёт оператору в Telegram.
+      </div>
+
+      <!-- Тип обмена -->
+      <div class="swap-type-row">
+        <label>Тип обмена</label>
+        <select id="swapType">
+          <option value="crypto_to_cash">Крипта → Наличные (Кривой Рог)</option>
+          <option value="crypto_to_card">Крипта → Карта банка (UA)</option>
+          <option value="crypto_to_crypto">Крипта → Крипта</option>
+          <option value="fiat_to_crypto">Карта/нал → Крипта</option>
         </select>
       </div>
-      <div class="field">
-        <div class="field-label">Сеть</div>
-        <select id="network" onchange="onPairChange()">
-          <option value="TON">TON</option>
-          <option value="TRC20">TRC-20</option>
-          <option value="BEP20">BEP-20</option>
-        </select>
-      </div>
-    </div>
 
-    <div class="section-label">Получаю</div>
-    <div class="row">
-      <div class="field">
-        <div class="field-label">Тип</div>
-        <select id="toType" onchange="onPairChange()">
-          <option value="UAH_CARD">UAH · карта</option>
-          <option value="UAH_CASH_KR">UAH · наличные (Кривой Рог)</option>
-          <option value="CRYPTO">Криптовалюта</option>
-        </select>
-      </div>
-      <div class="field" id="toCryptoField" style="display:none;">
-        <div class="field-label">Крипта получаю</div>
-        <select id="toCrypto" onchange="onPairChange()">
-          <option value="USDT">USDT</option>
-          <option value="USDC">USDC</option>
-          <option value="BTC">BTC</option>
-          <option value="ETH">ETH</option>
-          <option value="TON">TON</option>
-          <option value="BNB">BNB</option>
-          <option value="SOL">SOL</option>
-          <option value="XRP">XRP</option>
-          <option value="DOGE">DOGE</option>
-          <option value="TRX">TRX</option>
-          <option value="MATIC">MATIC</option>
-          <option value="LTC">LTC</option>
-          <option value="DAI">DAI</option>
-          <option value="TUSD">TUSD</option>
-          <option value="BUSD">BUSD</option>
-        </select>
-      </div>
-    </div>
+      <!-- ОТДАЮ -->
+      <div class="section-label">Отдаю</div>
+      <div class="field-block">
+        <div class="field-top">
+          <div class="pill">
+            <span class="pill-label">Криптовалюта</span>
+          </div>
+        </div>
 
-    <!-- КУРС -->
-    <div class="rate-box">
-      <div class="rate-left" id="rateExtra">
-        Курс загружается…
-      </div>
-      <div class="rate-main" id="rateMain">—</div>
-    </div>
+        <div class="field-input-row">
+          <div class="currency-select">
+            <select id="fromCurrency">
+              <!-- ТОП 15 -->
+              <option>USDT</option>
+              <option>USDC</option>
+              <option>BTC</option>
+              <option>ETH</option>
+              <option>TON</option>
+              <option>BNB</option>
+              <option>SOL</option>
+              <option>TRX</option>
+              <option>LTC</option>
+              <option>XRP</option>
+              <option>DOGE</option>
+              <option>ADA</option>
+              <option>POL</option>
+              <option>AVAX</option>
+              <option>DAI</option>
+            </select>
+          </div>
 
-    <!-- СУММА -->
-    <div class="section-label">Сумма</div>
-    <div class="row">
-      <div class="field">
-        <div class="field-label">Сколько отдаёте</div>
-        <input
-          id="amountFrom"
-          type="number"
-          min="0"
-          step="0.0001"
-          class="field-input"
-          placeholder="0.00"
-          oninput="recalculate()"
-        />
-      </div>
-    </div>
+          <div class="amount-input">
+            <input id="fromAmount" type="number" inputmode="decimal" placeholder="0.00" />
+          </div>
+        </div>
 
-    <!-- РЕЗУЛЬТАТ -->
-    <div class="result-box">
-      <div class="result-top">
-        <div class="result-label">Ориентировочно получите</div>
-        <div>
-          <span class="result-amount" id="resultAmount">0.00</span>
-          <span class="result-currency" id="resultCurrency">UAH</span>
+        <div class="network-select">
+          <select id="fromNetwork">
+            <option>TRC20</option>
+            <option>TON</option>
+            <option>BEP20</option>
+          </select>
         </div>
       </div>
-      <div class="result-note" id="resultNote">
-        Курс с учётом комиссии сервиса и сети. Финальные условия подтвердит оператор.
-      </div>
-    </div>
 
-    <!-- РЕКВИЗИТЫ -->
-    <div class="wallet-box">
-      <div class="section-label">Реквизиты</div>
-      <div class="wallet-label">Ваш кошелёк для этого направления</div>
-      <div class="wallet-row">
-        <div>
-          <div class="wallet-text" id="myWalletText">Не настроен</div>
-          <div class="wallet-copy" id="walletCopyHint">Нажмите, чтобы скопировать</div>
+      <!-- ПОЛУЧАЮ -->
+      <div class="section-label">Получаю</div>
+      <div class="field-block">
+        <div class="field-top">
+          <div class="pill">
+            <span class="pill-label" id="receiveTypeLabel">Наличные / карта</span>
+          </div>
         </div>
-        <img id="walletQr" class="wallet-qr" style="display:none;" alt="QR" />
+
+        <div class="field-input-row">
+          <div class="receiver-select">
+            <select id="toMethod">
+              <option value="cash">Наличные (Кривой Рог)</option>
+              <option value="mono">Monobank</option>
+              <option value="pumb">ПУМБ</option>
+              <option value="abank">А-Банк</option>
+              <option value="privat">ПриватБанк</option>
+              <option value="oschad">Ощадбанк</option>
+              <option value="any_card">Любая карта Visa / MC</option>
+              <option value="iban">По IBAN</option>
+              <option value="crypto">Крипта на кошелёк</option>
+            </select>
+          </div>
+
+          <div class="amount-input">
+            <input id="toAmount" type="number" inputmode="decimal" placeholder="0.00" readonly />
+            <span id="toCurrencyLabel">UAH</span>
+          </div>
+        </div>
       </div>
 
-      <div class="wallet-label" style="margin-top:6px;">Кошелёк / карта клиента</div>
-      <input
-        id="clientWallet"
-        type="text"
-        class="contact-input"
-        placeholder="Кошелёк или номер карты получателя"
-      />
-    </div>
-
-    <!-- КОНТАКТ -->
-    <div class="contact-box">
-      <div class="section-label">Контакт</div>
-      <input
-        id="contact"
-        type="text"
-        class="contact-input"
-        placeholder="@username или номер телефона"
-      />
-      <div class="small-note">
-        Заявка уйдёт оператору в Telegram. Вам напишут для подтверждения курса и деталей.
+      <!-- КУРС / КОММИССИЯ -->
+      <div class="rate-row">
+        <span id="rateText">Курс будет рассчитан…</span>
+        <span class="rate-pill" id="feeText">Комиссия 2%</span>
       </div>
-      <button class="btn-primary" onclick="submitForm()">
-        <span>Отправить заявку</span> →
+
+      <!-- КНОПКА -->
+      <button class="btn-primary" id="submitBtn">
+        Отправить заявку
       </button>
-    </div>
-  </section>
-</div>
 
-<div id="toast" class="toast"></div>
+      <!-- ПОДСКАЗКА -->
+      <div class="hint-card">
+        <strong>Важно:</strong> сейчас расчёт идёт по примерным курсам внутри мини-аппа.
+        Позже можно подключить курс с биржи (Binance/Coingecko) и учитывать комиссию сети автоматически.
+      </div>
+    </section>
+  </div>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const tg = window.Telegram?.WebApp;
-  if (tg) tg.expand();
+  <script>
+    // ===== SPLASH LOGIC =====
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 400);
+        }
+      }, 1800);
+    });
 
-  // ТВОЯ маржа, % (меняется в одну строку)
-  const COMMISSION_PERCENT = 1.5;
-
-  // Приблизительные комиссии сети (в монете, вычитаем из суммы клиента)
-  // ПОТОМ САМ ПОДГОНИ ПОД АКТУАЛЬНЫЕ Binance/сети
-  const NETWORK_FEES = {
-    "USDT:TRC20": 1.0,
-    "USDT:TON": 0.1,
-    "USDT:BEP20": 0.5,
-    "BTC:TRC20": 0.0006,
-    "BTC:BEP20": 0.0004,
-    "ETH:BEP20": 0.003,
-    "TON:TON": 0.03,
-    // остальные по желанию
-  };
-
-  // ТВОИ КОШЕЛЬКИ
-  // 🔴 ОБЯЗАТЕЛЬНО ЗАМЕНИ ПЛЕЙСХОЛДЕРЫ НА СВОИ АДРЕСА
-  const MY_WALLETS = {
-    "USDT:TRC20": "ВАШ_АДРЕС_USDT_TRC20",
-    "USDT:TON": "ВАШ_АДРЕС_USDT_TON",
-    "USDT:BEP20": "ВАШ_АДРЕС_USDT_BEP20",
-    "BTC:TRC20": "ВАШ_АДРЕС_BTC_TRC20_ИЛИ_BTC_СЕТЬ",
-    "ETH:BEP20": "ВАШ_АДРЕС_ETH_BEP20",
-    "TON:TON": "ВАШ_АДРЕС_TON",
-    // можно добавлять дальше
-  };
-
-  // CoinGecko ID для монет
-  const COINGECKO_IDS = {
-    "USDT": "tether",
-    "USDC": "usd-coin",
-    "BTC": "bitcoin",
-    "ETH": "ethereum",
-    "TON": "toncoin",
-    "BNB": "binancecoin",
-    "SOL": "solana",
-    "XRP": "ripple",
-    "DOGE": "dogecoin",
-    "TRX": "tron",
-    "MATIC": "matic-network",
-    "LTC": "litecoin",
-    "DAI": "dai",
-    "TUSD": "true-usd",
-    "BUSD": "binance-usd"
-  };
-
-  let rawRate = 0;
-  let finalRate = 0;
-  let currentMode = "FIAT"; // FIAT / CRYPTO
-
-  const fromCryptoEl = document.getElementById("fromCrypto");
-  const networkEl = document.getElementById("network");
-  const toTypeEl = document.getElementById("toType");
-  const toCryptoFieldEl = document.getElementById("toCryptoField");
-  const toCryptoEl = document.getElementById("toCrypto");
-
-  const rateMainEl = document.getElementById("rateMain");
-  const rateExtraEl = document.getElementById("rateExtra");
-  const amountFromEl = document.getElementById("amountFrom");
-  const resultAmountEl = document.getElementById("resultAmount");
-  const resultCurrencyEl = document.getElementById("resultCurrency");
-  const resultNoteEl = document.getElementById("resultNote");
-
-  const myWalletTextEl = document.getElementById("myWalletText");
-  const walletQrEl = document.getElementById("walletQr");
-  const walletCopyHintEl = document.getElementById("walletCopyHint");
-
-  const toastEl = document.getElementById("toast");
-
-  function showToast(text) {
-    toastEl.textContent = text;
-    toastEl.classList.add("show");
-    setTimeout(() => toastEl.classList.remove("show"), 2200);
-  }
-
-  function getNetworkFee() {
-    const coin = fromCryptoEl.value;
-    const net = networkEl.value;
-    const key = coin + ":" + net;
-    return NETWORK_FEES[key] || 0;
-  }
-
-  function updateWallet() {
-    const coin = fromCryptoEl.value;
-    const net = networkEl.value;
-    const key = coin + ":" + net;
-    const addr = MY_WALLETS[key];
-
-    if (addr) {
-      myWalletTextEl.textContent = addr;
-      walletCopyHintEl.style.display = "block";
-      const qrUrl =
-        "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" +
-        encodeURIComponent(addr);
-      walletQrEl.src = qrUrl;
-      walletQrEl.style.display = "block";
-    } else {
-      myWalletTextEl.textContent = "Не настроен. Уточните реквизиты у оператора.";
-      walletCopyHintEl.style.display = "none";
-      walletQrEl.style.display = "none";
-    }
-  }
-
-  myWalletTextEl.addEventListener("click", async () => {
-    const text = myWalletTextEl.textContent;
-    if (!text || text.includes("Не настроен")) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast("Адрес скопирован");
-    } catch (e) {
-      showToast("Скопируйте адрес вручную");
-    }
-  });
-
-  async function loadFiatRate() {
-    const from = fromCryptoEl.value;
-    const cgId = COINGECKO_IDS[from];
-    if (!cgId) {
-      rateMainEl.textContent = "—";
-      rateExtraEl.textContent = "Пара не поддерживается";
-      return;
-    }
-
-    try {
-      rateMainEl.textContent = "Загрузка…";
-      rateExtraEl.textContent = "";
-
-      const res = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=" +
-          cgId +
-          "&vs_currencies=uah"
-      );
-      const data = await res.json();
-      rawRate = data[cgId].uah;
-      finalRate = rawRate * (1 - COMMISSION_PERCENT / 100);
-
-      const toType = toTypeEl.value;
-      const labelTo =
-        toType === "UAH_CASH_KR" ? "UAH (наличные)" : "UAH на карту";
-
-      rateMainEl.textContent =
-        "1 " + from + " = " + finalRate.toFixed(2) + " " + labelTo;
-      const fee = getNetworkFee();
-      if (fee > 0) {
-        rateExtraEl.textContent =
-          "Маржа " +
-          COMMISSION_PERCENT.toFixed(1) +
-          "% + комиссия сети ≈ " +
-          fee +
-          " " +
-          from;
-      } else {
-        rateExtraEl.textContent =
-          "Курс с учётом комиссии сервиса " +
-          COMMISSION_PERCENT.toFixed(1) +
-          "%";
-      }
-
-      resultCurrencyEl.textContent = labelTo;
-      resultNoteEl.textContent =
-        "Расчёт ориентировочный. Финальный курс и сумма фиксируются оператором.";
-      currentMode = "FIAT";
-      recalculate();
-    } catch (e) {
-      console.error(e);
-      rateMainEl.textContent = "—";
-      rateExtraEl.textContent = "Ошибка загрузки курса, попробуйте позже.";
-    }
-  }
-
-  async function loadCryptoToCryptoRate() {
-    const from = fromCryptoEl.value;
-    const to = toCryptoEl.value;
-    const fromId = COINGECKO_IDS[from];
-    const toId = COINGECKO_IDS[to];
-
-    if (!fromId || !toId) {
-      rateMainEl.textContent = "—";
-      rateExtraEl.textContent = "Пара не поддерживается";
-      return;
-    }
-
-    try {
-      rateMainEl.textContent = "Загрузка…";
-      rateExtraEl.textContent = "";
-
-      const res = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=" +
-          fromId +
-          "," +
-          toId +
-          "&vs_currencies=uah"
-      );
-      const data = await res.json();
-      const fromUAH = data[fromId].uah;
-      const toUAH = data[toId].uah;
-
-      const baseRate = fromUAH / toUAH;
-      rawRate = baseRate;
-      finalRate = baseRate * (1 - COMMISSION_PERCENT / 100);
-
-      const fee = getNetworkFee();
-      rateMainEl.textContent =
-        "1 " + from + " ≈ " + finalRate.toFixed(6) + " " + to;
-      if (fee > 0) {
-        rateExtraEl.textContent =
-          "Кросс-курс + маржа " +
-          COMMISSION_PERCENT.toFixed(1) +
-          "% + комиссия сети ≈ " +
-          fee +
-          " " +
-          from;
-      } else {
-        rateExtraEl.textContent =
-          "Кросс-курс с учётом комиссии сервиса " +
-          COMMISSION_PERCENT.toFixed(1) +
-          "%";
-      }
-
-      resultCurrencyEl.textContent = to;
-      resultNoteEl.textContent =
-        "Точная сумма и курс будут подтверждены оператором.";
-      currentMode = "CRYPTO";
-      recalculate();
-    } catch (e) {
-      console.error(e);
-      rateMainEl.textContent = "—";
-      rateExtraEl.textContent = "Ошибка загрузки курса, попробуйте позже.";
-    }
-  }
-
-  function onPairChange() {
-    const toType = toTypeEl.value;
-
-    if (toType === "CRYPTO") {
-      toCryptoFieldEl.style.display = "block";
-      currentMode = "CRYPTO";
-      loadCryptoToCryptoRate();
-    } else {
-      toCryptoFieldEl.style.display = "none";
-      currentMode = "FIAT";
-      loadFiatRate();
-    }
-    updateWallet();
-  }
-
-  function recalculate() {
-    if (!finalRate) return;
-
-    const amount = parseFloat(amountFromEl.value || "0");
-    const fee = getNetworkFee();
-    const netAmount = Math.max(amount - fee, 0);
-
-    if (!amount || amount <= 0) {
-      resultAmountEl.textContent = "0.00";
-      return;
-    }
-
-    const result = netAmount * finalRate;
-    resultAmountEl.textContent =
-      isNaN(result)
-        ? "0.00"
-        : currentMode === "FIAT"
-        ? result.toFixed(2)
-        : result.toFixed(6);
-  }
-
-  function submitForm() {
-    const amount = parseFloat(amountFromEl.value || "0");
-    const contact = document.getElementById("contact").value.trim();
-    const clientWallet = document.getElementById("clientWallet").value.trim();
-
-    const from = fromCryptoEl.value;
-    const network = networkEl.value;
-    const toType = toTypeEl.value;
-    const toCoin = toType === "CRYPTO" ? toCryptoEl.value : null;
-
-    if (!amount || amount <= 0) {
-      showToast("Укажи сумму для обмена");
-      return;
-    }
-    if (!clientWallet) {
-      showToast("Укажи кошелёк или карту клиента");
-      return;
-    }
-    if (!contact) {
-      showToast("Укажи Telegram @username или номер");
-      return;
-    }
-    if (!finalRate) {
-      showToast("Курс ещё не загрузился");
-      return;
-    }
-
-    const fee = getNetworkFee();
-    const netAmount = Math.max(amount - fee, 0);
-    const estimated = netAmount * finalRate;
-
-    const key = from + ":" + network;
-    const myWallet = MY_WALLETS[key] || null;
-
-    const payload = {
-      type: "exchange_request",
-      from_coin: from,
-      from_network: network,
-      to_type: toType,
-      to_coin: toCoin,
-      amount_from: amount,
-      network_fee_coin: fee,
-      amount_net_from: netAmount,
-      rate: finalRate,
-      amount_to_estimate: estimated,
-      commission_percent: COMMISSION_PERCENT,
-      my_wallet: myWallet,
-      client_wallet: clientWallet,
-      contact: contact,
-      ts: Date.now()
+    // ===== ПРОСТОЙ ФЕЙК КУРС (для демо) =====
+    const baseRates = {
+      USDT: 40,   // 1 USDT ≈ 40 UAH
+      USDC: 40,
+      BTC: 40 * 95000,  // грубо
+      ETH: 40 * 3200,
+      TON: 40 * 8,
+      BNB: 40 * 600,
+      SOL: 40 * 200,
+      TRX: 40 * 0.08,
+      LTC: 40 * 80,
+      XRP: 40 * 0.7,
+      DOGE: 40 * 0.15,
+      ADA: 40 * 0.5,
+      POL: 40 * 4,
+      AVAX: 40 * 30,
+      DAI: 40
     };
 
-    if (tg && tg.sendData) {
-      tg.sendData(JSON.stringify(payload));
-      showToast("Заявка отправлена оператору. Ожидайте сообщение в Telegram.");
-      // НЕ закрываем мини-апп, даём человеку почитать
-    } else {
-      showToast("Открой мини-апп через Telegram-бота, а не браузер.");
-    }
-  }
+    const feePercent = 2; // 2% твоя наценка
 
-  // первый запуск
-  onPairChange();
-</script>
+    const fromCurrencyEl = document.getElementById('fromCurrency');
+    const fromAmountEl = document.getElementById('fromAmount');
+    const swapTypeEl = document.getElementById('swapType');
+    const toMethodEl = document.getElementById('toMethod');
+    const toAmountEl = document.getElementById('toAmount');
+    const toCurrencyLabelEl = document.getElementById('toCurrencyLabel');
+    const rateTextEl = document.getElementById('rateText');
+    const feeTextEl = document.getElementById('feeText');
+    const receiveTypeLabelEl = document.getElementById('receiveTypeLabel');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function updateReceiveLabel() {
+      const type = swapTypeEl.value;
+      if (type === 'crypto_to_crypto') {
+        receiveTypeLabelEl.textContent = 'Криптовалюта';
+        toCurrencyLabelEl.textContent = fromCurrencyEl.value;
+        toMethodEl.value = 'crypto';
+      } else if (type === 'crypto_to_cash' || type === 'crypto_to_card') {
+        receiveTypeLabelEl.textContent = 'Наличные / карта';
+        toCurrencyLabelEl.textContent = 'UAH';
+      } else {
+        receiveTypeLabelEl.textContent = 'Криптовалюта';
+        toCurrencyLabelEl.textContent = fromCurrencyEl.value;
+      }
+    }
+
+    function recalc() {
+      const cur = fromCurrencyEl.value;
+      const amt = parseFloat(fromAmountEl.value || '0');
+      const type = swapTypeEl.value;
+
+      if (!amt || !baseRates[cur]) {
+        toAmountEl.value = '';
+        rateTextEl.textContent = 'Курс будет рассчитан…';
+        return;
+      }
+
+      const baseRate = baseRates[cur]; // UAH за 1 единицу
+      const feeMult = 1 - feePercent / 100;
+
+      let result;
+      if (type === 'crypto_to_crypto') {
+        // грубо: конвертируем через UAH и обратно в ту же валюту (для демо)
+        result = amt * feeMult;
+        rateTextEl.textContent = `Вы отдаёте ${amt} ${cur}, получаете ≈ ${result.toFixed(6)} ${cur} с учётом ${feePercent}%`;
+      } else if (type === 'fiat_to_crypto') {
+        // клиент отдаёт UAH, получает крипту
+        // здесь from = крипта, но логика в демо упрощена
+        result = amt * baseRate * feeMult;
+        toAmountEl.value = result.toFixed(2);
+        rateTextEl.textContent = `1 ${cur} ≈ ${baseRate.toFixed(2)} ₴, комиссия ${feePercent}% включена`;
+        return;
+      } else {
+        // crypto -> UAH
+        const uahValue = amt * baseRate * feeMult;
+        result = uahValue;
+        toAmountEl.value = result.toFixed(2);
+        rateTextEl.textContent = `1 ${cur} ≈ ${baseRate.toFixed(2)} ₴, комиссия ${feePercent}% включена`;
+      }
+    }
+
+    fromCurrencyEl.addEventListener('change', () => {
+      updateReceiveLabel();
+      recalc();
+    });
+    fromAmountEl.addEventListener('input', recalc);
+    swapTypeEl.addEventListener('change', () => {
+      updateReceiveLabel();
+      recalc();
+    });
+    toMethodEl.addEventListener('change', recalc);
+
+    feeTextEl.textContent = `Комиссия ${feePercent}%`;
+
+    // Заглушка на отправку заявки (здесь просто alert).
+    submitBtn.addEventListener('click', () => {
+      const cur = fromCurrencyEl.value;
+      const amt = fromAmountEl.value || '0';
+      const type = swapTypeEl.options[swapTypeEl.selectedIndex].textContent;
+      const dest = toMethodEl.options[toMethodEl.selectedIndex].textContent;
+      const recv = toAmountEl.value || '0';
+
+      alert(
+        `Заявка отправлена:\n\n` +
+        `Тип: ${type}\n` +
+        `Отдаёте: ${amt} ${cur}\n` +
+        `Получаете: ${recv} ${toCurrencyLabelEl.textContent}\n` +
+        `Способ: ${dest}\n\n` +
+        `В реальном боте тут нужно отправить данные оператору через Telegram API.`
+      );
+    });
+
+    // Начальная настройка
+    updateReceiveLabel();
+  </script>
 </body>
 </html>
