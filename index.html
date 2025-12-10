@@ -8,10 +8,10 @@
   <style>
     :root {
       --bg: #05070a;
-      --card: #11151c;
-      --accent: #32b5ff;
-      --accent-soft: rgba(50, 181, 255, 0.15);
-      --text: #f5f5f5;
+      --card: #10141c;
+      --accent: #37b4ff;
+      --accent-soft: rgba(55, 180, 255, 0.14);
+      --text: #f5f5f7;
       --muted: #8c93a3;
       --danger: #ff4b6a;
       --radius-lg: 18px;
@@ -37,7 +37,7 @@
       margin: 0 auto;
     }
 
-    /* Header */
+    /* HEADER */
     .app-header {
       display: flex;
       align-items: center;
@@ -54,20 +54,25 @@
     .brand-logo {
       width: 34px;
       height: 34px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 30% 0, #ffffff 0, #32b5ff 40%, #0074ff 100%);
+      border-radius: 12px;
+      background: #0c111a;
+      border: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 18px;
-      color: #020308;
-      box-shadow: 0 6px 18px rgba(0, 132, 255, 0.35);
+      font-size: 17px;
+      letter-spacing: 0.5px;
+      color: #f5f5f7;
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
     .brand-text-title {
       font-size: 18px;
       font-weight: 650;
+      letter-spacing: 0.02em;
     }
 
     .brand-text-sub {
@@ -77,21 +82,21 @@
 
     .badge {
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 4px 9px;
       border-radius: 999px;
-      background: rgba(50, 181, 255, 0.1);
-      border: 1px solid rgba(50, 181, 255, 0.35);
+      background: var(--accent-soft);
+      border: 1px solid rgba(55, 180, 255, 0.5);
       color: var(--accent);
     }
 
-    /* Card */
+    /* CARD */
     .card {
-      background: rgba(10, 12, 18, 0.96);
+      background: rgba(8, 10, 16, 0.96);
       border-radius: 20px;
       padding: 16px 16px 18px;
       box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
+        0 18px 40px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(14px);
       margin-bottom: 14px;
     }
@@ -100,105 +105,76 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .card-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
     }
 
     .card-caption {
       font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .pill {
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
       font-size: 11px;
-      background: rgba(24, 172, 85, 0.18);
-      color: #4adf96;
+      background: rgba(39, 174, 96, 0.14);
+      color: #4cd484;
     }
 
-    .rate-line {
-      background: rgba(9, 14, 24, 0.9);
-      border-radius: 14px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      border: 1px solid rgba(50, 181, 255, 0.18);
-    }
-
-    .rate-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .rate-value {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-
-    .rate-sub {
-      margin-top: 2px;
+    .section-label {
       font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--muted);
+      margin-bottom: 6px;
     }
 
     .row {
       display: flex;
       gap: 8px;
-      margin-top: 10px;
+      margin-bottom: 8px;
     }
 
     .field {
       flex: 1;
-      background: rgba(13, 17, 26, 0.95);
-      border-radius: 16px;
-      padding: 10px 11px 8px;
+      background: rgba(13, 17, 26, 0.96);
+      border-radius: 14px;
+      padding: 8px 9px 8px;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .field-label {
       font-size: 11px;
       color: var(--muted);
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
-    .field-main {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
+    select,
     .field-input {
-      flex: 1;
+      width: 100%;
       background: transparent;
       border: none;
       outline: none;
       color: var(--text);
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 500;
+      padding: 3px 0;
+      -webkit-appearance: none;
     }
 
-    .field-input::placeholder {
-      color: #4c5569;
+    select {
+      padding-right: 16px;
     }
 
-    .field-tag {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(23, 29, 42, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: var(--muted);
-      white-space: nowrap;
+    select option {
+      background: #05070a;
+      color: #f5f5f7;
     }
 
     .field-note {
@@ -207,43 +183,85 @@
       color: var(--muted);
     }
 
-    .result-value {
+    .rate-block {
+      margin-top: 6px;
+      margin-bottom: 10px;
+      padding: 9px 11px;
+      border-radius: 14px;
+      background: rgba(9, 12, 21, 0.96);
+      border: 1px solid rgba(55, 180, 255, 0.22);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rate-text {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .rate-main {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .rate-extra {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .result-card {
+      margin-top: 6px;
+      background: rgba(9, 12, 20, 0.96);
+      border-radius: 16px;
+      padding: 10px 11px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .result-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .result-amount {
       font-size: 18px;
       font-weight: 650;
     }
 
     .result-currency {
-      margin-left: 4px;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
+      margin-left: 4px;
     }
 
-    .divider {
-      margin: 12px 0 8px;
-      height: 1px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent);
-      opacity: 0.4;
+    .result-comment {
+      font-size: 10px;
+      color: var(--muted);
     }
 
     .contact-card {
-      margin-top: 6px;
-      background: rgba(10, 12, 18, 0.96);
+      margin-top: 10px;
+      background: rgba(8, 10, 16, 0.96);
       border-radius: 18px;
-      padding: 10px 12px 12px;
+      padding: 10px 11px 11px;
       border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
     }
 
     .contact-input {
       width: 100%;
       border-radius: 12px;
-      background: rgba(13, 17, 26, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(12, 15, 23, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       padding: 9px 10px;
       color: var(--text);
       font-size: 13px;
@@ -255,14 +273,14 @@
     }
 
     .footer-note {
-      margin-top: 8px;
+      margin-top: 6px;
       font-size: 10px;
       color: var(--muted);
       line-height: 1.4;
     }
 
     .btn-primary {
-      margin-top: 10px;
+      margin-top: 11px;
       width: 100%;
       border-radius: 999px;
       border: none;
@@ -273,7 +291,7 @@
       background: linear-gradient(135deg, #2dd5ff, #0077ff);
       box-shadow:
         0 12px 26px rgba(0, 119, 255, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+        0 0 0 1px rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -285,10 +303,6 @@
       box-shadow:
         0 4px 14px rgba(0, 119, 255, 0.45),
         0 0 0 1px rgba(255, 255, 255, 0.08);
-    }
-
-    .btn-primary span {
-      font-size: 16px;
     }
 
     .toast {
@@ -316,7 +330,6 @@
     }
   </style>
 </head>
-
 <body>
 <div class="app">
   <!-- HEADER -->
@@ -325,64 +338,89 @@
       <div class="brand-logo">KE</div>
       <div>
         <div class="brand-text-title">Keks Exchange</div>
-        <div class="brand-text-sub">мини-обменник в Telegram</div>
+        <div class="brand-text-sub">микро-обменник в Telegram</div>
       </div>
     </div>
-    <span class="badge">beta · v0.1</span>
+    <span class="badge">beta · v0.2</span>
   </header>
 
   <!-- MAIN CARD -->
   <section class="card">
     <div class="card-header">
       <div>
-        <div class="card-title">Обмен USDT → UAH</div>
-        <div class="card-caption">курс обновляется автоматически</div>
+        <div class="card-title">Обмен крипты → UAH</div>
+        <div class="card-caption">курс берём автоматически, сверху — твоя маржа</div>
       </div>
       <div class="pill">P2P · non-custodial</div>
     </div>
 
-    <div class="rate-line">
+    <!-- Направление -->
+    <div class="section-label">Направление обмена</div>
+    <div class="row">
+      <div class="field">
+        <div class="field-label">Отдаю</div>
+        <select id="fromCrypto" onchange="onPairChange()">
+          <option value="USDT_TRON">USDT · TRC-20</option>
+          <option value="USDT_TON">USDT · TON</option>
+          <option value="BTC">BTC · Bitcoin</option>
+          <option value="ETH">ETH · Ethereum</option>
+        </select>
+        <div class="field-note">поддерживаем популярные сети</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Получаю</div>
+        <select id="toMethod" onchange="onPairChange()">
+          <option value="UAH_CARD">UAH · банковская карта</option>
+          <option value="UAH_CASH">UAH · наличные</option>
+        </select>
+        <div class="field-note" id="toNote">Украинский банк, карты Visa/MC</div>
+      </div>
+    </div>
+
+    <!-- Курс -->
+    <div class="rate-block">
       <div>
-        <div class="rate-label">Текущий курс</div>
-        <div class="rate-sub" id="rate-sub">Загрузка из CoinGecko…</div>
+        <div class="rate-text">Курс обмена (с учётом комиссии сервиса)</div>
+        <div class="rate-extra" id="rate-extra">Загрузка курса…</div>
       </div>
-      <div class="rate-value" id="rate-display">—</div>
+      <div class="rate-main" id="rate-main">—</div>
     </div>
 
+    <!-- Сумма / результат -->
+    <div class="section-label">Сумма</div>
     <div class="row">
       <div class="field">
-        <div class="field-label">Отдаёте</div>
-        <div class="field-main">
-          <input
-            id="amount"
-            type="number"
-            min="0"
-            step="0.01"
-            class="field-input"
-            placeholder="0.00"
-            oninput="calculate()"
-          />
-          <div class="field-tag">USDT</div>
-        </div>
-        <div class="field-note">Сеть: TRC-20 / TON / др. — по договорённости</div>
+        <div class="field-label">Сколько отдаёте</div>
+        <input
+          id="amount"
+          type="number"
+          min="0"
+          step="0.01"
+          class="field-input"
+          placeholder="0.00"
+          oninput="recalculate()"
+        />
+        <div class="field-note" id="amount-note">Минимальная сумма — по договорённости</div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="field">
-        <div class="field-label">Вы получите</div>
-        <div class="field-main">
-          <div class="result-value" id="result-value">0.00</div>
-          <div class="result-currency">UAH</div>
+    <div class="result-card">
+      <div class="result-row">
+        <div class="result-label">Вы получите ориентировочно</div>
+        <div>
+          <span class="result-amount" id="result-value">0.00</span>
+          <span class="result-currency" id="result-currency">UAH на карту</span>
         </div>
-        <div class="field-note" id="result-note">С учётом комиссии сервиса</div>
+      </div>
+      <div class="result-comment">
+        Итоговый курс и сумма подтверждаются оператором перед переводом.
       </div>
     </div>
 
-    <div class="divider"></div>
-
+    <!-- Контакт -->
     <div class="contact-card">
-      <div class="hint">Контакт для связи</div>
+      <div class="section-label">Контакты</div>
       <input
         id="contact"
         type="text"
@@ -390,11 +428,11 @@
         placeholder="@username или номер телефона"
       />
       <p class="footer-note">
-        После отправки заявки оператор напишет вам в Telegram, согласует
-        курс, реквизиты и время передачи средств.
+        После отправки заявки оператор свяжется с вами в Telegram для подтверждения
+        курса, реквизитов и деталей обмена.
       </p>
       <button class="btn-primary" onclick="submitForm()">
-        <span>Продолжить</span> →
+        <span>Создать заявку</span> →
       </button>
     </div>
   </section>
@@ -405,20 +443,29 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.expand();
-  }
+  if (tg) tg.expand();
 
-  // Настройка комиссии
-  // 1.5% комиссии: клиенту ок, тебе прибыль
-  const COMMISSION_PERCENT = 1.5;
+  const COMMISSION_PERCENT = 1.5; // твоя маржа: 1.5% — мягко и честно
+
+  // соответствие нашей крипты → CoinGecko id
+  const COINGECKO_IDS = {
+    "USDT_TRON": "tether",
+    "USDT_TON": "tether",
+    "BTC": "bitcoin",
+    "ETH": "ethereum",
+  };
+
   let rawRate = 0;
   let finalRate = 0;
 
-  const rateDisplay = document.getElementById("rate-display");
-  const rateSub = document.getElementById("rate-sub");
-  const resultValue = document.getElementById("result-value");
-  const resultNote = document.getElementById("result-note");
+  const fromCryptoEl = document.getElementById("fromCrypto");
+  const toMethodEl = document.getElementById("toMethod");
+  const toNoteEl = document.getElementById("toNote");
+  const rateMainEl = document.getElementById("rate-main");
+  const rateExtraEl = document.getElementById("rate-extra");
+  const amountEl = document.getElementById("amount");
+  const resultValueEl = document.getElementById("result-value");
+  const resultCurrencyEl = document.getElementById("result-currency");
   const toastEl = document.getElementById("toast");
 
   function showToast(text) {
@@ -428,57 +475,73 @@
   }
 
   async function loadRate() {
-    try {
-      rateSub.textContent = "Загрузка курса…";
+    const fromValue = fromCryptoEl.value;
+    const cgId = COINGECKO_IDS[fromValue];
 
+    if (!cgId) {
+      rateMainEl.textContent = "—";
+      rateExtraEl.textContent = "Пара не поддерживается";
+      return;
+    }
+
+    try {
+      rateExtraEl.textContent = "Загрузка курса…";
       const res = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=uah"
+        "https://api.coingecko.com/api/v3/simple/price?ids=" +
+          cgId +
+          "&vs_currencies=uah"
       );
       const data = await res.json();
-      rawRate = data.tether.uah;
+      rawRate = data[cgId].uah;
 
-      // применяем комиссию
       finalRate = rawRate * (1 - COMMISSION_PERCENT / 100);
 
-      rateDisplay.textContent =
-        "1 USDT = " + finalRate.toFixed(2) + " UAH";
-      rateSub.textContent =
-        "Базовый курс ≈ " +
-        rawRate.toFixed(2) +
-        " UAH · комиссия " +
-        COMMISSION_PERCENT +
-        "%";
+      const labelFrom = fromCryptoEl.options[fromCryptoEl.selectedIndex].text.split("·")[0].trim();
 
-      calculate();
+      rateMainEl.textContent =
+        "1 " + labelFrom + " = " + finalRate.toFixed(2) + " UAH";
+
+      rateExtraEl.textContent =
+        "Включена комиссия сервиса " + COMMISSION_PERCENT.toFixed(1) + "%";
+
+      recalculate();
     } catch (e) {
-      rateDisplay.textContent = "—";
-      rateSub.textContent =
-        "Не удалось загрузить курс, попробуйте позже.";
       console.error(e);
+      rateMainEl.textContent = "—";
+      rateExtraEl.textContent = "Не удалось получить курс, попробуйте позже";
     }
   }
 
-  function calculate() {
+  function onPairChange() {
+    const toValue = toMethodEl.value;
+    if (toValue === "UAH_CARD") {
+      toNoteEl.textContent = "Любая украинская карта, уточним банк перед обменом";
+      resultCurrencyEl.textContent = "UAH на карту";
+    } else if (toValue === "UAH_CASH") {
+      toNoteEl.textContent = "Наличные UAH, город и место оговариваются с оператором";
+      resultCurrencyEl.textContent = "UAH наличными";
+    }
+
+    loadRate();
+  }
+
+  function recalculate() {
     if (!finalRate) return;
 
-    const amount = parseFloat(
-      document.getElementById("amount").value || "0"
-    );
+    const amount = parseFloat(amountEl.value || "0");
     const result = amount * finalRate;
 
-    resultValue.textContent = isNaN(result)
+    resultValueEl.textContent = isNaN(result)
       ? "0.00"
       : result.toFixed(2);
-    resultNote.textContent =
-      "Расчёт по курсу " + finalRate.toFixed(2) + " UAH за 1 USDT";
   }
 
   function submitForm() {
-    const amount = document.getElementById("amount").value.trim();
+    const amount = parseFloat(amountEl.value || "0");
     const contact = document.getElementById("contact").value.trim();
 
-    if (!amount || parseFloat(amount) <= 0) {
-      showToast("Укажи сумму USDT");
+    if (!amount || amount <= 0) {
+      showToast("Укажи сумму, которую отдаёшь");
       return;
     }
     if (!contact) {
@@ -492,26 +555,29 @@
 
     const payload = {
       type: "exchange_request",
-      from: "USDT",
-      to: "UAH",
-      amount: parseFloat(amount),
+      from: fromCryptoEl.value,
+      from_label: fromCryptoEl.options[fromCryptoEl.selectedIndex].text,
+      to: toMethodEl.value,
+      to_label: toMethodEl.options[toMethodEl.selectedIndex].text,
+      amount_from: amount,
       rate: finalRate,
+      amount_to_estimate: amount * finalRate,
+      commission_percent: COMMISSION_PERCENT,
       contact: contact,
-      ts: Date.now()
+      ts: Date.now(),
     };
 
     if (tg && tg.sendData) {
       tg.sendData(JSON.stringify(payload));
       showToast("Заявка отправлена в бота");
-      setTimeout(() => {
-        if (tg.close) tg.close();
-      }, 700);
+      setTimeout(() => tg.close && tg.close(), 700);
     } else {
-      showToast("Открой мини-апп через Telegram-бота");
+      showToast("Открой через Telegram-бота, а не браузер");
     }
   }
 
-  loadRate();
+  // первый запуск
+  onPairChange();
 </script>
 </body>
 </html>
