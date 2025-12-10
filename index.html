@@ -9,11 +9,10 @@
     :root {
       --bg: #070b11;
       --card: #121824;
-      --accent: #38b5ff;
-      --accent-soft: rgba(56, 181, 255, 0.16);
+      --accent: #33c2ff;
+      --accent-soft: rgba(51, 194, 255, 0.16);
       --text: #f4f5f7;
       --muted: #9299aa;
-      --radius: 18px;
     }
 
     * {
@@ -36,7 +35,7 @@
       margin: 0 auto;
     }
 
-    /* Header */
+    /* HEADER */
     .header {
       display: flex;
       align-items: center;
@@ -84,14 +83,14 @@
       padding: 5px 10px;
       border-radius: 999px;
       background: var(--accent-soft);
-      border: 1px solid rgba(56, 181, 255, 0.5);
+      border: 1px solid rgba(51, 194, 255, 0.5);
       color: var(--accent);
       white-space: nowrap;
     }
 
-    /* Card */
+    /* CARD */
     .card {
-      background: rgba(12, 16, 26, 0.96);
+      background: rgba(12, 16, 26, 0.97);
       border-radius: 20px;
       padding: 16px 16px 18px;
       box-shadow:
@@ -166,7 +165,7 @@
       padding: 10px 11px;
       border-radius: 14px;
       background: #111725;
-      border: 1px solid rgba(56, 181, 255, 0.25);
+      border: 1px solid rgba(51, 194, 255, 0.25);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -182,6 +181,7 @@
       font-size: 15px;
       font-weight: 600;
       color: var(--accent);
+      text-align: right;
     }
 
     .result-box {
@@ -218,6 +218,48 @@
     .result-note {
       font-size: 11px;
       color: var(--muted);
+    }
+
+    .wallet-box {
+      margin-top: 12px;
+      padding: 10px 11px 11px;
+      border-radius: 16px;
+      background: #121828;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .wallet-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .wallet-text {
+      flex: 1;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .wallet-copy {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+
+    .wallet-qr {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      background: #0b101a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      object-fit: contain;
     }
 
     .contact-box {
@@ -307,14 +349,14 @@
         <div class="brand-sub">обмен через Telegram</div>
       </div>
     </div>
-    <span class="badge">online · Кривой Рог</span>
+    <span class="badge">Кривой Рог · online</span>
   </header>
 
   <section class="card">
     <div class="card-title">Создание заявки</div>
     <div class="card-sub">Выберите направление, сумму и оставьте контакт.</div>
 
-    <!-- Направление -->
+    <!-- НАПРАВЛЕНИЕ -->
     <div class="section-label">Отдаю</div>
     <div class="row">
       <div class="field">
@@ -339,7 +381,7 @@
       </div>
       <div class="field">
         <div class="field-label">Сеть</div>
-        <select id="network">
+        <select id="network" onchange="onPairChange()">
           <option value="TON">TON</option>
           <option value="TRC20">TRC-20</option>
           <option value="BEP20">BEP-20</option>
@@ -352,13 +394,13 @@
       <div class="field">
         <div class="field-label">Тип</div>
         <select id="toType" onchange="onPairChange()">
-          <option value="UAH_CARD">UAH · банковская карта</option>
+          <option value="UAH_CARD">UAH · карта</option>
           <option value="UAH_CASH_KR">UAH · наличные (Кривой Рог)</option>
           <option value="CRYPTO">Криптовалюта</option>
         </select>
       </div>
       <div class="field" id="toCryptoField" style="display:none;">
-        <div class="field-label">Криптовалюта получаю</div>
+        <div class="field-label">Крипта получаю</div>
         <select id="toCrypto" onchange="onPairChange()">
           <option value="USDT">USDT</option>
           <option value="USDC">USDC</option>
@@ -379,16 +421,15 @@
       </div>
     </div>
 
-    <!-- Курс -->
+    <!-- КУРС -->
     <div class="rate-box">
-      <div class="rate-left">
-        <div>Курс обмена (с учётом комиссии сервиса)</div>
-        <div id="rateExtra" style="margin-top:2px;"></div>
+      <div class="rate-left" id="rateExtra">
+        Курс загружается…
       </div>
-      <div class="rate-main" id="rateMain">Загрузка…</div>
+      <div class="rate-main" id="rateMain">—</div>
     </div>
 
-    <!-- Сумма -->
+    <!-- СУММА -->
     <div class="section-label">Сумма</div>
     <div class="row">
       <div class="field">
@@ -405,7 +446,7 @@
       </div>
     </div>
 
-    <!-- Результат -->
+    <!-- РЕЗУЛЬТАТ -->
     <div class="result-box">
       <div class="result-top">
         <div class="result-label">Ориентировочно получите</div>
@@ -415,11 +456,32 @@
         </div>
       </div>
       <div class="result-note" id="resultNote">
-        Итоговый курс и сумма подтверждаются оператором перед обменом.
+        Курс с учётом комиссии сервиса и сети. Финальные условия подтвердит оператор.
       </div>
     </div>
 
-    <!-- Контакт -->
+    <!-- РЕКВИЗИТЫ -->
+    <div class="wallet-box">
+      <div class="section-label">Реквизиты</div>
+      <div class="wallet-label">Ваш кошелёк для этого направления</div>
+      <div class="wallet-row">
+        <div>
+          <div class="wallet-text" id="myWalletText">Не настроен</div>
+          <div class="wallet-copy" id="walletCopyHint">Нажмите, чтобы скопировать</div>
+        </div>
+        <img id="walletQr" class="wallet-qr" style="display:none;" alt="QR" />
+      </div>
+
+      <div class="wallet-label" style="margin-top:6px;">Кошелёк / карта клиента</div>
+      <input
+        id="clientWallet"
+        type="text"
+        class="contact-input"
+        placeholder="Кошелёк или номер карты получателя"
+      />
+    </div>
+
+    <!-- КОНТАКТ -->
     <div class="contact-box">
       <div class="section-label">Контакт</div>
       <input
@@ -429,7 +491,7 @@
         placeholder="@username или номер телефона"
       />
       <div class="small-note">
-        Оператор напишет вам в Telegram, чтобы согласовать курс, реквизиты и время.
+        Заявка уйдёт оператору в Telegram. Вам напишут для подтверждения курса и деталей.
       </div>
       <button class="btn-primary" onclick="submitForm()">
         <span>Отправить заявку</span> →
@@ -445,10 +507,35 @@
   const tg = window.Telegram?.WebApp;
   if (tg) tg.expand();
 
-  // Комиссия сервиса (твой процент)
-  const COMMISSION_PERCENT = 1.5; // можно менять
+  // ТВОЯ маржа, % (меняется в одну строку)
+  const COMMISSION_PERCENT = 1.5;
 
-  // Соответствие монет → CoinGecko ID
+  // Приблизительные комиссии сети (в монете, вычитаем из суммы клиента)
+  // ПОТОМ САМ ПОДГОНИ ПОД АКТУАЛЬНЫЕ Binance/сети
+  const NETWORK_FEES = {
+    "USDT:TRC20": 1.0,
+    "USDT:TON": 0.1,
+    "USDT:BEP20": 0.5,
+    "BTC:TRC20": 0.0006,
+    "BTC:BEP20": 0.0004,
+    "ETH:BEP20": 0.003,
+    "TON:TON": 0.03,
+    // остальные по желанию
+  };
+
+  // ТВОИ КОШЕЛЬКИ
+  // 🔴 ОБЯЗАТЕЛЬНО ЗАМЕНИ ПЛЕЙСХОЛДЕРЫ НА СВОИ АДРЕСА
+  const MY_WALLETS = {
+    "USDT:TRC20": "ВАШ_АДРЕС_USDT_TRC20",
+    "USDT:TON": "ВАШ_АДРЕС_USDT_TON",
+    "USDT:BEP20": "ВАШ_АДРЕС_USDT_BEP20",
+    "BTC:TRC20": "ВАШ_АДРЕС_BTC_TRC20_ИЛИ_BTC_СЕТЬ",
+    "ETH:BEP20": "ВАШ_АДРЕС_ETH_BEP20",
+    "TON:TON": "ВАШ_АДРЕС_TON",
+    // можно добавлять дальше
+  };
+
+  // CoinGecko ID для монет
   const COINGECKO_IDS = {
     "USDT": "tether",
     "USDC": "usd-coin",
@@ -467,9 +554,9 @@
     "BUSD": "binance-usd"
   };
 
-  let rawRate = 0;   // базовый курс (в UAH или через кросс)
-  let finalRate = 0; // курс с комиссией
-  let currentMode = "FIAT"; // FIAT или CRYPTO
+  let rawRate = 0;
+  let finalRate = 0;
+  let currentMode = "FIAT"; // FIAT / CRYPTO
 
   const fromCryptoEl = document.getElementById("fromCrypto");
   const networkEl = document.getElementById("network");
@@ -483,6 +570,11 @@
   const resultAmountEl = document.getElementById("resultAmount");
   const resultCurrencyEl = document.getElementById("resultCurrency");
   const resultNoteEl = document.getElementById("resultNote");
+
+  const myWalletTextEl = document.getElementById("myWalletText");
+  const walletQrEl = document.getElementById("walletQr");
+  const walletCopyHintEl = document.getElementById("walletCopyHint");
+
   const toastEl = document.getElementById("toast");
 
   function showToast(text) {
@@ -490,6 +582,45 @@
     toastEl.classList.add("show");
     setTimeout(() => toastEl.classList.remove("show"), 2200);
   }
+
+  function getNetworkFee() {
+    const coin = fromCryptoEl.value;
+    const net = networkEl.value;
+    const key = coin + ":" + net;
+    return NETWORK_FEES[key] || 0;
+  }
+
+  function updateWallet() {
+    const coin = fromCryptoEl.value;
+    const net = networkEl.value;
+    const key = coin + ":" + net;
+    const addr = MY_WALLETS[key];
+
+    if (addr) {
+      myWalletTextEl.textContent = addr;
+      walletCopyHintEl.style.display = "block";
+      const qrUrl =
+        "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" +
+        encodeURIComponent(addr);
+      walletQrEl.src = qrUrl;
+      walletQrEl.style.display = "block";
+    } else {
+      myWalletTextEl.textContent = "Не настроен. Уточните реквизиты у оператора.";
+      walletCopyHintEl.style.display = "none";
+      walletQrEl.style.display = "none";
+    }
+  }
+
+  myWalletTextEl.addEventListener("click", async () => {
+    const text = myWalletTextEl.textContent;
+    if (!text || text.includes("Не настроен")) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Адрес скопирован");
+    } catch (e) {
+      showToast("Скопируйте адрес вручную");
+    }
+  });
 
   async function loadFiatRate() {
     const from = fromCryptoEl.value;
@@ -513,14 +644,31 @@
       rawRate = data[cgId].uah;
       finalRate = rawRate * (1 - COMMISSION_PERCENT / 100);
 
+      const toType = toTypeEl.value;
+      const labelTo =
+        toType === "UAH_CASH_KR" ? "UAH (наличные)" : "UAH на карту";
+
       rateMainEl.textContent =
-        "1 " + from + " = " + finalRate.toFixed(2) + " UAH";
-      rateExtraEl.textContent =
-        "Комиссия сервиса " + COMMISSION_PERCENT.toFixed(1) + "% уже учтена";
-      resultCurrencyEl.textContent =
-        toTypeEl.value === "UAH_CASH_KR" ? "UAH (наличными)" : "UAH";
+        "1 " + from + " = " + finalRate.toFixed(2) + " " + labelTo;
+      const fee = getNetworkFee();
+      if (fee > 0) {
+        rateExtraEl.textContent =
+          "Маржа " +
+          COMMISSION_PERCENT.toFixed(1) +
+          "% + комиссия сети ≈ " +
+          fee +
+          " " +
+          from;
+      } else {
+        rateExtraEl.textContent =
+          "Курс с учётом комиссии сервиса " +
+          COMMISSION_PERCENT.toFixed(1) +
+          "%";
+      }
+
+      resultCurrencyEl.textContent = labelTo;
       resultNoteEl.textContent =
-        "Сумма рассчитана ориентировочно по текущему курсу обменника.";
+        "Расчёт ориентировочный. Финальный курс и сумма фиксируются оператором.";
       currentMode = "FIAT";
       recalculate();
     } catch (e) {
@@ -557,19 +705,31 @@
       const fromUAH = data[fromId].uah;
       const toUAH = data[toId].uah;
 
-      // базовый кросс-курс from→to по UAH
       const baseRate = fromUAH / toUAH;
       rawRate = baseRate;
       finalRate = baseRate * (1 - COMMISSION_PERCENT / 100);
 
+      const fee = getNetworkFee();
       rateMainEl.textContent =
         "1 " + from + " ≈ " + finalRate.toFixed(6) + " " + to;
-      rateExtraEl.textContent =
-        "Кросс-курс по рынку + комиссия " + COMMISSION_PERCENT.toFixed(1) + "%";
+      if (fee > 0) {
+        rateExtraEl.textContent =
+          "Кросс-курс + маржа " +
+          COMMISSION_PERCENT.toFixed(1) +
+          "% + комиссия сети ≈ " +
+          fee +
+          " " +
+          from;
+      } else {
+        rateExtraEl.textContent =
+          "Кросс-курс с учётом комиссии сервиса " +
+          COMMISSION_PERCENT.toFixed(1) +
+          "%";
+      }
 
       resultCurrencyEl.textContent = to;
       resultNoteEl.textContent =
-        "Точная сумма и курс фиксируются оператором перед обменом.";
+        "Точная сумма и курс будут подтверждены оператором.";
       currentMode = "CRYPTO";
       recalculate();
     } catch (e) {
@@ -584,39 +744,53 @@
 
     if (toType === "CRYPTO") {
       toCryptoFieldEl.style.display = "block";
+      currentMode = "CRYPTO";
       loadCryptoToCryptoRate();
     } else {
       toCryptoFieldEl.style.display = "none";
+      currentMode = "FIAT";
       loadFiatRate();
     }
+    updateWallet();
   }
 
   function recalculate() {
     if (!finalRate) return;
 
     const amount = parseFloat(amountFromEl.value || "0");
+    const fee = getNetworkFee();
+    const netAmount = Math.max(amount - fee, 0);
+
     if (!amount || amount <= 0) {
       resultAmountEl.textContent = "0.00";
       return;
     }
 
-    const result = amount * finalRate;
-    resultAmountEl.textContent = isNaN(result)
-      ? "0.00"
-      : (currentMode === "FIAT"
-          ? result.toFixed(2)
-          : result.toFixed(6));
+    const result = netAmount * finalRate;
+    resultAmountEl.textContent =
+      isNaN(result)
+        ? "0.00"
+        : currentMode === "FIAT"
+        ? result.toFixed(2)
+        : result.toFixed(6);
   }
 
   function submitForm() {
     const amount = parseFloat(amountFromEl.value || "0");
     const contact = document.getElementById("contact").value.trim();
+    const clientWallet = document.getElementById("clientWallet").value.trim();
+
     const from = fromCryptoEl.value;
-    const toType = toTypeEl.value;
     const network = networkEl.value;
+    const toType = toTypeEl.value;
+    const toCoin = toType === "CRYPTO" ? toCryptoEl.value : null;
 
     if (!amount || amount <= 0) {
       showToast("Укажи сумму для обмена");
+      return;
+    }
+    if (!clientWallet) {
+      showToast("Укажи кошелёк или карту клиента");
       return;
     }
     if (!contact) {
@@ -628,44 +802,37 @@
       return;
     }
 
-    let toLabel = "";
-    let toTarget = "";
-    let toCoin = null;
+    const fee = getNetworkFee();
+    const netAmount = Math.max(amount - fee, 0);
+    const estimated = netAmount * finalRate;
 
-    if (toType === "UAH_CARD") {
-      toLabel = "UAH · банковская карта";
-      toTarget = "UAH_CARD";
-    } else if (toType === "UAH_CASH_KR") {
-      toLabel = "UAH · наличные (Кривой Рог)";
-      toTarget = "UAH_CASH_KR";
-    } else {
-      toCoin = toCryptoEl.value;
-      toLabel = "Криптовалюта " + toCoin;
-      toTarget = "CRYPTO";
-    }
-
-    const estimated = amount * finalRate;
+    const key = from + ":" + network;
+    const myWallet = MY_WALLETS[key] || null;
 
     const payload = {
       type: "exchange_request",
       from_coin: from,
       from_network: network,
-      to_type: toTarget,
+      to_type: toType,
       to_coin: toCoin,
       amount_from: amount,
+      network_fee_coin: fee,
+      amount_net_from: netAmount,
       rate: finalRate,
       amount_to_estimate: estimated,
       commission_percent: COMMISSION_PERCENT,
+      my_wallet: myWallet,
+      client_wallet: clientWallet,
       contact: contact,
       ts: Date.now()
     };
 
     if (tg && tg.sendData) {
       tg.sendData(JSON.stringify(payload));
-      showToast("Заявка отправлена в бота");
-      setTimeout(() => tg.close && tg.close(), 750);
+      showToast("Заявка отправлена оператору. Ожидайте сообщение в Telegram.");
+      // НЕ закрываем мини-апп, даём человеку почитать
     } else {
-      showToast("Открой мини-апп через Telegram-бота");
+      showToast("Открой мини-апп через Telegram-бота, а не браузер.");
     }
   }
 
