@@ -9,184 +9,288 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app" class="app">
-    <!-- HEADER -->
-    <header class="app-header">
-      <div class="logo-block">
-        <!-- если захочешь — поменяешь на <img src="зображення/keksswap-logo.png"> -->
-        <div class="logo-icon">🧁</div>
-        <div class="logo-text">KeksSwap</div>
-      </div>
+  <div class="app">
 
-      <div class="lang-switch">
-        <button class="lang-btn" data-lang="uk">UA</button>
-        <button class="lang-btn" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="pl">PL</button>
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo">
+          <!-- если загрузишь логотип, поменяй src -->
+          <!-- <img src="зображення/keksswap-logo.png" alt="KeksSwap" class="logo-img" /> -->
+          <div class="logo-icon">🧁</div>
+          <div class="logo-text">
+            <div class="logo-title">KeksSwap</div>
+            <div class="logo-sub">Crypto ↔ UAH</div>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="uk">UA</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="pl">PL</button>
+        </div>
+        <button class="menu-btn" id="menu-btn">☰</button>
       </div>
     </header>
 
-    <!-- MAIN SCREEN: WELCOME -->
-    <main class="screen screen--active" id="screen-welcome">
-      <section class="card hero-card">
-        <h1 data-i18n="welcome_title">Обмін криптовалюти на гривню</h1>
-        <p class="hero-sub" data-i18n="welcome_sub">
-          Швидкий та безпечний обмін крипти на банки України та електронні гаманці.
-        </p>
+    <!-- SIDE MENU -->
+    <div class="side-menu" id="side-menu">
+      <div class="side-menu-inner">
+        <div class="side-menu-header">
+          <div class="logo">
+            <div class="logo-icon">🧁</div>
+            <div class="logo-text">
+              <div class="logo-title">KeksSwap</div>
+            </div>
+          </div>
+          <button class="side-menu-close" id="side-menu-close">✕</button>
+        </div>
 
-        <button class="btn-primary" id="btn-start" data-i18n="btn_start">
-          Почати обмін
+        <button class="side-menu-login" id="menu-login" data-i18n="menu_login">
+          Увійти
         </button>
 
-        <p class="hero-note" data-i18n="aml_note_short">
-          Усі заявки проходять обовʼязкову AML-перевірку.
-        </p>
-      </section>
-    </main>
-
-    <!-- SCREEN: EXCHANGE FORM -->
-    <main class="screen" id="screen-exchange">
-      <section class="card exchange-card">
-        <h2 data-i18n="exchange_title">Налаштуй обмін</h2>
-
-        <!-- FROM ASSET -->
-        <div class="field-group">
-          <label class="field-label" data-i18n="from_label">Віддаєш</label>
-          <button class="asset-select" id="from-asset-btn">
-            <div class="asset-main">
-              <span class="asset-icon" id="from-asset-icon">₿</span>
-              <span class="asset-name" id="from-asset-name">Bitcoin BTC</span>
-            </div>
-            <span class="asset-sub" id="from-asset-sub">Crypto</span>
+        <nav class="side-menu-nav">
+          <button class="side-link side-link--active" data-screen="main" data-i18n="menu_main">
+            Головна
           </button>
-        </div>
-
-        <!-- TO ASSET -->
-        <div class="field-group">
-          <label class="field-label" data-i18n="to_label">Отримуєш</label>
-          <button class="asset-select" id="to-asset-btn">
-            <div class="asset-main">
-              <span class="asset-icon" id="to-asset-icon">🏦</span>
-              <span class="asset-name" id="to-asset-name">Monobank UAH</span>
-            </div>
-            <span class="asset-sub" id="to-asset-sub">Банк України</span>
+          <button class="side-link" data-screen="rules" data-i18n="menu_rules">
+            Правила обміну
           </button>
+          <button class="side-link" data-screen="aml" data-i18n="menu_aml">
+            AML & KYC
+          </button>
+          <button class="side-link" data-screen="faq" data-i18n="menu_faq">
+            FAQ
+          </button>
+          <button class="side-link" data-screen="contacts" data-i18n="menu_contacts">
+            Контакти
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN SCREENS WRAPPER -->
+    <main class="screens">
+
+      <!-- MAIN EXCHANGE SCREEN -->
+      <section class="screen screen--active" id="screen-main">
+        <div class="notice-card">
+          <span class="notice-icon">⚠️</span>
+          <span class="notice-text" data-i18n="notice_text">
+            Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).
+          </span>
         </div>
 
-        <!-- AMOUNTS -->
-        <div class="amount-row">
-          <div class="field-group amount-col">
-            <label class="field-label" data-i18n="amount_from">Сума, що віддаєш</label>
-            <input type="number" id="amount-from" class="input" min="0" step="0.0001" placeholder="0.00" />
+        <!-- ВІДДАЄТЕ -->
+        <div class="block-title" data-i18n="from_block_title">Віддаєте</div>
+        <div class="amount-card">
+          <div class="amount-row">
+            <input
+              type="number"
+              id="amount-from"
+              class="amount-input"
+              step="0.0001"
+              min="0"
+              placeholder="0.0000"
+            />
+            <div class="amount-asset-badge" id="from-asset-badge">
+              <span id="from-asset-ticker">BTC</span>
+            </div>
           </div>
-          <div class="amount-arrow">⇄</div>
-          <div class="field-group amount-col">
-            <label class="field-label" data-i18n="amount_to">Орієнтовно отримаєш</label>
-            <input type="text" id="amount-to" class="input input--readonly" readonly />
+          <div class="amount-range" id="amount-range-text">
+            від 0.0001 до 10 BTC
           </div>
         </div>
 
-        <!-- RATE & FEE -->
-        <div class="rate-info">
-          <div class="rate-line">
-            <span data-i18n="rate_label">Курс</span>
+        <button class="select-card" id="from-asset-btn">
+          <div class="select-left">
+            <div class="select-icon" id="from-asset-icon">₿</div>
+            <div class="select-text">
+              <div class="select-title" id="from-asset-name">Bitcoin BTC</div>
+              <div class="select-sub" id="from-asset-sub">Криптовалюта</div>
+            </div>
+          </div>
+          <div class="select-right">▾</div>
+        </button>
+
+        <!-- ОТРИМУЄТЕ -->
+        <div class="block-title" data-i18n="to_block_title">Отримуєте</div>
+        <div class="amount-card">
+          <div class="amount-row">
+            <input
+              type="text"
+              id="amount-to"
+              class="amount-input amount-input--readonly"
+              readonly
+              placeholder="0.00"
+            />
+            <div class="amount-asset-badge" id="to-asset-badge">
+              <span id="to-asset-ticker">UAH</span>
+            </div>
+          </div>
+          <div class="amount-range" id="amount-hint-text">
+            Сума з урахуванням комісії сервісу
+          </div>
+        </div>
+
+        <button class="select-card" id="to-asset-btn">
+          <div class="select-left">
+            <div class="select-icon" id="to-asset-icon">🏦</div>
+            <div class="select-text">
+              <div class="select-title" id="to-asset-name">Monobank UAH</div>
+              <div class="select-sub" id="to-asset-sub">Банк України</div>
+            </div>
+          </div>
+          <div class="select-right">▾</div>
+        </button>
+
+        <!-- INFO BLOCK -->
+        <div class="info-card">
+          <div class="info-row">
+            <span data-i18n="info_pair">Обмін</span>
+            <span id="pair-text">Bitcoin BTC → Monobank UAH</span>
+          </div>
+          <div class="info-row">
+            <span data-i18n="info_rate">Курс</span>
             <span id="rate-text">1 BTC ≈ 1 500 000 UAH</span>
           </div>
-          <div class="rate-line">
-            <span data-i18n="fee_label">Комісія сервісу</span>
+          <div class="info-row">
+            <span data-i18n="info_fee">Комісія сервісу</span>
             <span id="fee-text">2.5%</span>
           </div>
-          <div class="rate-line">
-            <span data-i18n="total_label">До виплати клієнту</span>
+          <div class="info-row">
+            <span data-i18n="info_payout">До виплати</span>
             <span id="payout-text">—</span>
           </div>
         </div>
 
-        <button class="btn-primary" id="btn-next-details" data-i18n="btn_next">
+        <button class="primary-btn" id="btn-next-details" data-i18n="btn_continue">
           Продовжити
         </button>
-
-        <button class="btn-link" id="btn-back-welcome" data-i18n="btn_back">
-          Назад
-        </button>
       </section>
-    </main>
 
-    <!-- SCREEN: DETAILS & CONFIRM -->
-    <main class="screen" id="screen-details">
-      <section class="card details-card">
-        <h2 data-i18n="details_title">Дані для заявки</h2>
+      <!-- DETAILS SCREEN -->
+      <section class="screen" id="screen-details">
+        <div class="block-title" data-i18n="details_title">Дані для заявки</div>
 
-        <div class="summary-block">
-          <div class="summary-row">
-            <span data-i18n="summary_from">Віддаєш</span>
+        <div class="info-card">
+          <div class="info-row">
+            <span data-i18n="summary_from">Віддаєте</span>
             <span id="summary-from"></span>
           </div>
-          <div class="summary-row">
-            <span data-i18n="summary_to">Отримуєш</span>
+          <div class="info-row">
+            <span data-i18n="summary_to">Отримуєте</span>
             <span id="summary-to"></span>
           </div>
-          <div class="summary-row">
+          <div class="info-row">
             <span data-i18n="summary_rate">Курс + комісія</span>
             <span id="summary-rate"></span>
           </div>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" data-i18n="field_recipient">
-            Реквізити для зарахування (номер картки / IBAN / гаманець)
-          </label>
-          <input type="text" id="field-recipient" class="input" placeholder="5375 **** **** ****" />
-        </div>
+        <label class="field-label" for="field-recipient" data-i18n="field_recipient">
+          Реквізити для зарахування (номер картки / IBAN / гаманець)
+        </label>
+        <input
+          type="text"
+          id="field-recipient"
+          class="input"
+          placeholder="5375 **** **** ****"
+        />
 
-        <div class="field-group">
-          <label class="field-label" data-i18n="field_name">
-            Ваше імʼя
-          </label>
-          <input type="text" id="field-name" class="input" placeholder="Імʼя / Нікнейм" />
-        </div>
+        <label class="field-label" for="field-name" data-i18n="field_name">
+          Ваше імʼя
+        </label>
+        <input
+          type="text"
+          id="field-name"
+          class="input"
+          placeholder="Імʼя / Нікнейм"
+        />
 
-        <div class="field-group">
-          <label class="field-label" data-i18n="field_comment">
-            Коментар (необовʼязково)
-          </label>
-          <textarea id="field-comment" class="input textarea" rows="2"
-            placeholder="Додаткові деталі по платежу"></textarea>
-        </div>
+        <label class="field-label" for="field-comment" data-i18n="field_comment">
+          Коментар (необовʼязково)
+        </label>
+        <textarea
+          id="field-comment"
+          class="input textarea"
+          rows="2"
+          placeholder="Додаткові деталі по платежу"
+        ></textarea>
 
-        <p class="details-note" data-i18n="aml_note_long">
-          Створюючи заявку, ви погоджуєтесь з правилами сервісу та AML/KYC політикою. У разі виявлення
-          підозрілої активності виплата може бути призупинена до завершення перевірки.
+        <p class="small-note" data-i18n="aml_note_long">
+          Створюючи заявку, ви погоджуєтесь з правилами сервісу та AML/KYC
+          політикою. У разі виявлення підозрілої активності виплата може бути
+          призупинена до завершення перевірки.
         </p>
 
-        <button class="btn-primary" id="btn-submit" data-i18n="btn_submit">
+        <button class="primary-btn" id="btn-submit" data-i18n="btn_submit">
           Створити заявку
         </button>
-
-        <button class="btn-link" id="btn-back-exchange" data-i18n="btn_back">
+        <button class="ghost-btn" id="btn-back-main" data-i18n="btn_back">
           Назад
         </button>
       </section>
+
+      <!-- STATIC PAGES (RULES / AML / FAQ / CONTACTS) -->
+      <section class="screen" id="screen-rules">
+        <h2 class="page-title" data-i18n="rules_title">Правила обміну</h2>
+        <p class="page-text" data-i18n="rules_text">
+          Тут будуть основні умови сервісу: мінімальні та максимальні суми,
+          час обробки заявок, правила фіксації курсу, обмеження, повернення
+          платежів тощо.
+        </p>
+      </section>
+
+      <section class="screen" id="screen-aml">
+        <h2 class="page-title">AML & KYC</h2>
+        <p class="page-text" data-i18n="aml_text">
+          KeksSwap виконує базову AML-перевірку всіх вхідних транзакцій.
+          У разі виявлення звʼязку з відомими шахрайськими схемами, даркнет
+          сервісами або санкційними адресами, заявка може бути скасована, а
+          кошти повернені відправнику за вирахуванням комісій мережі.
+        </p>
+      </section>
+
+      <section class="screen" id="screen-faq">
+        <h2 class="page-title">FAQ</h2>
+        <p class="page-text" data-i18n="faq_text">
+          Тут можна додати відповіді на часті запитання: скільки часу триває
+          обмін, як розраховується курс, які є ліміти, які валюти
+          підтримуються тощо.
+        </p>
+      </section>
+
+      <section class="screen" id="screen-contacts">
+        <h2 class="page-title" data-i18n="contacts_title">Контакти</h2>
+        <p class="page-text" data-i18n="contacts_text">
+          Для підтримки звертайтесь у Telegram: @ВашНік або на email:
+          support@keksswap.com
+        </p>
+      </section>
     </main>
 
-    <!-- ASSET PICKER (overlays like in ant.exchange) -->
-    <div class="asset-picker" id="asset-picker">
-      <div class="asset-picker-inner">
-        <div class="asset-picker-header">
-          <h3 id="asset-picker-title">Вибір активу</h3>
-          <button class="asset-picker-close" id="asset-picker-close">✕</button>
+    <!-- ASSET PICKER (BOTTOM SHEET) -->
+    <div class="picker-overlay" id="picker">
+      <div class="picker-sheet">
+        <div class="picker-header">
+          <div class="picker-title" id="picker-title">Віддаєте</div>
+          <button class="picker-close" id="picker-close">✕</button>
         </div>
-
-        <input type="text" id="asset-search" class="input search-input"
-          placeholder="Пошук..." />
-
-        <div class="asset-section" id="asset-list">
-          <!-- сюда app.js вставит список -->
-        </div>
+        <input
+          type="text"
+          class="input picker-search"
+          id="picker-search"
+          placeholder="Пошук..."
+        />
+        <div class="picker-list" id="picker-list"></div>
       </div>
     </div>
 
     <!-- TOAST -->
-    <div id="toast" class="toast"></div>
+    <div class="toast" id="toast"></div>
   </div>
 
   <script src="app.js"></script>
