@@ -1,98 +1,125 @@
-// Инициализация Telegram WebApp
+// Telegram init
 const tg = window.Telegram ? window.Telegram.WebApp : null;
-if (tg) {
-  tg.expand();
-}
+if (tg) tg.expand();
 
-// ===== ЛОКАЛИЗАЦИЯ =====
+/* ===================== ЛОКАЛИЗАЦИЯ ===================== */
+
 const translations = {
   uk: {
-    welcome_title: "Обмін криптовалюти на гривню",
-    welcome_sub:
-      "Швидкий та безпечний обмін крипти на банки України та електронні гаманці.",
-    aml_note_short: "Усі заявки проходять обовʼязкову AML-перевірку.",
-    aml_note_long:
-      "Створюючи заявку, ви погоджуєтесь з правилами сервісу та AML/KYC політикою. У разі виявлення підозрілої активності виплата може бути призупинена до завершення перевірки.",
-    btn_start: "Почати обмін",
-    btn_next: "Продовжити",
-    btn_back: "Назад",
-    btn_submit: "Створити заявку",
-    exchange_title: "Налаштуй обмін",
+    notice_text:
+      "Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).",
+    from_block_title: "Віддаєте",
+    to_block_title: "Отримуєте",
+    info_pair: "Обмін",
+    info_rate: "Курс",
+    info_fee: "Комісія сервісу",
+    info_payout: "До виплати",
+    btn_continue: "Продовжити",
     details_title: "Дані для заявки",
-    from_label: "Віддаєш",
-    to_label: "Отримуєш",
-    amount_from: "Сума, що віддаєш",
-    amount_to: "Орієнтовно отримаєш",
-    rate_label: "Курс",
-    fee_label: "Комісія сервісу",
-    total_label: "До виплати клієнту",
-    field_recipient: "Реквізити для зарахування (номер картки / IBAN / гаманець)",
+    summary_from: "Віддаєте",
+    summary_to: "Отримуєте",
+    summary_rate: "Курс + комісія",
+    field_recipient:
+      "Реквізити для зарахування (номер картки / IBAN / гаманець)",
     field_name: "Ваше імʼя",
     field_comment: "Коментар (необовʼязково)",
-    summary_from: "Віддаєш",
-    summary_to: "Отримуєш",
-    summary_rate: "Курс + комісія",
-    picker_from: "Вибір активу (віддаєш)",
-    picker_to: "Вибір активу (отримуєш)",
+    aml_note_long:
+      "Створюючи заявку, ви погоджуєтесь з правилами сервісу та AML/KYC політикою. У разі виявлення підозрілої активності виплата може бути призупинена до завершення перевірки.",
+    btn_submit: "Створити заявку",
+    btn_back: "Назад",
+    menu_login: "Увійти",
+    menu_main: "Головна",
+    menu_rules: "Правила обміну",
+    menu_aml: "AML & KYC",
+    menu_faq: "FAQ",
+    menu_contacts: "Контакти",
+    rules_title: "Правила обміну",
+    rules_text:
+      "Тут будуть основні умови сервісу: мінімальні та максимальні суми, час обробки заявок, правила фіксації курсу, обмеження, повернення платежів тощо.",
+    aml_text:
+      "KeksSwap виконує базову AML-перевірку всіх вхідних транзакцій. У разі виявлення звʼязку з шахрайськими схемами або санкційними адресами заявка може бути скасована.",
+    faq_text:
+      "Тут можна додати відповіді на часті запитання: час обміну, ліміти, підтримувані валюти тощо.",
+    contacts_title: "Контакти",
+    contacts_text:
+      "Для підтримки звертайтесь у Telegram: @ВашНік або на email: support@keksswap.com",
   },
   en: {
-    welcome_title: "Exchange crypto to UAH",
-    welcome_sub:
-      "Fast and secure crypto exchange to Ukrainian banks and e-wallets.",
-    aml_note_short: "All requests pass mandatory AML checks.",
-    aml_note_long:
-      "By creating a request, you agree with the service rules and AML/KYC policy. In case of suspicious activity the payout may be delayed.",
-    btn_start: "Start exchange",
-    btn_next: "Continue",
-    btn_back: "Back",
-    btn_submit: "Create request",
-    exchange_title: "Set up exchange",
+    notice_text:
+      "Requests created after 22:00 are processed from 08:00 (UTC+2).",
+    from_block_title: "You give",
+    to_block_title: "You receive",
+    info_pair: "Exchange",
+    info_rate: "Rate",
+    info_fee: "Service fee",
+    info_payout: "Payout",
+    btn_continue: "Continue",
     details_title: "Request details",
-    from_label: "You give",
-    to_label: "You receive",
-    amount_from: "Amount you give",
-    amount_to: "Estimated you receive",
-    rate_label: "Rate",
-    fee_label: "Service fee",
-    total_label: "Payout to client",
-    field_recipient: "Recipient details (card / IBAN / wallet)",
-    field_name: "Your name",
-    field_comment: "Comment (optional)",
     summary_from: "You give",
     summary_to: "You receive",
     summary_rate: "Rate + fee",
-    picker_from: "Choose asset (you give)",
-    picker_to: "Choose asset (you receive)",
+    field_recipient: "Recipient details (card / IBAN / wallet)",
+    field_name: "Your name",
+    field_comment: "Comment (optional)",
+    aml_note_long:
+      "By creating a request you agree to the service rules and AML/KYC policy. In case of suspicious activity the payout may be delayed.",
+    btn_submit: "Create request",
+    btn_back: "Back",
+    menu_login: "Log in",
+    menu_main: "Home",
+    menu_rules: "Exchange rules",
+    menu_aml: "AML & KYC",
+    menu_faq: "FAQ",
+    menu_contacts: "Contacts",
+    rules_title: "Exchange rules",
+    rules_text:
+      "Here you can describe main terms: min/max limits, processing time, rate fixation rules, refunds etc.",
+    aml_text:
+      "KeksSwap performs basic AML checks of all incoming transactions. If a link to fraudulent schemes or sanction addresses is detected, the order may be cancelled.",
+    faq_text:
+      "Add answers to common questions: exchange time, limits, supported currencies, etc.",
+    contacts_title: "Contacts",
+    contacts_text:
+      "Support: Telegram @YourNick or email support@keksswap.com",
   },
   pl: {
-    welcome_title: "Wymiana kryptowaluty na hrywny",
-    welcome_sub:
-      "Szybka i bezpieczna wymiana krypto na banki Ukrainy i e-portfele.",
-    aml_note_short: "Wszystkie zlecenia przechodzą obowiązkową kontrolę AML.",
-    aml_note_long:
-      "Tworząc zlecenie, akceptujesz regulamin i politykę AML/KYC. W przypadku podejrzanej aktywności wypłata może zostać wstrzymana do końca weryfikacji.",
-    btn_start: "Rozpocznij wymianę",
-    btn_next: "Kontynuuj",
-    btn_back: "Wstecz",
-    btn_submit: "Utwórz zlecenie",
-    exchange_title: "Ustaw wymianę",
+    notice_text:
+      "Zlecenia po 22:00 są przetwarzane od 08:00 (UTC+2).",
+    from_block_title: "Oddajesz",
+    to_block_title: "Otrzymujesz",
+    info_pair: "Wymiana",
+    info_rate: "Kurs",
+    info_fee: "Prowizja serwisu",
+    info_payout: "Do wypłaty",
+    btn_continue: "Kontynuuj",
     details_title: "Dane zlecenia",
-    from_label: "Oddajesz",
-    to_label: "Otrzymujesz",
-    amount_from: "Kwota, którą oddajesz",
-    amount_to: "Szacunkowo otrzymasz",
-    rate_label: "Kurs",
-    fee_label: "Prowizja serwisu",
-    total_label: "Do wypłaty klientowi",
+    summary_from: "Oddajesz",
+    summary_to: "Otrzymujesz",
+    summary_rate: "Kurs + prowizja",
     field_recipient:
       "Dane odbiorcy (numer karty / IBAN / portfel)",
     field_name: "Twoje imię",
     field_comment: "Komentarz (opcjonalnie)",
-    summary_from: "Oddajesz",
-    summary_to: "Otrzymujesz",
-    summary_rate: "Kurs + prowizja",
-    picker_from: "Wybór aktywa (oddajesz)",
-    picker_to: "Wybór aktywa (otrzymujesz)",
+    aml_note_long:
+      "Tworząc zlecenie, akceptujesz regulamin i politykę AML/KYC. W przypadku podejrzanej aktywności wypłata może zostać wstrzymana.",
+    btn_submit: "Utwórz zlecenie",
+    btn_back: "Wstecz",
+    menu_login: "Zaloguj się",
+    menu_main: "Strona główna",
+    menu_rules: "Zasady wymiany",
+    menu_aml: "AML & KYC",
+    menu_faq: "FAQ",
+    menu_contacts: "Kontakt",
+    rules_title: "Zasady wymiany",
+    rules_text:
+      "Tutaj możesz dodać główne zasady: limity, czas realizacji, zasady kursu, zwroty itd.",
+    aml_text:
+      "KeksSwap wykonuje podstawową kontrolę AML wszystkich transakcji. W przypadku wykrycia podejrzanej aktywności zlecenie może zostać anulowane.",
+    faq_text:
+      "Dodaj odpowiedzi na najczęstsze pytania: czas wymiany, limity, obsługiwane waluty itd.",
+    contacts_title: "Kontakt",
+    contacts_text:
+      "Wsparcie: Telegram @YourNick lub email support@keksswap.com",
   },
 };
 
@@ -104,8 +131,8 @@ function applyTranslations() {
     const key = el.getAttribute("data-i18n");
     if (dict[key]) el.textContent = dict[key];
   });
-  // placeholder search
-  const search = document.getElementById("asset-search");
+
+  const search = document.getElementById("picker-search");
   if (search) {
     if (currentLang === "uk") search.placeholder = "Пошук...";
     if (currentLang === "en") search.placeholder = "Search...";
@@ -121,19 +148,17 @@ document.querySelectorAll(".lang-btn").forEach((btn) => {
     btn.classList.add("active");
     currentLang = btn.dataset.lang;
     applyTranslations();
-    renderAssets(); // чтобы подписи групп обновились
+    renderPicker(); // подписчики групп
+    updateAssetTexts();
   });
 });
 
-// по умолчанию активируем UA
 document
   .querySelector('.lang-btn[data-lang="uk"]')
   .classList.add("active");
 
-// ===== ДАННЫЕ АКТИВОВ =====
+/* ===================== ДАННЫЕ АКТИВОВ ===================== */
 
-// Простая модель: считаем все относительным к UAH
-// basePriceUah = сколько UAH за 1 единицу
 const ASSETS = [
   // CRYPTO
   {
@@ -141,119 +166,198 @@ const ASSETS = [
     group: "crypto",
     type: "crypto",
     icon: "₿",
+    ticker: "BTC",
     name: "Bitcoin BTC",
-    sub: { uk: "Криптовалюта", en: "Cryptocurrency", pl: "Kryptowaluta" },
-    basePriceUah: 1500000,
+    sub: {
+      uk: "Криптовалюта",
+      en: "Cryptocurrency",
+      pl: "Kryptowaluta",
+    },
+    min: 0.0001,
+    max: 10,
+    priceUah: 1500000,
   },
   {
     id: "eth",
     group: "crypto",
     type: "crypto",
     icon: "Ξ",
+    ticker: "ETH",
     name: "Ethereum ETH",
-    sub: { uk: "Криптовалюта", en: "Cryptocurrency", pl: "Kryptowaluta" },
-    basePriceUah: 90000,
+    sub: {
+      uk: "Криптовалюта",
+      en: "Cryptocurrency",
+      pl: "Kryptowaluta",
+    },
+    min: 0.01,
+    max: 300,
+    priceUah: 90000,
   },
   {
     id: "usdt_trc",
     group: "crypto",
     type: "crypto",
     icon: "₮",
+    ticker: "USDT",
     name: "USDT TRC20",
-    sub: { uk: "Стаблкоїн", en: "Stablecoin", pl: "Stablecoin" },
-    basePriceUah: 40,
+    sub: {
+      uk: "Стаблкоїн TRC20",
+      en: "Stablecoin TRC20",
+      pl: "Stablecoin TRC20",
+    },
+    min: 10,
+    max: 100000,
+    priceUah: 40,
   },
   {
     id: "usdt_erc",
     group: "crypto",
     type: "crypto",
     icon: "₮",
+    ticker: "USDT",
     name: "USDT ERC20",
-    sub: { uk: "Стаблкоїн", en: "Stablecoin", pl: "Stablecoin" },
-    basePriceUah: 40,
+    sub: {
+      uk: "Стаблкоїн ERC20",
+      en: "Stablecoin ERC20",
+      pl: "Stablecoin ERC20",
+    },
+    min: 10,
+    max: 100000,
+    priceUah: 40,
   },
   {
     id: "usdc",
     group: "crypto",
     type: "crypto",
     icon: "◎",
+    ticker: "USDC",
     name: "USDC",
-    sub: { uk: "Стаблкоїн", en: "Stablecoin", pl: "Stablecoin" },
-    basePriceUah: 40,
+    sub: {
+      uk: "Стаблкоїн",
+      en: "Stablecoin",
+      pl: "Stablecoin",
+    },
+    min: 10,
+    max: 100000,
+    priceUah: 40,
   },
   {
     id: "bnb",
     group: "crypto",
     type: "crypto",
     icon: "🟡",
+    ticker: "BNB",
     name: "BNB (BEP20)",
-    sub: { uk: "Криптовалюта", en: "Cryptocurrency", pl: "Kryptowaluta" },
-    basePriceUah: 18000,
+    sub: {
+      uk: "Криптовалюта",
+      en: "Cryptocurrency",
+      pl: "Kryptowaluta",
+    },
+    min: 0.1,
+    max: 500,
+    priceUah: 18000,
   },
   {
     id: "trx",
     group: "crypto",
     type: "crypto",
     icon: "⚡",
-    name: "TRX",
-    sub: { uk: "Криптовалюта", en: "Cryptocurrency", pl: "Kryptowaluta" },
-    basePriceUah: 3.5,
+    ticker: "TRX",
+    name: "Tron TRX",
+    sub: {
+      uk: "Криптовалюта",
+      en: "Cryptocurrency",
+      pl: "Kryptowaluta",
+    },
+    min: 100,
+    max: 1000000,
+    priceUah: 3.5,
   },
 
-  // BANKS UAH
+  // UA BANKS
   {
     id: "mono",
     group: "ua_banks",
     type: "fiat",
     icon: "🟣",
+    ticker: "UAH",
     name: "Monobank UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
   {
     id: "pb",
     group: "ua_banks",
     type: "fiat",
     icon: "💳",
+    ticker: "UAH",
     name: "PrivatBank UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
   {
     id: "abank",
     group: "ua_banks",
     type: "fiat",
     icon: "🅰️",
+    ticker: "UAH",
     name: "A-Bank UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
   {
     id: "pumb",
     group: "ua_banks",
     type: "fiat",
     icon: "🏦",
+    ticker: "UAH",
     name: "PUMB UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
   {
     id: "oshchad",
     group: "ua_banks",
     type: "fiat",
     icon: "🏛️",
+    ticker: "UAH",
     name: "Oschadbank UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
   {
     id: "raif",
     group: "ua_banks",
     type: "fiat",
     icon: "🟡",
+    ticker: "UAH",
     name: "Raiffeisen UAH",
-    sub: { uk: "Банк України", en: "Ukrainian bank", pl: "Bank ukraiński" },
-    basePriceUah: 1,
+    sub: {
+      uk: "Банк України",
+      en: "Ukrainian bank",
+      pl: "Bank ukraiński",
+    },
+    priceUah: 1,
   },
 
   // E-WALLETS
@@ -262,126 +366,176 @@ const ASSETS = [
     group: "wallets",
     type: "wallet",
     icon: "🟦",
+    ticker: "EUR",
     name: "Wise EUR",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 44,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 44,
   },
   {
     id: "wise_usd",
     group: "wallets",
     type: "wallet",
     icon: "🟦",
+    ticker: "USD",
     name: "Wise USD",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 41,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 41,
   },
   {
     id: "revolut_eur",
     group: "wallets",
     type: "wallet",
     icon: "🅁",
+    ticker: "EUR",
     name: "Revolut EUR",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 44,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 44,
   },
   {
     id: "revolut_usd",
     group: "wallets",
     type: "wallet",
     icon: "🅁",
+    ticker: "USD",
     name: "Revolut USD",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 41,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 41,
   },
   {
     id: "genome_eur",
     group: "wallets",
     type: "wallet",
     icon: "🟢",
+    ticker: "EUR",
     name: "Genome EUR",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 44,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 44,
   },
   {
     id: "paypal_usd",
     group: "wallets",
     type: "wallet",
     icon: "Ⓟ",
+    ticker: "USD",
     name: "PayPal USD",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 41,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 41,
   },
   {
     id: "binance_pay",
     group: "wallets",
     type: "wallet",
     icon: "🟡",
+    ticker: "USDT",
     name: "Binance Pay (USDT)",
-    sub: { uk: "Е-гаманець", en: "E-wallet", pl: "Portfel elektroniczny" },
-    basePriceUah: 40,
+    sub: {
+      uk: "Е-гаманець",
+      en: "E-wallet",
+      pl: "Portfel elektroniczny",
+    },
+    priceUah: 40,
   },
 ];
 
-// Группы для отображения
 const GROUP_TITLES = {
   uk: {
     crypto: "Криптовалюта",
-    ua_banks: "Банки України",
+    ua_banks: "Банки — UAH",
     wallets: "Е-гаманці",
   },
   en: {
     crypto: "Crypto",
-    ua_banks: "Ukrainian banks",
+    ua_banks: "Banks — UAH",
     wallets: "E-wallets",
   },
   pl: {
     crypto: "Kryptowaluty",
-    ua_banks: "Banki ukraińskie",
+    ua_banks: "Banki — UAH",
     wallets: "E-portfele",
   },
 };
 
-// ===== СОСТОЯНИЕ =====
 let fromAsset = ASSETS.find((a) => a.id === "btc");
 let toAsset = ASSETS.find((a) => a.id === "mono");
-let currentPickerTarget = "from"; // 'from' | 'to'
-let amountFrom = 0;
 let feePercent = 2.5;
+let currentPickerTarget = "from";
+let amountFrom = 0;
 
-// ===== DOM =====
+/* ===================== DOM ===================== */
+
 const screens = {
-  welcome: document.getElementById("screen-welcome"),
-  exchange: document.getElementById("screen-exchange"),
+  main: document.getElementById("screen-main"),
   details: document.getElementById("screen-details"),
+  rules: document.getElementById("screen-rules"),
+  aml: document.getElementById("screen-aml"),
+  faq: document.getElementById("screen-faq"),
+  contacts: document.getElementById("screen-contacts"),
 };
 
-function showScreen(key) {
-  Object.values(screens).forEach((scr) =>
-    scr.classList.remove("screen--active")
-  );
-  screens[key].classList.add("screen--active");
+function showScreen(name) {
+  Object.values(screens).forEach((s) => s.classList.remove("screen--active"));
+  screens[name].classList.add("screen--active");
 }
 
-// main buttons
-document.getElementById("btn-start").addEventListener("click", () => {
-  showScreen("exchange");
+function setActiveMenu(screen) {
+  document
+    .querySelectorAll(".side-link")
+    .forEach((b) => b.classList.remove("side-link--active"));
+  const btn = document.querySelector(`.side-link[data-screen="${screen}"]`);
+  if (btn) btn.classList.add("side-link--active");
+}
+
+/* ===================== HEADER / MENU ===================== */
+
+const menuBtn = document.getElementById("menu-btn");
+const sideMenu = document.getElementById("side-menu");
+const sideMenuClose = document.getElementById("side-menu-close");
+
+menuBtn.addEventListener("click", () => {
+  sideMenu.style.display = "flex";
+});
+sideMenuClose.addEventListener("click", () => {
+  sideMenu.style.display = "none";
+});
+sideMenu.addEventListener("click", (e) => {
+  if (e.target === sideMenu) sideMenu.style.display = "none";
 });
 
-document.getElementById("btn-back-welcome").addEventListener("click", () => {
-  showScreen("welcome");
+document.querySelectorAll(".side-link").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const screen = btn.dataset.screen;
+    sideMenu.style.display = "none";
+    setActiveMenu(screen);
+    showScreen(screen);
+  });
 });
 
-document.getElementById("btn-next-details").addEventListener("click", () => {
-  if (!validateExchange()) return;
-  fillSummary();
-  showScreen("details");
-});
+/* ===================== AMOUNTS & ПЕРЕСЧЕТ ===================== */
 
-document.getElementById("btn-back-exchange").addEventListener("click", () => {
-  showScreen("exchange");
-});
-
-// amount change
 const amountFromInput = document.getElementById("amount-from");
 const amountToInput = document.getElementById("amount-to");
 
@@ -390,22 +544,9 @@ amountFromInput.addEventListener("input", () => {
   recalc();
 });
 
-// asset buttons
-document.getElementById("from-asset-btn").addEventListener("click", () => {
-  currentPickerTarget = "from";
-  openAssetPicker();
-});
-
-document.getElementById("to-asset-btn").addEventListener("click", () => {
-  currentPickerTarget = "to";
-  openAssetPicker();
-});
-
-// ===== ПЕРЕСЧЁТ =====
 function getRate(from, to) {
   if (!from || !to) return 0;
-  // перевод через UAH: amount * from.basePriceUah / to.basePriceUah
-  return from.basePriceUah / to.basePriceUah;
+  return from.priceUah / to.priceUah;
 }
 
 function recalc() {
@@ -414,108 +555,144 @@ function recalc() {
   const fee = (rawTo * feePercent) / 100;
   const payout = rawTo - fee;
 
-  const rateText = `1 ${fromAsset ? fromAsset.name.split(" ")[0] : ""} ≈ ${rate.toFixed(
-    2
-  )} ${toAsset ? toAsset.name.split(" ").slice(-1)[0] : ""}`;
-  document.getElementById("rate-text").textContent = rateText;
+  const fromTicker = fromAsset?.ticker || "";
+  const toTicker = toAsset?.ticker || "";
+
+  document.getElementById(
+    "pair-text"
+  ).textContent = `${fromAsset.name} → ${toAsset.name}`;
+
+  document.getElementById(
+    "rate-text"
+  ).textContent = `1 ${fromTicker} ≈ ${rate.toFixed(2)} ${toTicker}`;
   document.getElementById("fee-text").textContent = `${feePercent.toFixed(1)}%`;
   document.getElementById(
     "payout-text"
-  ).textContent = `${payout.toFixed(2)} ${toAsset ? toAsset.name.split(" ").slice(-1)[0] : ""}`;
-  amountToInput.value =
-    payout > 0 ? payout.toFixed(2) : "";
+  ).textContent = payout > 0 ? `${payout.toFixed(2)} ${toTicker}` : "—";
+
+  amountToInput.value = payout > 0 ? payout.toFixed(2) : "";
 }
 
-// ===== ASSET PICKER =====
-const picker = document.getElementById("asset-picker");
-const pickerTitle = document.getElementById("asset-picker-title");
-const pickerClose = document.getElementById("asset-picker-close");
-const assetListEl = document.getElementById("asset-list");
-const assetSearch = document.getElementById("asset-search");
+/* ===================== ОБНОВЛЕНИЕ ТЕКСТОВ ПОД АКТИВЫ ===================== */
 
-pickerClose.addEventListener("click", closeAssetPicker);
-picker.addEventListener("click", (e) => {
-  if (e.target === picker) closeAssetPicker();
+function updateAssetTexts() {
+  // from
+  if (fromAsset) {
+    document.getElementById("from-asset-icon").textContent = fromAsset.icon;
+    document.getElementById("from-asset-name").textContent = fromAsset.name;
+    document.getElementById("from-asset-sub").textContent =
+      fromAsset.sub[currentLang] || fromAsset.sub.uk;
+    document.getElementById("from-asset-ticker").textContent =
+      fromAsset.ticker;
+    document.getElementById(
+      "amount-range-text"
+    ).textContent = `від ${fromAsset.min} до ${fromAsset.max} ${fromAsset.ticker}`;
+  }
+
+  // to
+  if (toAsset) {
+    document.getElementById("to-asset-icon").textContent = toAsset.icon;
+    document.getElementById("to-asset-name").textContent = toAsset.name;
+    document.getElementById("to-asset-sub").textContent =
+      toAsset.sub[currentLang] || toAsset.sub.uk;
+    document.getElementById("to-asset-ticker").textContent = toAsset.ticker;
+  }
+
+  recalc();
+}
+
+/* ===================== PICKER ===================== */
+
+const pickerOverlay = document.getElementById("picker");
+const pickerTitle = document.getElementById("picker-title");
+const pickerClose = document.getElementById("picker-close");
+const pickerList = document.getElementById("picker-list");
+const pickerSearch = document.getElementById("picker-search");
+
+document.getElementById("from-asset-btn").addEventListener("click", () => {
+  currentPickerTarget = "from";
+  openPicker();
 });
 
-assetSearch.addEventListener("input", () => {
-  renderAssets(assetSearch.value.trim().toLowerCase());
+document.getElementById("to-asset-btn").addEventListener("click", () => {
+  currentPickerTarget = "to";
+  openPicker();
 });
 
-function openAssetPicker() {
+pickerClose.addEventListener("click", () => (pickerOverlay.style.display = "none"));
+pickerOverlay.addEventListener("click", (e) => {
+  if (e.target === pickerOverlay) pickerOverlay.style.display = "none";
+});
+
+pickerSearch.addEventListener("input", () => {
+  renderPicker(pickerSearch.value.trim().toLowerCase());
+});
+
+function openPicker() {
   const dict = translations[currentLang];
   pickerTitle.textContent =
     currentPickerTarget === "from"
-      ? dict.picker_from
-      : dict.picker_to;
-
-  assetSearch.value = "";
-  renderAssets();
-  picker.style.display = "flex";
+      ? dict.from_block_title
+      : dict.to_block_title;
+  pickerSearch.value = "";
+  renderPicker();
+  pickerOverlay.style.display = "flex";
 }
 
-function closeAssetPicker() {
-  picker.style.display = "none";
-}
+function renderPicker(search = "") {
+  pickerList.innerHTML = "";
+  const groups = {};
 
-function renderAssets(searchTerm = "") {
-  if (!assetListEl) return;
-  assetListEl.innerHTML = "";
-
-  const byGroup = {};
   ASSETS.forEach((a) => {
-    if (!byGroup[a.group]) byGroup[a.group] = [];
-    byGroup[a.group].push(a);
+    // для "отдаёте" только крипта, для "получаете" всё кроме крипты? (банки + кошельки)
+    if (currentPickerTarget === "from" && a.type !== "crypto") return;
+    if (currentPickerTarget === "to" && a.type === "crypto") return;
+
+    if (!groups[a.group]) groups[a.group] = [];
+    groups[a.group].push(a);
   });
 
-  Object.keys(byGroup).forEach((groupKey) => {
-    const groupAssets = byGroup[groupKey].filter((a) => {
-      if (!searchTerm) return true;
+  Object.keys(groups).forEach((g) => {
+    const filtered = groups[g].filter((a) => {
+      if (!search) return true;
       const n = a.name.toLowerCase();
       const s =
-        a.sub[currentLang]?.toLowerCase() ||
-        a.sub.uk.toLowerCase();
-      return n.includes(searchTerm) || s.includes(searchTerm);
+        a.sub[currentLang]?.toLowerCase() || a.sub.uk.toLowerCase();
+      return n.includes(search) || s.includes(search);
     });
 
-    if (!groupAssets.length) return;
+    if (!filtered.length) return;
 
     const title = document.createElement("div");
-    title.className = "asset-group-title";
-    title.textContent = GROUP_TITLES[currentLang][groupKey] || groupKey;
-    assetListEl.appendChild(title);
+    title.className = "picker-group-title";
+    title.textContent = GROUP_TITLES[currentLang][g] || g;
+    pickerList.appendChild(title);
 
-    groupAssets.forEach((a) => {
+    filtered.forEach((a) => {
       const item = document.createElement("div");
-      item.className = "asset-item";
+      item.className = "picker-item";
       item.addEventListener("click", () => {
-        if (currentPickerTarget === "from") {
-          fromAsset = a;
-          updateAssetButtons();
-        } else {
-          toAsset = a;
-          updateAssetButtons();
-        }
-        recalc();
-        closeAssetPicker();
+        if (currentPickerTarget === "from") fromAsset = a;
+        else toAsset = a;
+        updateAssetTexts();
+        pickerOverlay.style.display = "none";
       });
 
       const main = document.createElement("div");
-      main.className = "asset-item-main";
+      main.className = "picker-item-main";
 
       const icon = document.createElement("div");
-      icon.className = "asset-icon";
+      icon.className = "picker-item-icon";
       icon.textContent = a.icon;
 
       const textWrap = document.createElement("div");
       const nameEl = document.createElement("div");
-      nameEl.className = "asset-item-name";
+      nameEl.className = "picker-item-name";
       nameEl.textContent = a.name;
 
       const subEl = document.createElement("div");
-      subEl.className = "asset-item-sub";
-      subEl.textContent =
-        a.sub[currentLang] || a.sub.uk;
+      subEl.className = "picker-item-sub";
+      subEl.textContent = a.sub[currentLang] || a.sub.uk;
 
       textWrap.appendChild(nameEl);
       textWrap.appendChild(subEl);
@@ -529,41 +706,21 @@ function renderAssets(searchTerm = "") {
       item.appendChild(main);
       item.appendChild(arrow);
 
-      assetListEl.appendChild(item);
+      pickerList.appendChild(item);
     });
   });
 }
 
-function updateAssetButtons() {
-  if (fromAsset) {
-    document.getElementById("from-asset-icon").textContent =
-      fromAsset.icon;
-    document.getElementById("from-asset-name").textContent =
-      fromAsset.name;
-    document.getElementById("from-asset-sub").textContent =
-      fromAsset.sub[currentLang] || fromAsset.sub.uk;
-  }
-  if (toAsset) {
-    document.getElementById("to-asset-icon").textContent =
-      toAsset.icon;
-    document.getElementById("to-asset-name").textContent =
-      toAsset.name;
-    document.getElementById("to-asset-sub").textContent =
-      toAsset.sub[currentLang] || toAsset.sub.uk;
-  }
-}
+/* ===================== DETAILS / ВАЛИДАЦИЯ ===================== */
 
-// ===== ВАЛИДАЦИЯ & САММАРИ =====
+const toast = document.getElementById("toast");
 function showToast(msg) {
-  const toast = document.getElementById("toast");
   toast.textContent = msg;
   toast.classList.add("toast--visible");
-  setTimeout(() => {
-    toast.classList.remove("toast--visible");
-  }, 2200);
+  setTimeout(() => toast.classList.remove("toast--visible"), 2200);
 }
 
-function validateExchange() {
+function validateMain() {
   if (!amountFrom || amountFrom <= 0) {
     showToast(
       currentLang === "uk"
@@ -574,20 +731,10 @@ function validateExchange() {
     );
     return false;
   }
-  if (!fromAsset || !toAsset) {
+  if (fromAsset.type !== "crypto") {
     showToast(
       currentLang === "uk"
-        ? "Оберіть активи для обміну"
-        : currentLang === "en"
-        ? "Choose assets"
-        : "Wybierz aktywa"
-    );
-    return false;
-  }
-  if (fromAsset.type === "fiat") {
-    showToast(
-      currentLang === "uk"
-        ? "Поки що віддаємо лише криптовалюту 🙂"
+        ? "Зараз віддаємо лише криптовалюту 🙂"
         : currentLang === "en"
         ? "For now you can only give crypto 🙂"
         : "Na razie oddajemy tylko krypto 🙂"
@@ -597,29 +744,40 @@ function validateExchange() {
   return true;
 }
 
+document.getElementById("btn-next-details").addEventListener("click", () => {
+  if (!validateMain()) return;
+  fillSummary();
+  showScreen("details");
+});
+
+document.getElementById("btn-back-main").addEventListener("click", () => {
+  showScreen("main");
+});
+
 function fillSummary() {
   const rate = getRate(fromAsset, toAsset);
   const rawTo = amountFrom * rate;
   const fee = (rawTo * feePercent) / 100;
   const payout = rawTo - fee;
 
-  const fromAssetTicker = fromAsset.name.split(" ")[1] || "";
-  const toAssetTicker = toAsset.name.split(" ").slice(-1)[0] || "";
+  const ft = fromAsset.ticker;
+  const tt = toAsset.ticker;
 
   document.getElementById(
     "summary-from"
-  ).textContent = `${amountFrom.toFixed(4)} ${fromAssetTicker}`;
+  ).textContent = `${amountFrom.toFixed(4)} ${ft}`;
   document.getElementById(
     "summary-to"
-  ).textContent = `${payout.toFixed(2)} ${toAssetTicker}`;
+  ).textContent = `${payout.toFixed(2)} ${tt}`;
   document.getElementById(
     "summary-rate"
-  ).textContent = `1 ${fromAssetTicker} ≈ ${rate.toFixed(
-    2
-  )} ${toAssetTicker} | fee ${feePercent.toFixed(1)}%`;
+  ).textContent = `1 ${ft} ≈ ${rate.toFixed(2)} ${tt} | fee ${feePercent.toFixed(
+    1
+  )}%`;
 }
 
-// ===== ОТПРАВКА ЗАЯВКИ В TELEGRAM =====
+/* ===================== SUBMIT / SEND DATA ===================== */
+
 document.getElementById("btn-submit").addEventListener("click", () => {
   const recipient = document.getElementById("field-recipient").value.trim();
   const name = document.getElementById("field-name").value.trim();
@@ -628,9 +786,9 @@ document.getElementById("btn-submit").addEventListener("click", () => {
   if (!recipient) {
     showToast(
       currentLang === "uk"
-        ? "Вкажіть реквізити отримувача"
+        ? "Вкажіть реквізити"
         : currentLang === "en"
-        ? "Enter recipient details"
+        ? "Enter recipient"
         : "Podaj dane odbiorcy"
     );
     return;
@@ -640,7 +798,7 @@ document.getElementById("btn-submit").addEventListener("click", () => {
       currentLang === "uk"
         ? "Вкажіть імʼя"
         : currentLang === "en"
-        ? "Enter your name"
+        ? "Enter name"
         : "Podaj imię"
     );
     return;
@@ -677,25 +835,27 @@ document.getElementById("btn-submit").addEventListener("click", () => {
   try {
     if (tg) {
       tg.sendData(JSON.stringify(payload));
-      tg.close(); // закрываем мини-апп, бот получит заявку
+      tg.close();
     } else {
       console.log("Order payload:", payload);
-      alert("Demo mode: заявка виведена в консоль.");
+      alert("Demo mode: дивись консоль.");
     }
   } catch (e) {
     console.error(e);
     showToast(
       currentLang === "uk"
-        ? "Помилка відправки. Спробуйте ще раз."
+        ? "Помилка відправки"
         : currentLang === "en"
-        ? "Send error. Try again."
-        : "Błąd wysyłania. Spróbuj ponownie."
+        ? "Send error"
+        : "Błąd wysyłania"
     );
   }
 });
 
-// ===== СТАРТ =====
-updateAssetButtons();
-recalc();
+/* ===================== INIT ===================== */
+
 applyTranslations();
-renderAssets();
+updateAssetTexts();
+renderPicker();
+setActiveMenu("main");
+showScreen("main");
