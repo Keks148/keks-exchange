@@ -3,186 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <title>KeksSwap — обмен криптовалют</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#e4f3f4" />
 
-  <!-- Шрифт -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
-
-  <!-- Telegram WebApp JS (для работы внутри ТГ) -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Красивый жирный курсивный шрифт для заголовков -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
+    :root {
+      --bg-gradient-from: #e4f3f4;
+      --bg-gradient-to: #dff8ec;
+      --card-bg: #ffffff;
+      --accent: #000000;
+      --accent-soft: #111111;
+      --border-soft: #e3edf2;
+      --text-main: #0d1a26;
+      --text-muted: #7b8a99;
+      --input-bg: #f4f7fb;
+      --radius-xl: 24px;
+      --radius-l: 18px;
+      --radius-m: 14px;
+      --shadow-soft: 0 18px 45px rgba(12, 43, 70, 0.12);
+      --brand-green: #23b26a;
     }
 
-    html,
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-        sans-serif;
-      background: linear-gradient(180deg, #e4f2f5, #f3faf6);
-      color: #111827;
-    }
-
-    /* SPLASH */
-
-    .splash {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(180deg, #e4f2f5, #f3faf6);
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 20% 0, var(--bg-gradient-to), var(--bg-gradient-from) 55%);
+      color: var(--text-main);
       display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+      align-items: stretch;
     }
-
-    .splash.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .splash-logo {
-      width: 110px;
-      height: 110px;
-      border-radius: 32px;
-      background: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
-      animation: spin 1.6s ease-in-out infinite;
-    }
-
-    .splash-logo img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    }
-
-    .splash-title {
-      margin-top: 14px;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      70% {
-        transform: rotate(360deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* APP LAYOUT */
 
     .app {
-      max-width: 480px;
+      width: 100%;
+      max-width: 520px;
       margin: 0 auto;
-      padding: 14px 16px 24px;
-    }
-
-    .app-header {
+      padding: 16px 12px 24px;
       display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .back-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      border: none;
-      background: rgba(15, 23, 42, 0.06);
+    .header-card {
+      background: transparent;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      cursor: pointer;
+      padding-top: 40px;
+      padding-bottom: 6px;
+      gap: 8px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
+    .logo-wrapper {
+      width: 104px;
+      height: 104px;
+      border-radius: 28px;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.26);
       overflow: hidden;
     }
 
-    .brand-logo img {
-      width: 30px;
-      height: 30px;
-      object-fit: contain;
+    .logo-wrapper img {
+      width: 92px;
+      height: 92px;
+      border-radius: 24px;
+      object-fit: cover;
+      background: #cfe7ff;
     }
 
-    .brand-text {
-      display: flex;
-      flex-direction: column;
+    .app-title {
+      margin: 4px 0 0;
+      font-family: "Playfair Display", system-ui, serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: 26px;
+      letter-spacing: 0.04em;
     }
 
-    .brand-name {
-      font-size: 19px;
-      font-weight: 600;
-    }
-
-    .brand-tag {
-      font-size: 12px;
-      color: #6b7280;
+    .app-subtitle {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-muted);
     }
 
     .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 2px;
+      border-radius: 999px;
+      background: #eef3f7;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 4px 8px;
+      border-radius: 999px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .tab-btn span.icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .tab-btn span.label {
+      font-size: 11px;
+    }
+
+    .tab-btn.active {
       background: #ffffff;
-      border-radius: 24px;
-      padding: 20px 16px 22px;
-      box-shadow: 0 12px 45px rgba(15, 23, 42, 0.09);
+      color: var(--accent-soft);
+      box-shadow: 0 4px 9px rgba(9, 42, 68, 0.15);
     }
 
-    .card h1 {
-      font-size: 22px;
+    .tab-btn.active span.icon {
+      transform: translateY(-1px);
+    }
+
+    .section {
+      display: none;
+      margin-top: 4px;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-title {
+      margin: 2px 0 8px;
+      font-size: 19px;
+      font-family: "Playfair Display", system-ui, serif;
       font-weight: 600;
-      margin: 0 0 6px;
+      font-style: italic;
     }
 
-    .card-subtitle {
-      margin: 0 0 14px;
+    .section-description {
+      margin: 0 0 12px;
       font-size: 13px;
-      color: #6b7280;
-    }
-
-    .block-title {
-      margin-top: 14px;
-      margin-bottom: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #111827;
+      color: var(--text-muted);
     }
 
     .field-group {
@@ -190,509 +178,689 @@
     }
 
     .field-label {
-      display: block;
-      margin-bottom: 4px;
       font-size: 12px;
-      font-weight: 600;
-      color: #4b5563;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--text-muted);
     }
 
-    .field-control {
-      background: #f9fafb;
-      border-radius: 14px;
-      padding: 10px 12px;
-      display: flex;
+    .pill-label {
+      display: inline-flex;
       align-items: center;
-      border: 1px solid #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f3f7fb;
+      font-size: 11px;
+      color: #536678;
+      margin-bottom: 6px;
+    }
+
+    .pill-label strong {
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
     select,
-    input,
+    input[type="text"],
+    input[type="number"],
     textarea {
       width: 100%;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 15px;
-      font-weight: 500;
-      color: #111827;
-    }
-
-    select {
-      appearance: none;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: #9ca3af;
-      font-weight: 400;
-    }
-
-    .field-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .field-row .half {
-      flex: 1;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
-
-    .info-text {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 600;
-      color: #047857;
-      background: #d1fae5;
-      padding: 4px 10px;
-      border-radius: 999px;
-    }
-
-    .estimate-main {
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border-soft);
+      padding: 10px 11px;
       font-size: 14px;
-      font-weight: 600;
-      margin-top: 4px;
-      color: #111827;
+      background: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+      font-family: inherit;
     }
 
-    .estimate-secondary {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 2px;
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #b9d4ff;
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(36, 119, 255, 0.05);
     }
 
-    .btn-primary {
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .muted {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .submit-btn {
+      margin-top: 8px;
       width: 100%;
       border: none;
-      border-radius: 18px;
+      border-radius: 999px;
       padding: 14px 16px;
-      margin-top: 8px;
       font-size: 16px;
       font-weight: 600;
+      background: #000000;
       color: #ffffff;
-      background: linear-gradient(90deg, #000000, #151515);
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.38);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      max-width: 520px;
+      width: calc(100% - 38px);
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 20;
+    }
+
+    .toast.show {
+      display: flex;
+      animation: toast-in 0.18s ease-out;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    /* История */
+    .history-empty {
+      padding: 8px 4px 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      border-radius: 16px;
+      background: #f6f8fb;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .history-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .history-line {
+      font-weight: 500;
+    }
+
+    .history-status {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e6f6ee;
+      color: #187749;
+      white-space: nowrap;
+    }
+
+    .history-meta {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Профиль / Поддержка */
+
+    .profile-block {
+      background: #f6f8fb;
+      border-radius: 18px;
+      padding: 10px 12px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .support-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .support-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       cursor: pointer;
     }
 
-    .btn-primary:active {
-      transform: scale(0.99);
+    .support-btn.primary {
+      background: #000;
+      color: #fff;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
     }
 
-    .small-note {
-      margin-top: 10px;
-      font-size: 11px;
-      color: #9ca3af;
+    .support-btn.secondary {
+      background: #f3f7fb;
+      color: var(--text-main);
     }
 
-    @media (max-width: 360px) {
+    .support-btn span.icon {
+      font-size: 17px;
+    }
+
+    @media (max-width: 380px) {
       .card {
-        padding: 16px 12px 18px;
+        border-radius: 20px;
+        padding: 12px 12px 16px;
       }
-
-      .card h1 {
-        font-size: 20px;
+      .section-title {
+        font-size: 18px;
       }
-
-      .btn-primary {
-        font-size: 15px;
+      .app-title {
+        font-size: 24px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- ЗАСТАВКА -->
-  <div class="splash" id="splash">
-    <div class="splash-logo">
-      <!-- квадратный логотип keksSwap на голубом фоне -->
-      <img src="logo.png" alt="KeksSwap logo" />
-    </div>
-    <div class="splash-title">KeksSwap</div>
-  </div>
-
-  <!-- ПРИЛОЖЕНИЕ -->
   <div class="app">
-    <header class="app-header">
-      <button class="back-btn" type="button" onclick="history.back()">
-        ←
-      </button>
-      <div class="brand">
-        <div class="brand-logo">
-          <!-- круглый логотип-кекс -->
-          <img src="logo.png" alt="KeksSwap" />
-        </div>
-        <div class="brand-text">
-          <span class="brand-name">KeksSwap</span>
-          <span class="brand-tag">Обмен криптовалют</span>
-        </div>
+    <header class="header-card">
+      <div class="logo-wrapper">
+        <img src="logo.png" alt="KeksSwap logo">
       </div>
+      <h1 class="app-title">KeksSwap</h1>
+      <p class="app-subtitle">Обмен криптовалют — просто и по-человечески</p>
     </header>
 
-    <main>
-      <section class="card">
-        <h1>Быстрый обмен</h1>
-        <p class="card-subtitle">
-          Выберите тип обмена, валюту и сеть. Заявка придёт оператору в Telegram.
+    <main class="card">
+      <!-- Навигация по разделам -->
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-target="exchange">
+          <span class="icon">🔁</span>
+          <span class="label">Обмен</span>
+        </button>
+        <button class="tab-btn" data-target="history">
+          <span class="icon">📜</span>
+          <span class="label">История</span>
+        </button>
+        <button class="tab-btn" data-target="profile">
+          <span class="icon">👤</span>
+          <span class="label">Профиль</span>
+        </button>
+        <button class="tab-btn" data-target="support">
+          <span class="icon">💬</span>
+          <span class="label">Поддержка</span>
+        </button>
+      </nav>
+
+      <!-- Раздел: ОБМЕН -->
+      <section id="section-exchange" class="section active">
+        <h2 class="section-title">Быстрый обмен</h2>
+        <p class="section-description">
+          Выберите криптовалюту, сеть и способ получения. Заявка придёт оператору в Telegram.
         </p>
 
-        <form id="exchangeForm">
-          <!-- Тип обмена -->
+        <form id="exchange-form">
+          <!-- Отдаю -->
           <div class="field-group">
-            <label class="field-label" for="exchangeType">Тип обмена</label>
-            <div class="field-control">
-              <select id="exchangeType" name="exchangeType">
-                <option value="crypto-cash-kr">Крипта → Наличные (Кривой Рог)</option>
-                <option value="crypto-card-ua">Крипта → Карта (банки Украины)</option>
-                <option value="crypto-iban">Крипта → IBAN / SEPA</option>
-                <option value="crypto-crypto">Крипта → Крипта</option>
+            <div class="pill-label">Отдаю: <strong>криптовалюта</strong></div>
+            <div class="field-label">Криптовалюта</div>
+            <select id="send-coin" required>
+              <option value="USDT">USDT</option>
+              <option value="USDC">USDC</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+              <option value="TON">TON</option>
+              <option value="TRX">TRX</option>
+              <option value="SOL">SOL</option>
+              <option value="BNB">BNB</option>
+              <option value="LTC">LTC</option>
+              <option value="XRP">XRP</option>
+            </select>
+          </div>
+
+          <div class="field-group input-row">
+            <div>
+              <div class="field-label">Сеть</div>
+              <select id="send-network" required>
+                <option value="TRC20">TRC20</option>
+                <option value="ERC20">ERC20</option>
+                <option value="BEP20">BEP20</option>
+                <option value="TON">TON</option>
+                <option value="BTC">BTC (onchain)</option>
               </select>
+            </div>
+            <div>
+              <div class="field-label">Сумма</div>
+              <input
+                id="send-amount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
             </div>
           </div>
 
-          <!-- ОТДАЮ -->
-          <div class="block-title">Отдаю</div>
-
+          <!-- Получаю -->
           <div class="field-group">
-            <label class="field-label" for="fromCurrency">Криптовалюта</label>
-            <div class="field-control">
-              <select id="fromCurrency" name="fromCurrency">
+            <div class="pill-label">Получаю: <strong>карта или крипта</strong></div>
+            <div class="field-label">Способ получения</div>
+            <select id="receive-method" required>
+              <option value="card-uah">Банковская карта (UAH)</option>
+              <option value="card-forex">Банковская карта (USD / EUR)</option>
+              <option value="crypto">Крипта на кошелёк</option>
+            </select>
+          </div>
+
+          <div id="bank-row" class="field-group">
+            <div class="field-label">Банк (для карты UAH)</div>
+            <select id="bank-name">
+              <option value="Любой банк">Любой банк</option>
+              <option value="Monobank">Monobank</option>
+              <option value="ПриватБанк">ПриватБанк</option>
+              <option value="ПУМБ">ПУМБ</option>
+              <option value="А-Банк">А-Банк</option>
+              <option value="Ощадбанк">Ощадбанк</option>
+            </select>
+          </div>
+
+          <div id="receive-crypto-row" class="field-group" style="display:none;">
+            <div class="field-label">Криптовалюта для получения</div>
+            <div class="input-row">
+              <select id="receive-coin">
                 <option value="USDT">USDT</option>
                 <option value="USDC">USDC</option>
                 <option value="BTC">BTC</option>
                 <option value="ETH">ETH</option>
                 <option value="TON">TON</option>
-                <option value="BNB">BNB</option>
-                <option value="SOL">SOL</option>
                 <option value="TRX">TRX</option>
-                <option value="LTC">LTC</option>
-                <option value="XRP">XRP</option>
-                <option value="DOGE">DOGE</option>
-                <option value="ADA">ADA</option>
-                <option value="TUSD">TUSD</option>
-                <option value="DAI">DAI</option>
-                <option value="FDUSD">FDUSD</option>
+                <option value="SOL">SOL</option>
+                <option value="BNB">BNB</option>
               </select>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field-group half">
-              <label class="field-label" for="network">Сеть</label>
-              <div class="field-control">
-                <select id="network" name="network">
-                  <option value="TRC20">TRC20</option>
-                  <option value="ERC20">ERC20</option>
-                  <option value="BEP20">BEP20</option>
-                  <option value="TON">TON</option>
-                  <option value="BTC">BTC</option>
-                  <option value="SOL">SOL</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-group half">
-              <label class="field-label" for="amountFrom">Сумма</label>
-              <div class="field-control">
-                <input
-                  id="amountFrom"
-                  name="amountFrom"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  inputmode="decimal"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- ПОЛУЧАЮ -->
-          <div class="block-title">Получаю</div>
-
-          <div class="field-group">
-            <label class="field-label" for="receiveMethod">Способ получения</label>
-            <div class="field-control">
-              <select id="receiveMethod" name="receiveMethod">
-                <option value="cash-kr">Наличные (Кривой Рог)</option>
-                <option value="mono">Monobank карта</option>
-                <option value="pumb">PUMB карта</option>
-                <option value="abank">A-Банк карта</option>
-                <option value="privat">ПриватБанк карта</option>
-                <option value="oschad">Ощадбанк карта</option>
-                <option value="visa-mc">Visa / MasterCard (UA)</option>
-                <option value="iban">IBAN / SEPA</option>
-                <option value="crypto">Крипта (адрес кошелька)</option>
+              <select id="receive-network">
+                <option value="TRC20">TRC20</option>
+                <option value="ERC20">ERC20</option>
+                <option value="BEP20">BEP20</option>
+                <option value="TON">TON</option>
+                <option value="BTC">BTC (onchain)</option>
               </select>
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="requisites">
-              Реквизиты (карта / IBAN / кошелёк)
-            </label>
-            <div class="field-control">
-              <input
-                id="requisites"
-                name="requisites"
-                type="text"
-                placeholder="Номер карты, IBAN или адрес кошелька"
-              />
-            </div>
+            <div class="field-label">Реквизиты для получения</div>
+            <input
+              id="receive-details"
+              type="text"
+              placeholder="Номер карты, IBAN или адрес кошелька"
+              required
+            />
           </div>
 
-          <!-- КОНТАКТ -->
-          <div class="block-title">Контакт для связи</div>
-
+          <!-- Контакты -->
           <div class="field-group">
-            <label class="field-label" for="telegramContact">Ваш Telegram</label>
-            <div class="field-control">
-              <input
-                id="telegramContact"
-                name="telegramContact"
-                type="text"
-                placeholder="@username или номер телефона"
-              />
-            </div>
+            <div class="field-label">Контакт для связи</div>
+            <input
+              id="contact"
+              type="text"
+              placeholder="@username или номер телефона"
+              required
+            />
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="comment">
-              Комментарий (необязательно)
-            </label>
-            <div class="field-control">
-              <textarea
-                id="comment"
-                name="comment"
-                placeholder="Например: хочу забрать наличные в центре города"
-              ></textarea>
-            </div>
+            <div class="field-label">Комментарий (необязательно)</div>
+            <textarea
+              id="comment"
+              placeholder="Например: хочу получить на карту Monobank; удобное время и т.п."
+            ></textarea>
           </div>
 
-          <!-- КУРС / КОМИССИЯ -->
-          <div class="info-row">
-            <div>
-              <div class="info-text" id="rateInfo">
-                Курс будет рассчитан оператором
-              </div>
-              <div class="estimate-main" id="estimateMain"></div>
-              <div class="estimate-secondary" id="estimateSecondary"></div>
-            </div>
-            <div class="badge" id="commissionBadge">Комиссия 2%</div>
-          </div>
-
-          <button class="btn-primary" type="submit">Отправить заявку</button>
-
-          <p class="small-note">
-            Важно: сейчас расчёт идёт по примерным рыночным курсам. Итоговый курс
-            и сумма будут подтверждены оператором в Telegram перед сделкой.
+          <p class="muted">
+            Курс будет рассчитан оператором по актуальному рынку. Перед обменом вы получите подтверждение в Telegram.
           </p>
+
+          <button type="submit" class="submit-btn">Отправить заявку</button>
         </form>
       </section>
+
+      <!-- Раздел: ИСТОРИЯ -->
+      <section id="section-history" class="section">
+        <h2 class="section-title">История заявок</h2>
+        <p class="section-description">
+          Здесь будут последние заявки, которые вы отправили из этого устройства.
+        </p>
+        <div id="history-container">
+          <div class="history-empty">
+            История пока пустая. Оформите первую заявку — и она появится здесь.
+          </div>
+        </div>
+      </section>
+
+      <!-- Раздел: ПРОФИЛЬ -->
+      <section id="section-profile" class="section">
+        <h2 class="section-title">Профиль</h2>
+        <p class="section-description">
+          Информация берётся из Telegram. Ничего лишнего не сохраняем.
+        </p>
+
+        <div class="profile-block">
+          <div><strong id="profile-name">Гость</strong></div>
+          <div id="profile-username" class="muted">Откройте мини-приложение из Telegram, чтобы подтянуть username.</div>
+          <div class="muted" style="margin-top:6px;">Статистика по заявкам на этом устройстве:</div>
+          <div id="profile-stats" style="font-size:13px;margin-top:2px;">
+            Заявок: 0 · Последняя: — 
+          </div>
+        </div>
+      </section>
+
+      <!-- Раздел: ПОДДЕРЖКА -->
+      <section id="section-support" class="section">
+        <h2 class="section-title">Поддержка</h2>
+        <p class="section-description">
+          Если появились вопросы по курсу, сумме или встрече — напишите оператору или отправьте короткое сообщение.
+        </p>
+
+        <div class="profile-block">
+          <div>Оператор: <strong>@KeksSwapSupport</strong></div>
+          <div class="muted">
+            Время ответа обычно в пределах 5–15 минут. Если заявка срочная — напишите сразу после отправки формы.
+          </div>
+
+          <div class="support-actions">
+            <button type="button" class="support-btn primary" id="support-open-chat">
+              <span class="icon">💬</span>
+              <span>Открыть чат в Telegram</span>
+            </button>
+            <button type="button" class="support-btn secondary" id="support-copy">
+              <span class="icon">📋</span>
+              <span>Скопировать @KeksSwapSupport</span>
+            </button>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <div id="toast" class="toast"></div>
   </div>
 
   <script>
-    // === НАСТРОЙКИ ===
-    const COMMISSION_PERCENT = 2; // твоя комиссия
-    const COIN_IDS = {
-      USDT: "tether",
-      USDC: "usd-coin",
-      BTC: "bitcoin",
-      ETH: "ethereum",
-      TON: "toncoin",
-      BNB: "binancecoin",
-      SOL: "solana",
-      TRX: "tron",
-      LTC: "litecoin",
-      XRP: "ripple",
-      DOGE: "dogecoin",
-      ADA: "cardano",
-      TUSD: "true-usd",
-      DAI: "dai",
-      FDUSD: "fdusd",
-    };
+    // --- Telegram WebApp init (если есть) ---
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.expand && tg.expand();
+      tg.ready && tg.ready();
+    }
 
-    let ratesUAH = {};
+    // --- Навигация по разделам ---
+    const sections = document.querySelectorAll(".section");
+    const tabButtons = document.querySelectorAll(".tab-btn");
 
-    // Спрятать заставку через 1.5 сек
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        document.getElementById("splash").classList.add("hidden");
-      }, 1500);
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.target; // exchange / history / profile / support
+        sections.forEach(sec => {
+          sec.classList.toggle("active", sec.id === "section-" + target);
+        });
+        tabButtons.forEach(b => b.classList.toggle("active", b === btn));
+      });
     });
 
-    // Загрузка курсов с CoinGecko
-    async function loadRates() {
-      const ids = Object.values(COIN_IDS).join(",");
-      const url =
-        "https://api.coingecko.com/api/v3/simple/price?ids=" +
-        ids +
-        "&vs_currencies=uah";
+    // --- Переключение вида получения ---
+    const receiveMethodSelect = document.getElementById("receive-method");
+    const bankRow = document.getElementById("bank-row");
+    const receiveCryptoRow = document.getElementById("receive-crypto-row");
 
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        ratesUAH = data;
-        updateEstimate();
-      } catch (e) {
-        console.error("Ошибка загрузки курсов:", e);
-      }
-    }
-
-    function getRateUAH(symbol) {
-      const id = COIN_IDS[symbol];
-      if (!id || !ratesUAH[id] || !ratesUAH[id].uah) return null;
-      return ratesUAH[id].uah;
-    }
-
-    function formatNumber(n) {
-      return n.toLocaleString("ru-RU", {
-        maximumFractionDigits: 0,
-      });
-    }
-
-    // Пересчёт примерной суммы
-    function updateEstimate() {
-      const amount = parseFloat(
-        document.getElementById("amountFrom").value || "0"
-      );
-      const currency = document.getElementById("fromCurrency").value;
-      const rateInfo = document.getElementById("rateInfo");
-      const estimateMain = document.getElementById("estimateMain");
-      const estimateSecondary = document.getElementById("estimateSecondary");
-
-      estimateMain.textContent = "";
-      estimateSecondary.textContent = "";
-
-      if (!amount || amount <= 0) {
-        rateInfo.textContent = "Курс будет рассчитан оператором";
-        return;
-      }
-
-      const rate = getRateUAH(currency);
-      if (!rate) {
-        rateInfo.textContent = "Курс временно недоступен, оператор уточнит сумму";
-        return;
-      }
-
-      const base = amount * rate;
-      const withCommission = base * (1 - COMMISSION_PERCENT / 100);
-
-      rateInfo.textContent = "Оценка по рыночному курсу";
-      estimateMain.textContent =
-        "≈ " + formatNumber(withCommission) + " UAH с учётом комиссии";
-      estimateSecondary.textContent =
-        "Без комиссии: ~ " + formatNumber(base) + " UAH";
-    }
-
-    // Отправка заявки в Telegram WebApp
-    function sendToTelegram(payload, prettyText) {
-      if (window.Telegram && window.Telegram.WebApp) {
-        try {
-          Telegram.WebApp.sendData(JSON.stringify(payload));
-          alert("Заявка отправлена оператору в Telegram.");
-        } catch (e) {
-          console.error(e);
-          alert("Ошибка отправки в Telegram WebApp.");
-        }
+    function updateReceiveVisibility() {
+      const method = receiveMethodSelect.value;
+      if (method === "card-uah") {
+        bankRow.style.display = "";
+        receiveCryptoRow.style.display = "none";
+      } else if (method === "crypto") {
+        bankRow.style.display = "none";
+        receiveCryptoRow.style.display = "";
       } else {
-        // Фолбэк: просто показываем текст (если открыто в обычном браузере)
-        alert(
-          "Вы открыли страницу вне Telegram.\nСкопируйте эти данные и отправьте оператору:\n\n" +
-            prettyText
-        );
+        // card-forex
+        bankRow.style.display = "none";
+        receiveCryptoRow.style.display = "none";
+      }
+    }
+    receiveMethodSelect.addEventListener("change", updateReceiveVisibility);
+    updateReceiveVisibility();
+
+    // --- История заявок ---
+    const HISTORY_KEY = "keksswap_history_v1";
+    const historyContainer = document.getElementById("history-container");
+    const profileStats = document.getElementById("profile-stats");
+
+    function loadHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      } catch (e) {
+        return [];
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // подставляем комиссию в бэйдж
-      document.getElementById(
-        "commissionBadge"
-      ).textContent = `Комиссия ${COMMISSION_PERCENT}%`;
+    function saveHistory(list) {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 30)));
+      } catch (e) {}
+    }
 
-      loadRates();
+    function renderHistory() {
+      const history = loadHistory();
+      if (!history.length) {
+        historyContainer.innerHTML =
+          '<div class="history-empty">История пока пустая. Оформите первую заявку — и она появится здесь.</div>';
+      } else {
+        historyContainer.innerHTML =
+          '<div class="history-list">' +
+          history
+            .map(item => {
+              const date = new Date(item.createdAt);
+              const dateStr = date.toLocaleString();
+              const line =
+                item.sendAmount +
+                " " +
+                item.sendCoin +
+                " → " +
+                item.receiveSummary;
+              return (
+                '<div class="history-item">' +
+                  '<div class="history-main">' +
+                    '<div class="history-line">' + line + "</div>" +
+                    '<div class="history-status">Отправлено</div>' +
+                  "</div>" +
+                  '<div class="history-meta">' + dateStr + "</div>" +
+                "</div>"
+              );
+            })
+            .join("") +
+          "</div>";
+      }
 
-      const amountInput = document.getElementById("amountFrom");
-      const currencySelect = document.getElementById("fromCurrency");
-      const receiveSelect = document.getElementById("receiveMethod");
+      // Обновить блок Профиль
+      const count = history.length;
+      if (!count) {
+        profileStats.textContent = "Заявок: 0 · Последняя: —";
+      } else {
+        const last = new Date(history[0].createdAt).toLocaleString();
+        profileStats.textContent = "Заявок: " + count + " · Последняя: " + last;
+      }
+    }
 
-      amountInput.addEventListener("input", updateEstimate);
-      currencySelect.addEventListener("change", updateEstimate);
-      receiveSelect.addEventListener("change", updateEstimate);
+    renderHistory();
 
-      document
-        .getElementById("exchangeForm")
-        .addEventListener("submit", (e) => {
-          e.preventDefault();
+    // --- Профиль из Telegram ---
+    const profileNameEl = document.getElementById("profile-name");
+    const profileUsernameEl = document.getElementById("profile-username");
+    const contactInput = document.getElementById("contact");
 
-          const exchangeType =
-            document.getElementById("exchangeType").selectedOptions[0]
-              .textContent;
-          const fromCurrency = currencySelect.value;
-          const network =
-            document.getElementById("network").selectedOptions[0].textContent;
-          const amount = amountInput.value || "0";
-          const receiveMethod =
-            receiveSelect.selectedOptions[0].textContent;
-          const requisites =
-            document.getElementById("requisites").value.trim() || "—";
-          const telegramContact =
-            document.getElementById("telegramContact").value.trim() || "—";
-          const comment =
-            document.getElementById("comment").value.trim() || "—";
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      const u = tg.initDataUnsafe.user;
+      const fullName = [u.first_name, u.last_name].filter(Boolean).join(" ");
+      if (fullName) profileNameEl.textContent = fullName;
+      if (u.username) {
+        const uname = "@" + u.username;
+        profileUsernameEl.textContent = uname;
+        profileUsernameEl.classList.remove("muted");
+        if (!contactInput.value) contactInput.value = uname;
+      } else {
+        profileUsernameEl.textContent = "Username в Telegram не задан.";
+      }
+    }
 
-          const rate = getRateUAH(fromCurrency);
-          let approxUAH = "";
-          if (rate && amount) {
-            const base = parseFloat(amount) * rate;
-            const withCommission = base * (1 - COMMISSION_PERCENT / 100);
-            approxUAH = formatNumber(withCommission) + " UAH";
-          } else {
-            approxUAH = "будет рассчитано оператором";
+    // --- Тост ---
+    const toastEl = document.getElementById("toast");
+    let toastTimeout = null;
+
+    function showToast(text) {
+      toastEl.textContent = text;
+      toastEl.classList.add("show");
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.remove("show");
+      }, 2600);
+    }
+
+    // --- Отправка формы ---
+    const form = document.getElementById("exchange-form");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const sendCoin = document.getElementById("send-coin").value;
+      const sendNetwork = document.getElementById("send-network").value;
+      const sendAmount = document.getElementById("send-amount").value.trim();
+      const receiveMethod = receiveMethodSelect.value;
+      const bankName = document.getElementById("bank-name").value;
+      const receiveCoin = document.getElementById("receive-coin").value;
+      const receiveNetwork = document.getElementById("receive-network").value;
+      const receiveDetails = document.getElementById("receive-details").value.trim();
+      const contact = contactInput.value.trim();
+      const comment = document.getElementById("comment").value.trim();
+
+      if (!sendAmount || Number(sendAmount) <= 0) {
+        showToast("Укажи сумму обмена.");
+        return;
+      }
+      if (!receiveDetails) {
+        showToast("Укажи реквизиты для получения.");
+        return;
+      }
+      if (!contact) {
+        showToast("Укажи контакт для связи.");
+        return;
+      }
+
+      let receiveSummary = "";
+      if (receiveMethod === "card-uah") {
+        receiveSummary = "Карта UAH (" + bankName + ")";
+      } else if (receiveMethod === "card-forex") {
+        receiveSummary = "Карта USD/EUR";
+      } else {
+        receiveSummary = "Крипта " + receiveCoin + " (" + receiveNetwork + ")";
+      }
+
+      const order = {
+        sendCoin,
+        sendNetwork,
+        sendAmount,
+        receiveMethod,
+        bankName,
+        receiveCoin,
+        receiveNetwork,
+        receiveDetails,
+        contact,
+        comment,
+        receiveSummary,
+        createdAt: new Date().toISOString()
+      };
+
+      // Отправка данных в Telegram мини-приложение
+      if (tg && tg.sendData) {
+        try {
+          tg.sendData(JSON.stringify(order));
+          if (tg.HapticFeedback && tg.HapticFeedback.notificationOccurred) {
+            tg.HapticFeedback.notificationOccurred("success");
           }
+        } catch (err) {
+          console.error("Telegram sendData error", err);
+        }
+      }
 
-          const payload = {
-            exchangeType,
-            fromCurrency,
-            network,
-            amount,
-            receiveMethod,
-            requisites,
-            telegramContact,
-            comment,
-            approxUAH,
-            commissionPercent: COMMISSION_PERCENT,
-          };
+      // Сохранить в локальную историю
+      const history = loadHistory();
+      history.unshift(order);
+      saveHistory(history);
+      renderHistory();
 
-          const prettyText =
-            "💱 Новая заявка KeksSwap\n\n" +
-            `Тип: ${exchangeType}\n` +
-            `Отдаёт: ${amount} ${fromCurrency} (${network})\n` +
-            `Получает: ${receiveMethod}\n` +
-            `Реквизиты: ${requisites}\n` +
-            `Контакт: ${telegramContact}\n` +
-            `Комментарий: ${comment}\n` +
-            `Оценочно к выдаче: ${approxUAH} (комиссия ${COMMISSION_PERCENT}% )`;
+      showToast("✅ Заявка отправлена оператору в Telegram");
+      form.reset();
+      updateReceiveVisibility();
+    });
 
-          sendToTelegram(payload, prettyText);
-        });
+    // --- Поддержка ---
+    const SUPPORT_LINK = "https://t.me/KeksSwapSupport";
+
+    document.getElementById("support-open-chat").addEventListener("click", () => {
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(SUPPORT_LINK);
+      } else {
+        window.open(SUPPORT_LINK, "_blank");
+      }
+    });
+
+    document.getElementById("support-copy").addEventListener("click", async () => {
+      const text = "@KeksSwapSupport";
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Скопировано: " + text);
+      } catch (e) {
+        showToast(text);
+      }
     });
   </script>
 </body>
-  </html>
+</html>
