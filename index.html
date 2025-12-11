@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#e4f3f4" />
 
-  <!-- Красивый жирный курсивный шрифт для заголовков -->
+  <!-- Жирный курсивный шрифт для заголовков -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -21,10 +21,8 @@
       --text-muted: #7b8a99;
       --input-bg: #f4f7fb;
       --radius-xl: 24px;
-      --radius-l: 18px;
       --radius-m: 14px;
       --shadow-soft: 0 18px 45px rgba(12, 43, 70, 0.12);
-      --brand-green: #23b26a;
     }
 
     * {
@@ -58,33 +56,33 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 40px;
+      padding-top: 28px;
       padding-bottom: 6px;
       gap: 8px;
     }
 
     .logo-wrapper {
-      width: 104px;
-      height: 104px;
-      border-radius: 28px;
+      width: 96px;
+      height: 96px;
+      border-radius: 26px;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.26);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
       overflow: hidden;
     }
 
     .logo-wrapper img {
-      width: 92px;
-      height: 92px;
-      border-radius: 24px;
+      width: 86px;
+      height: 86px;
+      border-radius: 22px;
       object-fit: cover;
       background: #cfe7ff;
     }
 
     .app-title {
-      margin: 4px 0 0;
+      margin: 6px 0 0;
       font-family: "Playfair Display", system-ui, serif;
       font-weight: 700;
       font-style: italic;
@@ -96,6 +94,36 @@
       margin: 0;
       font-size: 14px;
       color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Переключатель языка */
+    .lang-switch {
+      margin-top: 6px;
+      display: inline-flex;
+      gap: 4px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: #555;
+    }
+
+    .lang-btn.active {
+      background: #000;
+      color: #fff;
     }
 
     .card {
@@ -107,6 +135,8 @@
       flex-direction: column;
       gap: 14px;
     }
+
+    /* Табы */
 
     .tab-nav {
       display: grid;
@@ -193,11 +223,6 @@
       font-size: 11px;
       color: #536678;
       margin-bottom: 6px;
-    }
-
-    .pill-label strong {
-      font-weight: 600;
-      margin-left: 4px;
     }
 
     .input-row {
@@ -295,6 +320,7 @@
     }
 
     /* История */
+
     .history-empty {
       padding: 8px 4px 4px;
       font-size: 13px;
@@ -408,93 +434,111 @@
         <img src="logo.png" alt="KeksSwap logo">
       </div>
       <h1 class="app-title">KeksSwap</h1>
-      <p class="app-subtitle">Обмен криптовалют — просто и по-человечески</p>
+      <p class="app-subtitle" data-i18n="subtitle"></p>
+
+      <div class="lang-switch">
+        <button class="lang-btn" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="uk">UA</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="pl">PL</button>
+      </div>
     </header>
 
     <main class="card">
       <!-- Навигация по разделам -->
       <nav class="tab-nav">
         <button class="tab-btn active" data-target="exchange">
-          <span class="icon">🔁</span>
-          <span class="label">Обмен</span>
+          <span class="icon">⇄</span>
+          <span class="label" data-i18n="tab-exchange"></span>
         </button>
         <button class="tab-btn" data-target="history">
-          <span class="icon">📜</span>
-          <span class="label">История</span>
+          <span class="icon">☷</span>
+          <span class="label" data-i18n="tab-history"></span>
         </button>
         <button class="tab-btn" data-target="profile">
-          <span class="icon">👤</span>
-          <span class="label">Профиль</span>
+          <span class="icon">◎</span>
+          <span class="label" data-i18n="tab-profile"></span>
         </button>
         <button class="tab-btn" data-target="support">
-          <span class="icon">💬</span>
-          <span class="label">Поддержка</span>
+          <span class="icon">❍</span>
+          <span class="label" data-i18n="tab-support"></span>
         </button>
       </nav>
 
-      <!-- Раздел: ОБМЕН -->
+      <!-- ОБМЕН -->
       <section id="section-exchange" class="section active">
-        <h2 class="section-title">Быстрый обмен</h2>
-        <p class="section-description">
-          Выберите криптовалюту, сеть и способ получения. Заявка придёт оператору в Telegram.
-        </p>
+        <h2 class="section-title" data-i18n="title-exchange"></h2>
+        <p class="section-description" data-i18n="desc-exchange"></p>
 
         <form id="exchange-form">
-          <!-- Отдаю -->
+          <!-- ОТДАЮ -->
           <div class="field-group">
-            <div class="pill-label">Отдаю: <strong>криптовалюта</strong></div>
-            <div class="field-label">Криптовалюта</div>
-            <select id="send-coin" required>
-              <option value="USDT">USDT</option>
-              <option value="USDC">USDC</option>
-              <option value="BTC">BTC</option>
-              <option value="ETH">ETH</option>
-              <option value="TON">TON</option>
-              <option value="TRX">TRX</option>
-              <option value="SOL">SOL</option>
-              <option value="BNB">BNB</option>
-              <option value="LTC">LTC</option>
-              <option value="XRP">XRP</option>
+            <div class="pill-label" data-i18n="pill-send"></div>
+            <div class="field-label" data-i18n="label-send-asset"></div>
+            <select id="send-asset" required>
+              <option value="card-uah">▣ Карта UAH</option>
+              <option value="USDT">⬤ USDT</option>
+              <option value="USDC">⬤ USDC</option>
+              <option value="BTC">⬤ BTC</option>
+              <option value="ETH">⬤ ETH</option>
+              <option value="TON">⬤ TON</option>
+              <option value="TRX">⬤ TRX</option>
+              <option value="SOL">⬤ SOL</option>
+              <option value="BNB">⬤ BNB</option>
+              <option value="LTC">⬤ LTC</option>
+              <option value="XRP">⬤ XRP</option>
             </select>
           </div>
 
-          <div class="field-group input-row">
-            <div>
-              <div class="field-label">Сеть</div>
-              <select id="send-network" required>
-                <option value="TRC20">TRC20</option>
-                <option value="ERC20">ERC20</option>
-                <option value="BEP20">BEP20</option>
-                <option value="TON">TON</option>
-                <option value="BTC">BTC (onchain)</option>
-              </select>
-            </div>
-            <div>
-              <div class="field-label">Сумма</div>
-              <input
-                id="send-amount"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                required
-              />
+          <div class="field-group">
+            <div class="input-row">
+              <div id="send-network-col">
+                <div class="field-label" data-i18n="label-network"></div>
+                <select id="send-network" required>
+                  <option value="TRC20">TRC20</option>
+                  <option value="ERC20">ERC20</option>
+                  <option value="BEP20">BEP20</option>
+                  <option value="TON">TON</option>
+                  <option value="BTC">BTC (onchain)</option>
+                </select>
+              </div>
+              <div>
+                <div class="field-label" data-i18n="label-amount"></div>
+                <input
+                  id="send-amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  data-i18n-placeholder="placeholder-send-amount"
+                  required
+                />
+              </div>
             </div>
           </div>
 
-          <!-- Получаю -->
+          <!-- ПОЛУЧАЮ -->
           <div class="field-group">
-            <div class="pill-label">Получаю: <strong>карта или крипта</strong></div>
-            <div class="field-label">Способ получения</div>
-            <select id="receive-method" required>
-              <option value="card-uah">Банковская карта (UAH)</option>
-              <option value="card-forex">Банковская карта (USD / EUR)</option>
-              <option value="crypto">Крипта на кошелёк</option>
+            <div class="pill-label" data-i18n="pill-receive"></div>
+            <div class="field-label" data-i18n="label-receive-asset"></div>
+            <select id="receive-asset" required>
+              <option value="card-uah">▣ Карта UAH (Visa / MasterCard)</option>
+              <option value="requisites-uah">▦ Перевод по реквизитам (UAH)</option>
+              <option value="card-forex">▣ Карта USD / EUR</option>
+              <option value="USDT">⬤ USDT (крипта)</option>
+              <option value="USDC">⬤ USDC (крипта)</option>
+              <option value="BTC">⬤ BTC (крипта)</option>
+              <option value="ETH">⬤ ETH (крипта)</option>
+              <option value="TON">⬤ TON (крипта)</option>
+              <option value="TRX">⬤ TRX (крипта)</option>
+              <option value="SOL">⬤ SOL (крипта)</option>
+              <option value="BNB">⬤ BNB (крипта)</option>
+              <option value="LTC">⬤ LTC (крипта)</option>
+              <option value="XRP">⬤ XRP (крипта)</option>
             </select>
           </div>
 
           <div id="bank-row" class="field-group">
-            <div class="field-label">Банк (для карты UAH)</div>
+            <div class="field-label" data-i18n="label-bank"></div>
             <select id="bank-name">
               <option value="Любой банк">Любой банк</option>
               <option value="Monobank">Monobank</option>
@@ -505,117 +549,93 @@
             </select>
           </div>
 
-          <div id="receive-crypto-row" class="field-group" style="display:none;">
-            <div class="field-label">Криптовалюта для получения</div>
-            <div class="input-row">
-              <select id="receive-coin">
-                <option value="USDT">USDT</option>
-                <option value="USDC">USDC</option>
-                <option value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
-                <option value="TON">TON</option>
-                <option value="TRX">TRX</option>
-                <option value="SOL">SOL</option>
-                <option value="BNB">BNB</option>
-              </select>
-              <select id="receive-network">
-                <option value="TRC20">TRC20</option>
-                <option value="ERC20">ERC20</option>
-                <option value="BEP20">BEP20</option>
-                <option value="TON">TON</option>
-                <option value="BTC">BTC (onchain)</option>
-              </select>
-            </div>
+          <div id="receive-network-row" class="field-group" style="display:none;">
+            <div class="field-label" data-i18n="label-receive-network"></div>
+            <select id="receive-network">
+              <option value="TRC20">TRC20</option>
+              <option value="ERC20">ERC20</option>
+              <option value="BEP20">BEP20</option>
+              <option value="TON">TON</option>
+              <option value="BTC">BTC (onchain)</option>
+            </select>
           </div>
 
           <div class="field-group">
-            <div class="field-label">Реквизиты для получения</div>
+            <div class="field-label" data-i18n="label-receive-details"></div>
             <input
               id="receive-details"
               type="text"
-              placeholder="Номер карты, IBAN или адрес кошелька"
+              data-i18n-placeholder="placeholder-receive-details"
               required
             />
           </div>
 
           <!-- Контакты -->
           <div class="field-group">
-            <div class="field-label">Контакт для связи</div>
+            <div class="field-label" data-i18n="label-contact"></div>
             <input
               id="contact"
               type="text"
-              placeholder="@username или номер телефона"
+              data-i18n-placeholder="placeholder-contact"
               required
             />
           </div>
 
           <div class="field-group">
-            <div class="field-label">Комментарий (необязательно)</div>
+            <div class="field-label" data-i18n="label-comment"></div>
             <textarea
               id="comment"
-              placeholder="Например: хочу получить на карту Monobank; удобное время и т.п."
+              data-i18n-placeholder="placeholder-comment"
             ></textarea>
           </div>
 
-          <p class="muted">
-            Курс будет рассчитан оператором по актуальному рынку. Перед обменом вы получите подтверждение в Telegram.
-          </p>
+          <p class="muted" data-i18n="muted-exchange-note"></p>
 
-          <button type="submit" class="submit-btn">Отправить заявку</button>
+          <button type="submit" class="submit-btn" data-i18n="btn-submit"></button>
         </form>
       </section>
 
-      <!-- Раздел: ИСТОРИЯ -->
+      <!-- ИСТОРИЯ -->
       <section id="section-history" class="section">
-        <h2 class="section-title">История заявок</h2>
-        <p class="section-description">
-          Здесь будут последние заявки, которые вы отправили из этого устройства.
-        </p>
-        <div id="history-container">
-          <div class="history-empty">
-            История пока пустая. Оформите первую заявку — и она появится здесь.
-          </div>
-        </div>
+        <h2 class="section-title" data-i18n="history-title"></h2>
+        <p class="section-description" data-i18n="history-desc"></p>
+        <div id="history-container"></div>
       </section>
 
-      <!-- Раздел: ПРОФИЛЬ -->
+      <!-- ПРОФИЛЬ -->
       <section id="section-profile" class="section">
-        <h2 class="section-title">Профиль</h2>
-        <p class="section-description">
-          Информация берётся из Telegram. Ничего лишнего не сохраняем.
-        </p>
+        <h2 class="section-title" data-i18n="profile-title"></h2>
+        <p class="section-description" data-i18n="profile-desc"></p>
 
         <div class="profile-block">
           <div><strong id="profile-name">Гость</strong></div>
-          <div id="profile-username" class="muted">Откройте мини-приложение из Telegram, чтобы подтянуть username.</div>
-          <div class="muted" style="margin-top:6px;">Статистика по заявкам на этом устройстве:</div>
+          <div id="profile-username" class="muted"></div>
+          <div class="muted" style="margin-top:6px;" data-i18n="profile-stats-label">
+            <!-- текст подхватится из stats -->
+          </div>
           <div id="profile-stats" style="font-size:13px;margin-top:2px;">
-            Заявок: 0 · Последняя: — 
+            <!-- сюда рендерятся цифры -->
           </div>
         </div>
       </section>
 
-      <!-- Раздел: ПОДДЕРЖКА -->
+      <!-- ПОДДЕРЖКА -->
       <section id="section-support" class="section">
-        <h2 class="section-title">Поддержка</h2>
-        <p class="section-description">
-          Если появились вопросы по курсу, сумме или встрече — напишите оператору или отправьте короткое сообщение.
-        </p>
+        <h2 class="section-title" data-i18n="support-title"></h2>
+        <p class="section-description" data-i18n="support-desc"></p>
 
         <div class="profile-block">
-          <div>Оператор: <strong>@KeksSwapSupport</strong></div>
-          <div class="muted">
-            Время ответа обычно в пределах 5–15 минут. Если заявка срочная — напишите сразу после отправки формы.
-          </div>
+          <div id="support-operator" data-i18n="support-operator-line"></div>
+          <div class="muted" style="margin-top:4px;" data-i18n="support-time"></div>
 
           <div class="support-actions">
             <button type="button" class="support-btn primary" id="support-open-chat">
-              <span class="icon">💬</span>
-              <span>Открыть чат в Telegram</span>
+              <span class="icon">❍</span>
+              <span data-i18n="support-open-btn"></span>
             </button>
             <button type="button" class="support-btn secondary" id="support-copy">
-              <span class="icon">📋</span>
-              <span>Скопировать @KeksSwapSupport</span>
+              <span class="icon">▣</span>
+              <span data-i18n="support-copy-btn"></span>
             </button>
           </div>
         </div>
@@ -626,51 +646,367 @@
   </div>
 
   <script>
-    // --- Telegram WebApp init (если есть) ---
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.expand && tg.expand();
       tg.ready && tg.ready();
     }
 
-    // --- Навигация по разделам ---
+    // ---------- ЛОКАЛИЗАЦИЯ ----------
+
+    const translations = {
+      ru: {
+        subtitle: "Обмен криптовалют — просто и по-человечески",
+        "tab-exchange": "Обмен",
+        "tab-history": "История",
+        "tab-profile": "Профиль",
+        "tab-support": "Поддержка",
+
+        "title-exchange": "Быстрый обмен",
+        "desc-exchange":
+          "Выберите, что отдаёте и что хотите получить. Заявка придёт оператору в Telegram.",
+        "pill-send": "Отдаю: крипта или карта",
+        "pill-receive": "Получаю: карта / реквизиты / крипта",
+        "label-send-asset": "Актив для оплаты",
+        "label-network": "Сеть",
+        "label-amount": "Сумма",
+        "label-receive-asset": "Что хотите получить",
+        "label-bank": "Банк (для карты)",
+        "label-receive-network": "Сеть для получения",
+        "label-receive-details": "Реквизиты для получения",
+        "label-contact": "Контакт для связи",
+        "label-comment": "Комментарий (необязательно)",
+
+        "placeholder-send-amount": "0.00",
+        "placeholder-receive-details": "Номер карты, IBAN или адрес кошелька",
+        "placeholder-contact": "@username или номер телефона",
+        "placeholder-comment":
+          "Например: хочу оплатить картой UAH; удобное время и т.п.",
+
+        "muted-exchange-note":
+          "Курс будет рассчитан оператором по актуальному рынку. Перед обменом вы получите подтверждение в Telegram.",
+
+        "btn-submit": "Отправить заявку",
+
+        "history-title": "История заявок",
+        "history-desc":
+          "Здесь будут последние заявки, которые вы отправили из этого устройства.",
+        "history-empty":
+          "История пока пустая. Оформите первую заявку — и она появится здесь.",
+        "history-status-sent": "Отправлено",
+
+        "profile-title": "Профиль",
+        "profile-desc":
+          "Информация берётся из Telegram. Ничего лишнего не сохраняем.",
+        "profile-username-missing": "Username в Telegram не задан.",
+        "profile-stats-empty": "Заявок: 0 · Последняя: —",
+        "profile-stats-template": "Заявок: {count} · Последняя: {last}",
+
+        "support-title": "Поддержка",
+        "support-desc":
+          "Если появились вопросы по курсу, сумме или расчёту — напишите оператору или скопируйте контакт.",
+        "support-operator-line": "Оператор: @KeksSwapSupport",
+        "support-time":
+          "Время ответа обычно в пределах 5–15 минут. Если заявка срочная — напишите сразу после отправки формы.",
+        "support-open-btn": "Открыть чат в Telegram",
+        "support-copy-btn": "Скопировать @KeksSwapSupport",
+
+        "toast-copied": "Скопировано: @KeksSwapSupport",
+        "toast-sent": "✅ Заявка отправлена оператору в Telegram",
+        "err-amount": "Укажи сумму обмена.",
+        "err-receive-details": "Укажи реквизиты для получения.",
+        "err-contact": "Укажи контакт для связи."
+      },
+
+      uk: {
+        subtitle: "Обмін криптовалют — просто й по-людськи",
+        "tab-exchange": "Обмін",
+        "tab-history": "Історія",
+        "tab-profile": "Профіль",
+        "tab-support": "Підтримка",
+
+        "title-exchange": "Швидкий обмін",
+        "desc-exchange":
+          "Оберіть, що віддаєте та що хочете отримати. Заявка прийде оператору в Telegram.",
+        "pill-send": "Віддаю: крипта або карта",
+        "pill-receive": "Отримую: карта / реквізити / крипта",
+        "label-send-asset": "Актив для оплати",
+        "label-network": "Мережа",
+        "label-amount": "Сума",
+        "label-receive-asset": "Що хочете отримати",
+        "label-bank": "Банк (для картки)",
+        "label-receive-network": "Мережа для отримання",
+        "label-receive-details": "Реквізити для отримання",
+        "label-contact": "Контакт для звʼязку",
+        "label-comment": "Коментар (необовʼязково)",
+
+        "placeholder-send-amount": "0.00",
+        "placeholder-receive-details":
+          "Номер картки, IBAN або адреса гаманця",
+        "placeholder-contact": "@username або номер телефону",
+        "placeholder-comment":
+          "Наприклад: хочу оплатити карткою UAH; зручний час тощо.",
+
+        "muted-exchange-note":
+          "Курс розрахує оператор за актуальним ринком. Перед обміном ви отримаєте підтвердження в Telegram.",
+
+        "btn-submit": "Надіслати заявку",
+
+        "history-title": "Історія заявок",
+        "history-desc":
+          "Тут будуть останні заявки, які ви надсилали з цього пристрою.",
+        "history-empty":
+          "Історія поки порожня. Створіть першу заявку — і вона зʼявиться тут.",
+        "history-status-sent": "Надіслано",
+
+        "profile-title": "Профіль",
+        "profile-desc":
+          "Інформація береться з Telegram. Нічого зайвого не зберігаємо.",
+        "profile-username-missing": "Username в Telegram не вказано.",
+        "profile-stats-empty": "Заявок: 0 · Остання: —",
+        "profile-stats-template": "Заявок: {count} · Остання: {last}",
+
+        "support-title": "Підтримка",
+        "support-desc":
+          "Якщо є запитання щодо курсу, суми чи розрахунку — напишіть оператору або скопіюйте контакт.",
+        "support-operator-line": "Оператор: @KeksSwapSupport",
+        "support-time":
+          "Зазвичай відповідаємо протягом 5–15 хвилин. Якщо заявка термінова — напишіть одразу після відправки форми.",
+        "support-open-btn": "Відкрити чат у Telegram",
+        "support-copy-btn": "Скопіювати @KeksSwapSupport",
+
+        "toast-copied": "Скопійовано: @KeksSwapSupport",
+        "toast-sent": "✅ Заявку надіслано оператору в Telegram",
+        "err-amount": "Вкажіть суму обміну.",
+        "err-receive-details": "Вкажіть реквізити для отримання.",
+        "err-contact": "Вкажіть контакт для звʼязку."
+      },
+
+      en: {
+        subtitle: "Crypto exchange — simple and human",
+        "tab-exchange": "Exchange",
+        "tab-history": "History",
+        "tab-profile": "Profile",
+        "tab-support": "Support",
+
+        "title-exchange": "Quick exchange",
+        "desc-exchange":
+          "Choose what you send and what you want to receive. The request will be sent to the operator in Telegram.",
+        "pill-send": "Send: crypto or card",
+        "pill-receive": "Receive: card / details / crypto",
+        "label-send-asset": "Asset to pay with",
+        "label-network": "Network",
+        "label-amount": "Amount",
+        "label-receive-asset": "What you want to receive",
+        "label-bank": "Bank (for card)",
+        "label-receive-network": "Network to receive on",
+        "label-receive-details": "Details to receive",
+        "label-contact": "Contact",
+        "label-comment": "Comment (optional)",
+
+        "placeholder-send-amount": "0.00",
+        "placeholder-receive-details":
+          "Card number, IBAN or wallet address",
+        "placeholder-contact": "@username or phone number",
+        "placeholder-comment":
+          "For example: want to receive to UAH card; convenient time, etc.",
+
+        "muted-exchange-note":
+          "The rate will be calculated by the operator at the current market price. You will get confirmation in Telegram before the exchange.",
+
+        "btn-submit": "Send request",
+
+        "history-title": "Request history",
+        "history-desc":
+          "Here you will see the last requests sent from this device.",
+        "history-empty":
+          "History is empty for now. Create your first request and it will appear here.",
+        "history-status-sent": "Sent",
+
+        "profile-title": "Profile",
+        "profile-desc":
+          "Information is taken from Telegram. We do not store anything extra.",
+        "profile-username-missing": "Telegram username is not set.",
+        "profile-stats-empty": "Requests: 0 · Last: —",
+        "profile-stats-template": "Requests: {count} · Last: {last}",
+
+        "support-title": "Support",
+        "support-desc":
+          "If you have questions about the rate, amount or calculation — write to the operator or copy the contact.",
+        "support-operator-line": "Operator: @KeksSwapSupport",
+        "support-time":
+          "Typical reply time is 5–15 minutes. If your request is urgent, write right after sending the form.",
+        "support-open-btn": "Open chat in Telegram",
+        "support-copy-btn": "Copy @KeksSwapSupport",
+
+        "toast-copied": "Copied: @KeksSwapSupport",
+        "toast-sent": "✅ Request sent to the operator in Telegram",
+        "err-amount": "Enter the amount to exchange.",
+        "err-receive-details": "Enter details to receive funds.",
+        "err-contact": "Enter a contact for communication."
+      },
+
+      pl: {
+        subtitle: "Wymiana kryptowalut — prosto i po ludzku",
+        "tab-exchange": "Wymiana",
+        "tab-history": "Historia",
+        "tab-profile": "Profil",
+        "tab-support": "Wsparcie",
+
+        "title-exchange": "Szybka wymiana",
+        "desc-exchange":
+          "Wybierz co wysyłasz i co chcesz otrzymać. Zlecenie trafi do operatora w Telegramie.",
+        "pill-send": "Wysyłam: krypto lub karta",
+        "pill-receive": "Otrzymuję: karta / dane / krypto",
+        "label-send-asset": "Aktyw do zapłaty",
+        "label-network": "Sieć",
+        "label-amount": "Kwota",
+        "label-receive-asset": "Co chcesz otrzymać",
+        "label-bank": "Bank (dla karty)",
+        "label-receive-network": "Sieć do odbioru",
+        "label-receive-details": "Dane do odbioru",
+        "label-contact": "Kontakt",
+        "label-comment": "Komentarz (opcjonalnie)",
+
+        "placeholder-send-amount": "0.00",
+        "placeholder-receive-details":
+          "Numer karty, IBAN lub adres portfela",
+        "placeholder-contact": "@username lub numer telefonu",
+        "placeholder-comment":
+          "Np.: chcę otrzymać na kartę UAH; wygodna godzina itd.",
+
+        "muted-exchange-note":
+          "Kurs obliczy operator po aktualnym rynku. Przed wymianą otrzymasz potwierdzenie w Telegramie.",
+
+        "btn-submit": "Wyślij zlecenie",
+
+        "history-title": "Historia zleceń",
+        "history-desc":
+          "Tutaj pojawią się ostatnie zlecenia wysłane z tego urządzenia.",
+        "history-empty":
+          "Historia jest na razie pusta. Utwórz pierwsze zlecenie, a pojawi się tutaj.",
+        "history-status-sent": "Wysłano",
+
+        "profile-title": "Profil",
+        "profile-desc":
+          "Informacje pobierane są z Telegrama. Nie przechowujemy niczego zbędnego.",
+        "profile-username-missing": "Nazwa użytkownika Telegram nie jest ustawiona.",
+        "profile-stats-empty": "Zleceń: 0 · Ostatnie: —",
+        "profile-stats-template": "Zleceń: {count} · Ostatnie: {last}",
+
+        "support-title": "Wsparcie",
+        "support-desc":
+          "Masz pytania o kurs, kwotę lub rozliczenie? Napisz do operatora lub skopiuj kontakt.",
+        "support-operator-line": "Operator: @KeksSwapSupport",
+        "support-time":
+          "Zwykle odpowiadamy w ciągu 5–15 minut. Jeśli zlecenie jest pilne — napisz od razu po wysłaniu formularza.",
+        "support-open-btn": "Otwórz czat w Telegramie",
+        "support-copy-btn": "Skopiuj @KeksSwapSupport",
+
+        "toast-copied": "Skopiowano: @KeksSwapSupport",
+        "toast-sent": "✅ Zlecenie wysłane do operatora w Telegramie",
+        "err-amount": "Podaj kwotę wymiany.",
+        "err-receive-details": "Podaj dane do odbioru.",
+        "err-contact": "Podaj kontakt."
+      }
+    };
+
+    let currentLang = localStorage.getItem("keksswap_lang") || "ru";
+
+    function t(key) {
+      const dict = translations[currentLang] || translations["ru"];
+      return dict[key] || translations["ru"][key] || key;
+    }
+
+    function applyTranslations(lang) {
+      currentLang = lang;
+      localStorage.setItem("keksswap_lang", lang);
+
+      // кнопки языка
+      document.querySelectorAll(".lang-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lang === currentLang);
+      });
+
+      // обычный текст
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        el.textContent = t(key);
+      });
+
+      // плейсхолдеры
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.dataset.i18nPlaceholder;
+        el.placeholder = t(key);
+      });
+
+      updateProfileTexts();
+      renderHistory();
+    }
+
+    // ---------- ЛОГИКА UI ----------
+
     const sections = document.querySelectorAll(".section");
     const tabButtons = document.querySelectorAll(".tab-btn");
 
-    tabButtons.forEach(btn => {
+    tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        const target = btn.dataset.target; // exchange / history / profile / support
-        sections.forEach(sec => {
+        const target = btn.dataset.target;
+        sections.forEach((sec) => {
           sec.classList.toggle("active", sec.id === "section-" + target);
         });
-        tabButtons.forEach(b => b.classList.toggle("active", b === btn));
+        tabButtons.forEach((b) => b.classList.toggle("active", b === btn));
       });
     });
 
-    // --- Переключение вида получения ---
-    const receiveMethodSelect = document.getElementById("receive-method");
+    // переключатель языка
+    document.querySelectorAll(".lang-btn").forEach((btn) => {
+      btn.addEventListener("click", () => applyTranslations(btn.dataset.lang));
+    });
+
+    // --- Переключение видимости для получения ---
+    const receiveAssetSelect = document.getElementById("receive-asset");
     const bankRow = document.getElementById("bank-row");
-    const receiveCryptoRow = document.getElementById("receive-crypto-row");
+    const receiveNetworkRow = document.getElementById("receive-network-row");
+    const receiveNetworkSelect = document.getElementById("receive-network");
+
+    const CRYPTO_VALUES = ["USDT", "USDC", "BTC", "ETH", "TON", "TRX", "SOL", "BNB", "LTC", "XRP"];
 
     function updateReceiveVisibility() {
-      const method = receiveMethodSelect.value;
-      if (method === "card-uah") {
+      const asset = receiveAssetSelect.value;
+      if (asset === "card-uah" || asset === "card-forex") {
         bankRow.style.display = "";
-        receiveCryptoRow.style.display = "none";
-      } else if (method === "crypto") {
+        receiveNetworkRow.style.display = "none";
+      } else if (asset === "requisites-uah") {
         bankRow.style.display = "none";
-        receiveCryptoRow.style.display = "";
-      } else {
-        // card-forex
+        receiveNetworkRow.style.display = "none";
+      } else if (CRYPTO_VALUES.includes(asset)) {
         bankRow.style.display = "none";
-        receiveCryptoRow.style.display = "none";
+        receiveNetworkRow.style.display = "";
       }
     }
-    receiveMethodSelect.addEventListener("change", updateReceiveVisibility);
+    receiveAssetSelect.addEventListener("change", updateReceiveVisibility);
     updateReceiveVisibility();
 
-    // --- История заявок ---
-    const HISTORY_KEY = "keksswap_history_v1";
+    // --- Скрывать сеть, если отдаём картой ---
+    const sendAssetSelect = document.getElementById("send-asset");
+    const sendNetworkCol = document.getElementById("send-network-col");
+    const sendNetworkSelect = document.getElementById("send-network");
+
+    function updateSendVisibility() {
+      const asset = sendAssetSelect.value;
+      if (asset === "card-uah") {
+        sendNetworkCol.style.display = "none";
+        sendNetworkSelect.disabled = true;
+      } else {
+        sendNetworkCol.style.display = "";
+        sendNetworkSelect.disabled = false;
+      }
+    }
+    sendAssetSelect.addEventListener("change", updateSendVisibility);
+    updateSendVisibility();
+
+    // --- История ---
+    const HISTORY_KEY = "keksswap_history_v2";
     const historyContainer = document.getElementById("history-container");
     const profileStats = document.getElementById("profile-stats");
 
@@ -692,27 +1028,33 @@
       const history = loadHistory();
       if (!history.length) {
         historyContainer.innerHTML =
-          '<div class="history-empty">История пока пустая. Оформите первую заявку — и она появится здесь.</div>';
+          '<div class="history-empty">' + t("history-empty") + "</div>";
       } else {
         historyContainer.innerHTML =
           '<div class="history-list">' +
           history
-            .map(item => {
+            .map((item) => {
               const date = new Date(item.createdAt);
               const dateStr = date.toLocaleString();
               const line =
                 item.sendAmount +
                 " " +
-                item.sendCoin +
+                item.sendAssetText +
                 " → " +
                 item.receiveSummary;
               return (
                 '<div class="history-item">' +
-                  '<div class="history-main">' +
-                    '<div class="history-line">' + line + "</div>" +
-                    '<div class="history-status">Отправлено</div>' +
-                  "</div>" +
-                  '<div class="history-meta">' + dateStr + "</div>" +
+                '<div class="history-main">' +
+                '<div class="history-line">' +
+                line +
+                "</div>" +
+                '<div class="history-status">' +
+                t("history-status-sent") +
+                "</div>" +
+                "</div>" +
+                '<div class="history-meta">' +
+                dateStr +
+                "</div>" +
                 "</div>"
               );
             })
@@ -720,34 +1062,42 @@
           "</div>";
       }
 
-      // Обновить блок Профиль
       const count = history.length;
       if (!count) {
-        profileStats.textContent = "Заявок: 0 · Последняя: —";
+        profileStats.textContent = t("profile-stats-empty");
       } else {
         const last = new Date(history[0].createdAt).toLocaleString();
-        profileStats.textContent = "Заявок: " + count + " · Последняя: " + last;
+        const tpl = t("profile-stats-template");
+        profileStats.textContent = tpl
+          .replace("{count}", count)
+          .replace("{last}", last);
       }
     }
-
-    renderHistory();
 
     // --- Профиль из Telegram ---
     const profileNameEl = document.getElementById("profile-name");
     const profileUsernameEl = document.getElementById("profile-username");
     const contactInput = document.getElementById("contact");
 
+    let hasTelegramUsername = false;
+    let telegramUsernameText = "";
+
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       const u = tg.initDataUnsafe.user;
       const fullName = [u.first_name, u.last_name].filter(Boolean).join(" ");
       if (fullName) profileNameEl.textContent = fullName;
       if (u.username) {
-        const uname = "@" + u.username;
-        profileUsernameEl.textContent = uname;
-        profileUsernameEl.classList.remove("muted");
-        if (!contactInput.value) contactInput.value = uname;
+        telegramUsernameText = "@" + u.username;
+        hasTelegramUsername = true;
+        if (!contactInput.value) contactInput.value = telegramUsernameText;
+      }
+    }
+
+    function updateProfileTexts() {
+      if (hasTelegramUsername) {
+        profileUsernameEl.textContent = telegramUsernameText;
       } else {
-        profileUsernameEl.textContent = "Username в Telegram не задан.";
+        profileUsernameEl.textContent = t("profile-username-missing");
       }
     }
 
@@ -755,8 +1105,8 @@
     const toastEl = document.getElementById("toast");
     let toastTimeout = null;
 
-    function showToast(text) {
-      toastEl.textContent = text;
+    function showToast(textKey) {
+      toastEl.textContent = t(textKey);
       toastEl.classList.add("show");
       if (toastTimeout) clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
@@ -770,46 +1120,65 @@
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const sendCoin = document.getElementById("send-coin").value;
-      const sendNetwork = document.getElementById("send-network").value;
-      const sendAmount = document.getElementById("send-amount").value.trim();
-      const receiveMethod = receiveMethodSelect.value;
+      const sendAsset = sendAssetSelect.value;
+      const sendAssetText =
+        sendAssetSelect.options[sendAssetSelect.selectedIndex].text;
+      const sendNetwork = sendNetworkSelect.disabled
+        ? ""
+        : sendNetworkSelect.value;
+      const sendAmount = document
+        .getElementById("send-amount")
+        .value.trim();
+
+      const receiveAsset = receiveAssetSelect.value;
+      const receiveAssetText =
+        receiveAssetSelect.options[receiveAssetSelect.selectedIndex].text;
       const bankName = document.getElementById("bank-name").value;
-      const receiveCoin = document.getElementById("receive-coin").value;
-      const receiveNetwork = document.getElementById("receive-network").value;
-      const receiveDetails = document.getElementById("receive-details").value.trim();
+      const receiveNetwork =
+        receiveNetworkRow.style.display === "none"
+          ? ""
+          : receiveNetworkSelect.value;
+      const receiveDetails = document
+        .getElementById("receive-details")
+        .value.trim();
       const contact = contactInput.value.trim();
       const comment = document.getElementById("comment").value.trim();
 
       if (!sendAmount || Number(sendAmount) <= 0) {
-        showToast("Укажи сумму обмена.");
+        showToast("err-amount");
         return;
       }
       if (!receiveDetails) {
-        showToast("Укажи реквизиты для получения.");
+        showToast("err-receive-details");
         return;
       }
       if (!contact) {
-        showToast("Укажи контакт для связи.");
+        showToast("err-contact");
         return;
       }
 
       let receiveSummary = "";
-      if (receiveMethod === "card-uah") {
+      if (receiveAsset === "card-uah") {
         receiveSummary = "Карта UAH (" + bankName + ")";
-      } else if (receiveMethod === "card-forex") {
-        receiveSummary = "Карта USD/EUR";
-      } else {
-        receiveSummary = "Крипта " + receiveCoin + " (" + receiveNetwork + ")";
+      } else if (receiveAsset === "requisites-uah") {
+        receiveSummary = "Реквизиты UAH";
+      } else if (receiveAsset === "card-forex") {
+        receiveSummary = "Карта USD/EUR (" + bankName + ")";
+      } else if (CRYPTO_VALUES.includes(receiveAsset)) {
+        receiveSummary =
+          "Крипта " +
+          receiveAsset +
+          (receiveNetwork ? " (" + receiveNetwork + ")" : "");
       }
 
       const order = {
-        sendCoin,
+        sendAsset,
+        sendAssetText,
         sendNetwork,
         sendAmount,
-        receiveMethod,
+        receiveAsset,
+        receiveAssetText,
         bankName,
-        receiveCoin,
         receiveNetwork,
         receiveDetails,
         contact,
@@ -818,7 +1187,6 @@
         createdAt: new Date().toISOString()
       };
 
-      // Отправка данных в Telegram мини-приложение
       if (tg && tg.sendData) {
         try {
           tg.sendData(JSON.stringify(order));
@@ -830,37 +1198,42 @@
         }
       }
 
-      // Сохранить в локальную историю
       const history = loadHistory();
       history.unshift(order);
       saveHistory(history);
       renderHistory();
 
-      showToast("✅ Заявка отправлена оператору в Telegram");
+      showToast("toast-sent");
       form.reset();
       updateReceiveVisibility();
+      updateSendVisibility();
     });
 
     // --- Поддержка ---
     const SUPPORT_LINK = "https://t.me/KeksSwapSupport";
 
-    document.getElementById("support-open-chat").addEventListener("click", () => {
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(SUPPORT_LINK);
-      } else {
-        window.open(SUPPORT_LINK, "_blank");
-      }
-    });
+    document
+      .getElementById("support-open-chat")
+      .addEventListener("click", () => {
+        if (tg && tg.openTelegramLink) {
+          tg.openTelegramLink(SUPPORT_LINK);
+        } else {
+          window.open(SUPPORT_LINK, "_blank");
+        }
+      });
 
     document.getElementById("support-copy").addEventListener("click", async () => {
       const text = "@KeksSwapSupport";
       try {
         await navigator.clipboard.writeText(text);
-        showToast("Скопировано: " + text);
+        showToast("toast-copied");
       } catch (e) {
-        showToast(text);
+        showToast("toast-copied");
       }
     });
+
+    // старт: сначала язык, потом текст/история/профиль
+    applyTranslations(currentLang);
   </script>
 </body>
 </html>
