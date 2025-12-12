@@ -1,90 +1,90 @@
 (() => {
-  // Telegram WebApp safe areas
   const tg = window.Telegram?.WebApp;
-  if (tg) {
+
+  // ---- Telegram safe areas + theme ----
+  function initTelegram() {
+    if (!tg) return;
     tg.ready();
     tg.expand();
 
-    const top = tg.safeAreaInset?.top ?? 10;
-    const bottom = tg.safeAreaInset?.bottom ?? 10;
+    const top = (tg.safeAreaInset?.top ?? 10) + 18;     // ниже, чтобы не мешало меню Telegram
+    const bottom = (tg.safeAreaInset?.bottom ?? 10) + 10;
+
     document.documentElement.style.setProperty("--safeTop", `${Math.max(10, top)}px`);
     document.documentElement.style.setProperty("--safeBottom", `${Math.max(10, bottom)}px`);
 
-    try { tg.setHeaderColor("#f5f6fb"); } catch {}
-    try { tg.setBackgroundColor("#f5f6fb"); } catch {}
+    try { tg.setHeaderColor?.("#f5f6fb"); } catch {}
+    try { tg.setBackgroundColor?.("#f5f6fb"); } catch {}
   }
 
-  // === Paths to your assets (your folders already match this) ===
+  // ---- Assets paths ----
   const ASSETS = {
-    brand: "./logo.png", // если нет — поставь сюда свой логотип или удалим img вообще
+    brand: "./logo.png",            // твой логотип в корне
     banksDir: "./logos/banks/",
-    cryptoDir: "./logos/crypto/",
     walletsDir: "./logos/wallets/",
+    cryptoDir: "./logos/crypto/",
   };
 
-  // If you don't have ./img/logo.png, use your cupcake logo from repo root:
-  // ASSETS.brand = "./keksswap-logo.png" (пример)
-
-  // === UI texts ===
+  // ---- UI texts ----
   const I18N = {
     ua: {
+      notice: "Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).",
+      exchange: "Обмін",
       give: "Віддаєте",
       get: "Отримуєте",
-      continue: "Продовжити",
+      menu: "Меню",
       rules: "Правила обміну",
       aml: "AML & KYC",
       faq: "FAQ",
       contacts: "Контакти",
-      login: "Увійти",
-      notice: "Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).",
-      search: "Пошук…",
-      exchange: "Обмін",
+      continue: "Продовжити",
+      search: "Пошук...",
+      pickGive: "Віддаєте",
+      pickGet: "Отримуєте",
       rate: "Курс",
       fee: "Комісія сервісу",
       payout: "До виплати",
-      menu: "Меню",
-      back: "Назад",
     },
     en: {
+      notice: "Requests created after 22:00 are processed from 08:00 (UTC+2).",
+      exchange: "Exchange",
       give: "You give",
       get: "You get",
-      continue: "Continue",
+      menu: "Menu",
       rules: "Exchange rules",
       aml: "AML & KYC",
       faq: "FAQ",
       contacts: "Contacts",
-      login: "Login",
-      notice: "Requests created after 22:00 are processed from 08:00 (UTC+2).",
-      search: "Search…",
-      exchange: "Exchange",
+      continue: "Continue",
+      search: "Search...",
+      pickGive: "You give",
+      pickGet: "You get",
       rate: "Rate",
       fee: "Service fee",
       payout: "Payout",
-      menu: "Menu",
-      back: "Back",
     },
     pl: {
-      give: "Dajesz",
+      notice: "Zlecenia utworzone po 22:00 są przetwarzane od 08:00 (UTC+2).",
+      exchange: "Wymiana",
+      give: "Oddajesz",
       get: "Otrzymujesz",
-      continue: "Kontynuuj",
+      menu: "Menu",
       rules: "Zasady wymiany",
       aml: "AML & KYC",
       faq: "FAQ",
       contacts: "Kontakt",
-      login: "Zaloguj",
-      notice: "Zlecenia utworzone po 22:00 są realizowane od 08:00 (UTC+2).",
-      search: "Szukaj…",
-      exchange: "Wymiana",
+      continue: "Kontynuuj",
+      search: "Szukaj...",
+      pickGive: "Oddajesz",
+      pickGet: "Otrzymujesz",
       rate: "Kurs",
-      fee: "Prowizja",
+      fee: "Prowizja serwisu",
       payout: "Do wypłaty",
-      menu: "Menu",
-      back: "Wstecz",
-    }
+    },
   };
 
-  // === Data ===
-  // Важно: имена файлов должны совпадать (у тебя они уже такие).
+  // ---- Data (под твои файлы) ----
+  // ВАЖНО: файлы должны совпадать по названию (lowercase лучше всего)
   const GROUPS = [
     {
       id: "usdt",
@@ -92,13 +92,13 @@
       subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
       icon: `${ASSETS.cryptoDir}tether-usdt.png`,
       items: [
-        { id:"usdt-trc", name:"Tether (TRC20)", code:"USDT", icon:`${ASSETS.cryptoDir}usdt-trc.png`, rateUAH: 41.0 },
-        { id:"usdt-eth", name:"Tether (ERC20)", code:"USDT", icon:`${ASSETS.cryptoDir}usdt-eth.png`, rateUAH: 41.0 },
-        { id:"usdt-bep", name:"Tether (BEP20)", code:"USDT", icon:`${ASSETS.cryptoDir}usdt-bep.png`, rateUAH: 41.0 },
-        { id:"usdt-arb", name:"Tether (ARB)",   code:"USDT", icon:`${ASSETS.cryptoDir}usdt-arb.png`, rateUAH: 41.0 },
-        { id:"usdt-pol", name:"Tether (POL)",   code:"USDT", icon:`${ASSETS.cryptoDir}usdt-pol.png`, rateUAH: 41.0 },
-        { id:"usdt-sol", name:"Tether (SOL)",   code:"USDT", icon:`${ASSETS.cryptoDir}usdt-sol.png`, rateUAH: 41.0 },
-      ]
+        { id: "usdt-trc", name: "Tether (TRC20)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-trc.png`, rateUAH: 41.0 },
+        { id: "usdt-eth", name: "Tether (ERC20)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-eth.png`, rateUAH: 41.0 },
+        { id: "usdt-bep", name: "Tether (BEP20)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-bep.png`, rateUAH: 41.0 },
+        { id: "usdt-arb", name: "Tether (ARB)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-arb.png`, rateUAH: 41.0 },
+        { id: "usdt-pol", name: "Tether (POL)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-pol.png`, rateUAH: 41.0 },
+        { id: "usdt-sol", name: "Tether (SOL)", sub: "USDT", icon: `${ASSETS.cryptoDir}usdt-sol.png`, rateUAH: 41.0 },
+      ],
     },
     {
       id: "usdc",
@@ -106,373 +106,420 @@
       subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
       icon: `${ASSETS.cryptoDir}usdc-eth.png`,
       items: [
-        { id:"usdc-eth", name:"USD Coin (ERC20)", code:"USDC", icon:`${ASSETS.cryptoDir}usdc-eth.png`, rateUAH: 41.0 },
-        { id:"usdc-pol", name:"USD Coin (POL)",   code:"USDC", icon:`${ASSETS.cryptoDir}usdc-pol.png`, rateUAH: 41.0 },
-        { id:"usdc-sol", name:"USD Coin (SOL)",   code:"USDC", icon:`${ASSETS.cryptoDir}usdc-sol.png`, rateUAH: 41.0 },
-      ]
+        { id: "usdc-eth", name: "USD Coin (ERC20)", sub: "USDC", icon: `${ASSETS.cryptoDir}usdc-eth.png`, rateUAH: 41.0 },
+        { id: "usdc-pol", name: "USD Coin (POL)", sub: "USDC", icon: `${ASSETS.cryptoDir}usdc-pol.png`, rateUAH: 41.0 },
+        { id: "usdc-sol", name: "USD Coin (SOL)", sub: "USDC", icon: `${ASSETS.cryptoDir}usdc-sol.png`, rateUAH: 41.0 },
+      ],
     },
     {
       id: "crypto",
       title: { ua: "Криптовалюти", en: "Cryptocurrencies", pl: "Kryptowaluty" },
       subtitle: { ua: "Топ монети", en: "Top coins", pl: "Top monety" },
-      icon: `${ASSETS.cryptoDir}btc.png`,
+      icon: `${ASSETS.cryptoDir}crypto.png`,   // <-- вот это
       items: [
-        { id:"btc", name:"Bitcoin",  code:"BTC", icon:`${ASSETS.cryptoDir}btc.png`, rateUAH: 1500000 },
-        { id:"eth", name:"Ethereum", code:"ETH", icon:`${ASSETS.cryptoDir}eth.png`, rateUAH: 170000 },
-        { id:"sol", name:"Solana",   code:"SOL", icon:`${ASSETS.cryptoDir}sol.png`, rateUAH: 7000 },
-        { id:"trx", name:"Tron",     code:"TRX", icon:`${ASSETS.cryptoDir}trx.png`, rateUAH: 5.0 },
-        { id:"ton", name:"TON",      code:"TON", icon:`${ASSETS.cryptoDir}ton.png`, rateUAH: 250 },
-        { id:"ltc", name:"Litecoin", code:"LTC", icon:`${ASSETS.cryptoDir}ltc.png`, rateUAH: 3500 },
-      ]
+        { id: "btc", name: "Bitcoin", sub: "BTC", icon: `${ASSETS.cryptoDir}btc.png`, rateUAH: 1500000 },
+        { id: "eth", name: "Ethereum", sub: "ETH", icon: `${ASSETS.cryptoDir}eth.png`, rateUAH: 170000 },
+        { id: "sol", name: "Solana", sub: "SOL", icon: `${ASSETS.cryptoDir}sol.png`, rateUAH: 7000 },
+        { id: "trx", name: "Tron", sub: "TRX", icon: `${ASSETS.cryptoDir}trx.png`, rateUAH: 5.0 },
+        { id: "ton", name: "TON", sub: "TON", icon: `${ASSETS.cryptoDir}ton.png`, rateUAH: 250 },
+        { id: "ltc", name: "Litecoin", sub: "LTC", icon: `${ASSETS.cryptoDir}ltc.png`, rateUAH: 4000 },
+      ],
     },
     {
-      id: "banks",
+      id: "banks_uah",
       title: { ua: "Банки - UAH", en: "Banks - UAH", pl: "Banki - UAH" },
       subtitle: { ua: "Україна", en: "Ukraine", pl: "Ukraina" },
       icon: `${ASSETS.banksDir}ukr-banki.png`,
       items: [
-        { id:"mono",   name:"Monobank",  code:"UAH", icon:`${ASSETS.banksDir}mono.png`,  rateUAH: 1 },
-        { id:"privat", name:"Privat24",  code:"UAH", icon:`${ASSETS.banksDir}privat.png`,rateUAH: 1 },
-        { id:"a-bank", name:"A-Bank",    code:"UAH", icon:`${ASSETS.banksDir}a-bank.png`,rateUAH: 1 },
-        { id:"oschad", name:"Oschadbank",code:"UAH", icon:`${ASSETS.banksDir}oschad.png`,rateUAH: 1 },
-        { id:"pumb",   name:"PUMB",      code:"UAH", icon:`${ASSETS.banksDir}pumb.png`,  rateUAH: 1 },
-        { id:"otp",    name:"OTP Bank",  code:"UAH", icon:`${ASSETS.banksDir}otp.png`,   rateUAH: 1 },
-        { id:"izi",    name:"izibank",   code:"UAH", icon:`${ASSETS.banksDir}izi.png`,   rateUAH: 1 },
-        { id:"visa",   name:"Visa/MasterCard", code:"UAH", icon:`${ASSETS.banksDir}visa-master.png`, rateUAH: 1 },
-      ]
+        { id: "mono", name: "Monobank", sub: "UAH", icon: `${ASSETS.banksDir}mono.png`, rateUAH: 1 },
+        { id: "privat", name: "Privat24", sub: "UAH", icon: `${ASSETS.banksDir}privat.png`, rateUAH: 1 },
+        { id: "pumb", name: "PUMB", sub: "UAH", icon: `${ASSETS.banksDir}pumb.png`, rateUAH: 1 },
+        { id: "a-bank", name: "A-Bank", sub: "UAH", icon: `${ASSETS.banksDir}a-bank.png`, rateUAH: 1 },
+        { id: "oschad", name: "Oschadbank", sub: "UAH", icon: `${ASSETS.banksDir}oschad.png`, rateUAH: 1 },
+        { id: "otp", name: "OTP", sub: "UAH", icon: `${ASSETS.banksDir}otp.png`, rateUAH: 1 },
+        { id: "visa", name: "Visa / MasterCard", sub: "UAH", icon: `${ASSETS.banksDir}visa-master.png`, rateUAH: 1 },
+      ],
     },
     {
       id: "wallets",
-      title: { ua: "Електронні гаманці", en: "E-wallets", pl: "Portfele elektr." },
+      title: { ua: "Електронні гаманці", en: "E-wallets", pl: "Portfele elektroniczne" },
       subtitle: { ua: "USD/EUR", en: "USD/EUR", pl: "USD/EUR" },
       icon: `${ASSETS.walletsDir}valet.png`,
       items: [
-        { id:"paypal",   name:"PayPal",   code:"USD", icon:`${ASSETS.walletsDir}paypal.png`,   rateUAH: 41.0 },
-        { id:"revolut",  name:"Revolut",  code:"USD", icon:`${ASSETS.walletsDir}revolut.png`,  rateUAH: 41.0 },
-        { id:"payoneer", name:"Payoneer", code:"USD", icon:`${ASSETS.walletsDir}payoneer.png`, rateUAH: 41.0 },
-        { id:"wise",     name:"Wise",     code:"USD", icon:`${ASSETS.walletsDir}vise.png`,     rateUAH: 41.0 },
-      ]
+        { id: "paypal", name: "PayPal", sub: "USD", icon: `${ASSETS.walletsDir}paypal.png`, rateUAH: 41.0 },
+        { id: "payoneer", name: "Payoneer", sub: "USD", icon: `${ASSETS.walletsDir}payoneer.png`, rateUAH: 41.0 },
+        { id: "revolut", name: "Revolut", sub: "USD", icon: `${ASSETS.walletsDir}revolut.png`, rateUAH: 41.0 },
+        { id: "wise", name: "Wise", sub: "USD", icon: `${ASSETS.walletsDir}vise.png`, rateUAH: 41.0 },
+      ],
     },
   ];
 
-  // Flatten helper
-  function allItems() {
-    const out = [];
-    for (const g of GROUPS) for (const it of g.items) out.push({ ...it, groupId: g.id, groupIcon: g.icon, groupTitle: g.title });
-    return out;
-  }
-
-  // State
+  // ---- State ----
   const state = {
     lang: "ua",
-    giveItem: GROUPS[2].items[0], // BTC
-    getItem: GROUPS[3].items[0],  // Monobank
-    giveAmount: 0,
-    feePct: 2.5,
-    sheetMode: null, // "give" | "get"
-    sheetOpen: false,
-    sheetQuery: "",
+    view: "exchange", // exchange | menu | rules | aml | faq | contacts
+    give: GROUPS[2].items[0], // BTC
+    get: GROUPS[3].items[0],  // Monobank
+    giveAmountStr: "",        // строка ввода (важно для фокуса)
+    fee: 0.025,
+    sheet: null,              // { side: 'give'|'get', search:'' }
+    openGroups: new Set(["crypto", "banks_uah"]), // какие группы раскрыты
+    lastEdited: "give",        // 'give' | 'get'
   };
 
-  const $ = (sel) => document.querySelector(sel);
+  const el = {
+    app: document.getElementById("app"),
+    giveInput: null,
+    getInput: null,
+    giveSelectBtn: null,
+    getSelectBtn: null,
+    summaryRate: null,
+    summaryFee: null,
+    summaryPayout: null,
+    sheetRoot: null,
+  };
 
-  function t(key){
-    return I18N[state.lang][key] ?? key;
+  function t(key) {
+    return I18N[state.lang][key] || key;
   }
 
-  function fmt(n){
-    if (!isFinite(n)) return "0";
-    return new Intl.NumberFormat(state.lang === "ua" ? "uk-UA" : (state.lang === "pl" ? "pl-PL" : "en-US"), {
-      maximumFractionDigits: 8
-    }).format(n);
+  function fmtNumber(n, maxFrac = 8) {
+    if (!isFinite(n)) return "";
+    const s = n.toFixed(maxFrac);
+    // trim trailing zeros
+    return s.replace(/\.?0+$/, "");
   }
 
-  function compute(){
-    // giveItem.rateUAH = UAH per 1 coin
-    // getItem.rateUAH = UAH per 1 unit of target (UAH=1, USD=41 etc)
-    const giveUAH = state.giveAmount * (state.giveItem.rateUAH || 0);
-    const grossGet = giveUAH / (state.getItem.rateUAH || 1);
-    const fee = grossGet * (state.feePct/100);
-    const payout = Math.max(0, grossGet - fee);
-
-    return { giveUAH, grossGet, fee, payout };
+  function parseAmount(str) {
+    if (!str) return 0;
+    const cleaned = String(str).replace(",", ".").replace(/[^\d.]/g, "");
+    const n = Number(cleaned);
+    return isFinite(n) ? n : 0;
   }
 
-  function setLang(lang){
-    state.lang = lang;
-    render();
+  // rate: through UAH
+  // crypto item rateUAH = UAH per 1 unit
+  // bank UAH item rateUAH=1
+  function calcGetFromGive(giveAmount, giveItem, getItem) {
+    const giveUAH = giveAmount * (giveItem.rateUAH || 0);
+    const afterFeeUAH = giveUAH * (1 - state.fee);
+    const getAmount = (getItem.rateUAH ? afterFeeUAH / getItem.rateUAH : 0);
+    return getAmount;
   }
 
-  function swap(){
-    const a = state.giveItem;
-    state.giveItem = state.getItem;
-    state.getItem = a;
-    render();
+  function calcGiveFromGet(getAmount, giveItem, getItem) {
+    const needUAH = getAmount * (getItem.rateUAH || 0);
+    const beforeFeeUAH = needUAH / (1 - state.fee);
+    const giveAmount = (giveItem.rateUAH ? beforeFeeUAH / giveItem.rateUAH : 0);
+    return giveAmount;
   }
 
-  function openSheet(mode){
-    state.sheetMode = mode;
-    state.sheetOpen = true;
-    state.sheetQuery = "";
-    render();
-  }
+  // ---- Render (один раз) ----
+  function mount() {
+    el.app.innerHTML = `
+      <div class="headerSticky">
+        <div class="wrap">
+          <div class="topbar">
+            <div class="brand">
+              <img class="brandImg" src="${ASSETS.brand}" alt="KeksSwap" />
+            </div>
 
-  function closeSheet(){
-    state.sheetOpen = false;
-    render();
-  }
-
-  function setItem(item){
-    if (state.sheetMode === "give") state.giveItem = item;
-    else state.getItem = item;
-    closeSheet();
-  }
-
-  function buildTopbar(){
-    return `
-      <div class="topbar">
-        <div class="brand">
-          <img src="${ASSETS.brand}" onerror="this.style.display='none'"/>
-          <div class="name">KeksSwap</div>
-        </div>
-
-        <div class="langs">
-          <button class="langBtn ${state.lang==='ua'?'active':''}" data-lang="ua">UA</button>
-          <button class="langBtn ${state.lang==='en'?'active':''}" data-lang="en">EN</button>
-          <button class="langBtn ${state.lang==='pl'?'active':''}" data-lang="pl">PL</button>
-          <button class="menuBtn" id="menuBtn" title="${t('menu')}">☰</button>
-        </div>
-      </div>
-    `;
-  }
-
-  function buildNotice(){
-    return `
-      <div class="card notice">
-        <div class="dot">!</div>
-        <div>${t('notice')}</div>
-      </div>
-    `;
-  }
-
-  function itemLabel(item){
-    return `
-      <div class="itemLeft">
-        <div class="ico"><img src="${item.icon}" onerror="this.style.opacity=.15"/></div>
-        <div class="itemText">
-          <div class="t">${item.name} <span style="color:var(--muted);font-weight:800">${item.code}</span></div>
-          <div class="s">${(item.groupTitle?.[state.lang] ?? "")}</div>
+            <div class="controls">
+              <div class="langs">
+                <button class="langBtn" data-lang="ua">UA</button>
+                <button class="langBtn" data-lang="en">EN</button>
+                <button class="langBtn" data-lang="pl">PL</button>
+              </div>
+              <button class="iconBtn" id="menuBtn" aria-label="menu">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    `;
-  }
 
-  function buildExchange(){
-    const c = compute();
-    const rateLine = `${t('rate')}: 1 ${state.giveItem.code} ≈ ${fmt((state.giveItem.rateUAH||0)/(state.getItem.rateUAH||1))} ${state.getItem.code}`;
-    return `
-      <div class="card panel">
-        <div class="sectionTitle">${t('exchange')}</div>
-
-        <div class="inputWrap">
+      <div class="wrap">
+        <div class="card notice">
+          <div class="dot">!</div>
           <div>
-            <div class="muted" style="font-weight:800;color:var(--muted);margin-bottom:6px">${t('give')}</div>
-            <input class="amount" type="number" inputmode="decimal" step="any" min="0" placeholder="0.0000" id="giveAmount" value="${state.giveAmount || ""}">
-            <div style="height:10px"></div>
+            <div class="txt" id="noticeText"></div>
+          </div>
+        </div>
+
+        <div class="card exchange" id="exchangeCard" style="display:none">
+          <div class="h1" id="exchangeTitle"></div>
+
+          <div class="sectionTitle" id="giveTitle"></div>
+          <div class="field">
+            <div class="inputRow">
+              <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" />
+              <div class="suffix" id="giveSuffix"></div>
+            </div>
             <button class="selectBtn" id="giveSelect">
-              ${itemLabel(state.giveItem)}
-              <div class="chev">▾</div>
+              <div class="selectLeft">
+                <img class="coinImg" id="giveIcon" alt="">
+                <div class="selectText">
+                  <div class="main" id="giveName"></div>
+                  <div class="sub" id="giveSub"></div>
+                </div>
+              </div>
+              <div class="chev"></div>
             </button>
           </div>
 
           <div class="swapRow">
-            <button class="swapBtn" id="swapBtn" title="swap">⇅</button>
-          </div>
-
-          <div>
-            <div class="muted" style="font-weight:800;color:var(--muted);margin-bottom:6px">${t('get')}</div>
-            <input class="amount" type="text" readonly value="${fmt(c.payout)}">
-            <div style="height:10px"></div>
-            <button class="selectBtn" id="getSelect">
-              ${itemLabel(state.getItem)}
-              <div class="chev">▾</div>
+            <button class="swapBtn" id="swapBtn" aria-label="swap">
+              <svg class="swapIcon" viewBox="0 0 24 24" fill="none">
+                <path d="M7 7h14l-3-3m3 3-3 3M17 17H3l3 3m-3-3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </button>
           </div>
-        </div>
-      </div>
 
-      <div style="height:12px"></div>
-
-      <div class="card summary">
-        <div class="big">${t('exchange')} ${state.giveItem.code} → ${state.getItem.name}</div>
-        <div class="muted">${rateLine}</div>
-        <div class="muted">${t('fee')}: ${state.feePct}%</div>
-        <div class="big">${t('payout')}: ${fmt(c.payout)} ${state.getItem.code}</div>
-        <div style="height:10px"></div>
-        <button class="primaryBtn" id="continueBtn">${t('continue')}</button>
-      </div>
-    `;
-  }
-
-  function buildSheet(){
-    if (!state.sheetOpen) return "";
-
-    const q = state.sheetQuery.trim().toLowerCase();
-    const groupsHtml = GROUPS.map((g, idx) => {
-      const items = g.items.filter(it => {
-        if (!q) return true;
-        return (it.name + " " + it.code).toLowerCase().includes(q) || (g.title[state.lang]||"").toLowerCase().includes(q);
-      });
-
-      if (items.length === 0) return "";
-
-      const gid = `g_${idx}`;
-      const groupRow = `
-        <div class="groupRow" data-toggle="${gid}">
-          <div class="itemLeft">
-            <div class="ico"><img src="${g.icon}" onerror="this.style.opacity=.15"/></div>
-            <div class="itemText">
-              <div class="t">${g.title[state.lang]}</div>
-              <div class="s">${g.subtitle[state.lang] ?? ""}</div>
+          <div class="sectionTitle" id="getTitle"></div>
+          <div class="field">
+            <div class="inputRow">
+              <input id="getAmount" class="amountInput" inputmode="decimal" placeholder="0" />
+              <div class="suffix" id="getSuffix"></div>
             </div>
+            <button class="selectBtn" id="getSelect">
+              <div class="selectLeft">
+                <img class="coinImg" id="getIcon" alt="">
+                <div class="selectText">
+                  <div class="main" id="getName"></div>
+                  <div class="sub" id="getSub"></div>
+                </div>
+              </div>
+              <div class="chev"></div>
+            </button>
           </div>
-          <div class="row" style="gap:10px">
-            <div class="count">${items.length}</div>
-            <div class="rightArrow">▾</div>
-          </div>
-        </div>
-      `;
 
-      const itemsHtml = items.map(it => `
-        <div class="opt" data-pick="${it.id}">
-          ${itemLabel({ ...it, groupTitle: g.title })}
-          <div class="rightArrow">›</div>
-        </div>
-      `).join("");
+          <div class="card summary">
+            <div class="row"><span id="rateLabel"></span><strong id="rateValue"></strong></div>
+            <div class="row"><span id="feeLabel"></span><strong id="feeValue"></strong></div>
+            <div class="row"><span id="payoutLabel"></span><strong id="payoutValue"></strong></div>
+          </div>
 
-      return `
-        ${groupRow}
-        <div class="groupItems ${q ? "show" : ""}" id="${gid}">
-          ${itemsHtml}
+          <button class="primaryBtn" id="continueBtn"></button>
         </div>
-      `;
-    }).join("");
 
-    return `
-      <div class="sheetBackdrop show" id="sheetBackdrop">
-        <div class="sheet">
-          <div class="sheetHead">
-            <div class="title">${state.sheetMode === "give" ? t("give") : t("get")}</div>
-            <button class="sheetClose" id="sheetClose">✕</button>
-          </div>
-          <div class="search">
-            <input id="sheetSearch" placeholder="${t('search')}" value="${state.sheetQuery}">
-          </div>
-          <div class="list" id="sheetList">
-            ${groupsHtml}
-          </div>
+        <div class="card menuPanel" id="menuCard" style="display:none">
+          <div class="h1" id="menuTitle"></div>
+          <ul>
+            <li data-nav="rules">${t("rules")} <span>›</span></li>
+            <li data-nav="aml">${t("aml")} <span>›</span></li>
+            <li data-nav="faq">${t("faq")} <span>›</span></li>
+            <li data-nav="contacts">${t("contacts")} <span>›</span></li>
+          </ul>
         </div>
       </div>
     `;
-  }
 
-  function buildMenuPage(){
-    // простая “страница меню” вместо сломанного клика в Telegram
-    return `
-      <div class="card page">
-        <h2>${t('menu')}</h2>
-        <p>• ${t('rules')}<br/>• ${t('aml')}<br/>• ${t('faq')}<br/>• ${t('contacts')}</p>
-      </div>
-    `;
-  }
+    // cache elements
+    el.giveInput = document.getElementById("giveAmount");
+    el.getInput = document.getElementById("getAmount");
+    el.summaryRate = document.getElementById("rateValue");
+    el.summaryFee = document.getElementById("feeValue");
+    el.summaryPayout = document.getElementById("payoutValue");
 
-  // simple router
-  let route = "home"; // home | menu
-
-  function render(){
-    const root = $("#app");
-    const content = `
-      <div class="wrap">
-        ${buildTopbar()}
-        ${buildNotice()}
-
-        ${route === "home" ? buildExchange() : buildMenuPage()}
-
-        ${buildSheet()}
-      </div>
-    `;
-    root.innerHTML = content;
-
-    // bind events
-    document.querySelectorAll(".langBtn").forEach(b=>{
-      b.addEventListener("click", ()=>setLang(b.dataset.lang));
-    });
-
-    const menuBtn = $("#menuBtn");
-    if (menuBtn) menuBtn.addEventListener("click", ()=>{ route = (route==="home"?"menu":"home"); render(); });
-
-    const giveSelect = $("#giveSelect");
-    if (giveSelect) giveSelect.addEventListener("click", ()=>openSheet("give"));
-
-    const getSelect = $("#getSelect");
-    if (getSelect) getSelect.addEventListener("click", ()=>openSheet("get"));
-
-    const swapBtn = $("#swapBtn");
-    if (swapBtn) swapBtn.addEventListener("click", swap);
-
-    const giveAmount = $("#giveAmount");
-    if (giveAmount) giveAmount.addEventListener("input", (e)=>{
-      const v = parseFloat(e.target.value);
-      state.giveAmount = isFinite(v) ? v : 0;
-      // quick rerender payout only (simple: full render)
-      render();
-      // keep cursor at end? mobile ok
-    });
-
-    const sheetClose = $("#sheetClose");
-    if (sheetClose) sheetClose.addEventListener("click", closeSheet);
-
-    const backdrop = $("#sheetBackdrop");
-    if (backdrop) backdrop.addEventListener("click", (e)=>{
-      if (e.target === backdrop) closeSheet();
-    });
-
-    const search = $("#sheetSearch");
-    if (search) {
-      search.addEventListener("input", (e)=>{
-        state.sheetQuery = e.target.value;
-        // just rerender sheet
-        render();
-        // focus back (mobile)
-        setTimeout(()=>$("#sheetSearch")?.focus(), 0);
+    // listeners
+    document.querySelectorAll(".langBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.lang = btn.dataset.lang;
+        refreshStaticTexts();
+        refreshSelections();
+        refreshSummary();
       });
-      setTimeout(()=>search.focus(), 0);
+    });
+
+    document.getElementById("menuBtn").addEventListener("click", () => {
+      state.view = (state.view === "menu") ? "exchange" : "menu";
+      refreshView();
+    });
+
+    document.querySelectorAll("[data-nav]").forEach(li => {
+      li.addEventListener("click", () => {
+        state.view = li.dataset.nav;
+        // пока сделаем как заглушки: возвращаемся в exchange + покажем меню позже
+        state.view = "exchange";
+        refreshView();
+      });
+    });
+
+    document.getElementById("giveSelect").addEventListener("click", () => openSheet("give"));
+    document.getElementById("getSelect").addEventListener("click", () => openSheet("get"));
+
+    document.getElementById("swapBtn").addEventListener("click", () => {
+      const tmp = state.give;
+      state.give = state.get;
+      state.get = tmp;
+
+      // пересчёт по последнему редактированному полю
+      if (state.lastEdited === "give") {
+        const giveAmount = parseAmount(state.giveAmountStr);
+        const getAmount = calcGetFromGive(giveAmount, state.give, state.get);
+        el.getInput.value = fmtNumber(getAmount, 8);
+      } else {
+        const getAmount = parseAmount(el.getInput.value);
+        const giveAmount = calcGiveFromGet(getAmount, state.give, state.get);
+        state.giveAmountStr = fmtNumber(giveAmount, 8);
+        el.giveInput.value = state.giveAmountStr;
+      }
+      refreshSelections();
+      refreshSummary();
+    });
+
+    // !!! КЛЮЧЕВОЕ: НЕ ПЕРЕРИСОВЫВАЕМ ВЕСЬ UI НА input !!!
+    el.giveInput.addEventListener("input", () => {
+      state.lastEdited = "give";
+      state.giveAmountStr = el.giveInput.value; // сохраняем как строку
+      const giveAmount = parseAmount(state.giveAmountStr);
+      const getAmount = calcGetFromGive(giveAmount, state.give, state.get);
+      el.getInput.value = fmtNumber(getAmount, 8);
+      refreshSummary();
+    });
+
+    el.getInput.addEventListener("input", () => {
+      state.lastEdited = "get";
+      const getAmount = parseAmount(el.getInput.value);
+      const giveAmount = calcGiveFromGet(getAmount, state.give, state.get);
+      state.giveAmountStr = fmtNumber(giveAmount, 8);
+      el.giveInput.value = state.giveAmountStr;
+      refreshSummary();
+    });
+
+    document.getElementById("continueBtn").addEventListener("click", () => {
+      // пока просто покажем alert (потом сделаем форму заявки)
+      alert("Далі зробимо форму заявки (реквізити/адреса/телефон).");
+    });
+
+    refreshStaticTexts();
+    refreshView();
+    refreshSelections();
+    refreshSummary();
+  }
+
+  function refreshStaticTexts() {
+    document.getElementById("noticeText").textContent = t("notice");
+    document.getElementById("exchangeTitle").textContent = t("exchange");
+    document.getElementById("giveTitle").textContent = t("give");
+    document.getElementById("getTitle").textContent = t("get");
+    document.getElementById("menuTitle").textContent = t("menu");
+
+    document.getElementById("rateLabel").textContent = t("rate");
+    document.getElementById("feeLabel").textContent = t("fee");
+    document.getElementById("payoutLabel").textContent = t("payout");
+
+    document.getElementById("continueBtn").textContent = t("continue");
+
+    // langs active
+    document.querySelectorAll(".langBtn").forEach(b => {
+      b.classList.toggle("active", b.dataset.lang === state.lang);
+    });
+  }
+
+  function refreshView() {
+    const exchangeCard = document.getElementById("exchangeCard");
+    const menuCard = document.getElementById("menuCard");
+    exchangeCard.style.display = (state.view === "exchange") ? "" : "none";
+    menuCard.style.display = (state.view === "menu") ? "" : "none";
+  }
+
+  function refreshSelections() {
+    // suffix (ticker)
+    document.getElementById("giveSuffix").textContent = state.give.sub;
+    document.getElementById("getSuffix").textContent = state.get.sub;
+
+    // icons + names
+    document.getElementById("giveIcon").src = state.give.icon;
+    document.getElementById("giveName").textContent = `${state.give.name} ${state.give.sub}`;
+    document.getElementById("giveSub").textContent = subLabelForItem(state.give);
+
+    document.getElementById("getIcon").src = state.get.icon;
+    document.getElementById("getName").textContent = `${state.get.name} ${state.get.sub}`;
+    document.getElementById("getSub").textContent = subLabelForItem(state.get);
+  }
+
+  function subLabelForItem(item){
+    // маленькая строка под названием — можно улучшить позже
+    // пока просто "..." чтобы было красиво
+    return (item.sub === "UAH") ? (state.lang === "en" ? "Bank" : state.lang === "pl" ? "Bank" : "Банк України")
+                               : (state.lang === "en" ? "Crypto" : state.lang === "pl" ? "Krypto" : "Криптовалюта");
+  }
+
+  function refreshSummary() {
+    const giveAmount = parseAmount(el.giveInput.value);
+    const getAmount = parseAmount(el.getInput.value);
+
+    // rate text: 1 give ≈ x get
+    const rate = calcGetFromGive(1, state.give, state.get);
+    el.summaryRate.textContent = `1 ${state.give.sub} ≈ ${fmtNumber(rate, 8)} ${state.get.sub}`;
+    el.summaryFee.textContent = `${(state.fee * 100).toFixed(1)}%`;
+    el.summaryPayout.textContent = `${fmtNumber(getAmount, 8)} ${state.get.sub}`;
+
+    // keep give input text if empty
+    if (!el.giveInput.value && state.giveAmountStr) {
+      el.giveInput.value = state.giveAmountStr;
     }
-
-    // group toggles & picks
-    document.querySelectorAll("[data-toggle]").forEach(el=>{
-      el.addEventListener("click", ()=>{
-        const id = el.dataset.toggle;
-        const block = document.getElementById(id);
-        if (block) block.classList.toggle("show");
-      });
-    });
-
-    // map id -> item
-    const flat = allItems();
-    document.querySelectorAll("[data-pick]").forEach(el=>{
-      el.addEventListener("click", ()=>{
-        const id = el.dataset.pick;
-        const it = flat.find(x=>x.id===id);
-        if (it) setItem(it);
-      });
-    });
-
-    const cont = $("#continueBtn");
-    if (cont) cont.addEventListener("click", ()=>{
-      alert("Далі зробимо форму заявки (реквізити/адреса/телефон) та підтвердження. Поки це демо UI + логіка курсу.");
-    });
   }
 
-  render();
-})();
+  // ---- Sheet (picker) ----
+  function openSheet(side) {
+    state.sheet = { side, search: "" };
+    renderSheet();
+  }
+
+  function closeSheet() {
+    state.sheet = null;
+    if (el.sheetRoot) {
+      el.sheetRoot.remove();
+      el.sheetRoot = null;
+    }
+  }
+
+  function renderSheet() {
+    if (!state.sheet) return;
+
+    closeSheet(); // remove old if any
+
+    const root = document.createElement("div");
+    root.className = "sheetBackdrop";
+    root.innerHTML = `
+      <div class="sheet" role="dialog" aria-modal="true">
+        <div class="sheetHead">
+          <div class="sheetTitle">${state.sheet.side === "give" ? t("pickGive") : t("pickGet")}</div>
+          <button class="closeX" id="sheetClose" aria-label="close">
+            <svg class="icon" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="searchBox">
+          <input class="searchInput" id="sheetSearch" placeholder="${t("search")}" />
+        </div>
+        <div class="sheetBody" id="sheetBody"></div>
+      </div>
+    `;
+    document.body.appendChild(root);
+    el.sheetRoot = root;
+
+    // events
+    root.addEventListener("click", (e) => {
+      if (e.target === root) closeSheet();
+    });
+    root.querySelector("#sheetClose").addEventListener("click", closeSheet);
+
+    const search = root.querySelector("#sheetSearch");
+    search.addEventListener("input", () => {
+      state.sheet.search = search.value.trim().toLowerCase();
+      fillSheetBody();
+    });
+
+    fillSheetBody();
+    // focus
+    setTimeout(() => search.focus(), 0);
+  }
+
+  function fillSheetBody() {
+    const b
