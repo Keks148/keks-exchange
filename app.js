@@ -522,4 +522,93 @@
   }
 
   function fillSheetBody() {
-    const b
+    const body = el.sheetRoot.querySelector("#sheetBody");
+    body.innerHTML = "";
+
+    const q = state.sheet.search;
+    const groups = GROUPS.map(g => {
+      const title = g.title[state.lang] || g.title.ua;
+      const subtitle = g.subtitle[state.lang] || g.subtitle.ua;
+
+      const items = g.items.filter(it => {
+        if (!q) return true;
+        const hay = `${it.name} ${it.sub} ${title} ${subtitle}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      return { ...g, titleText: title, subText: subtitle, itemsFiltered: items };
+    }).filter(g => g.itemsFiltered.length > 0);
+
+    groups.forEach(g => {
+      const isOpen = state.openGroups.has(g.id);
+      const groupEl = document.createElement("div");
+      groupEl.className = `group ${isOpen ? "open" : ""}`;
+      groupEl.innerHTML = `
+        <div class="groupTop" data-group="${g.id}">
+          <div class="groupLeft">
+            <img class="coinImg" src="${g.icon}" alt="">
+            <div class="meta">
+              <div class="t">${g.titleText}</div>
+              <div class="s">${g.subText}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="badge">${g.itemsFiltered.length}</div>
+            <div class="chev" style="transform:${isOpen ? "rotate(225deg)" : "rotate(45deg)"}"></div>
+          </div>
+        </div>
+        <div class="groupItems"></div>
+      `;
+      body.appendChild(groupEl);
+
+      groupEl.querySelector("[data-group]").addEventListener("click", () => {
+        if (state.openGroups.has(g.id)) state.openGroups.delete(g.id);
+        else state.openGroups.add(g.id);
+        fillSheetBody();
+      });
+
+      const itemsWrap = groupEl.querySelector(".groupItems");
+      if (isOpen) {
+        g.itemsFiltered.forEach(it => {
+          const btn = document.createElement("button");
+          btn.className = "itemBtn";
+          btn.innerHTML = `
+            <div class="left">
+              <img class="coinImg" src="${it.icon}" alt="">
+              <div>
+                <div class="nm">${it.name}</div>
+                <div class="sb">${it.sub}</div>
+              </div>
+            </div>
+            <span style="font-weight:900;color:rgba(15,23,42,.55)">›</span>
+          `;
+          btn.addEventListener("click", () => {
+            if (state.sheet.side === "give") state.give = it;
+            else state.get = it;
+
+            refreshSelections();
+
+            // пересчитать после смены валюты
+            if (state.lastEdited === "give") {
+              const giveAmount = parseAmount(el.giveInput.value);
+              const getAmount = calcGetFromGive(giveAmount, state.give, state.get);
+              el.getInput.value = fmtNumber(getAmount, 8);
+            } else {
+              const getAmount = parseAmount(el.getInput.value);
+              const giveAmount = calcGiveFromGet(getAmount, state.give, state.get);
+              state.giveAmountStr = fmtNumber(giveAmount, 8);
+              el.giveInput.value = state.giveAmountStr;
+            }
+            refreshSummary();
+            closeSheet();
+          });
+          itemsWrap.appendChild(btn);
+        });
+      }
+    });
+  }
+
+  // ---- start ----
+  initTelegram();
+  mount();
+})();
