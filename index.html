@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>KeksSwap</title>
 
-  <!-- Telegram WebApp -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css?v=7" />
 </head>
 <body>
-  <div id="app"></div>
-  <script src="./app.js"></script>
+  <div id="app" style="padding:16px;font-family:system-ui"></div>
+
+  <script>
+    // Мини-диагностика: показывает, что HTML живой
+    document.getElementById('app').innerHTML =
+      '<div style="font-weight:900">Loading…</div><div style="color:#64748b;margin-top:6px">If you see only white screen — app.js did not load or crashed.</div>';
+  </script>
+
+  <script src="./app.js?v=7"></script>
 </body>
 </html>
