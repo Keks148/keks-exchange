@@ -429,3 +429,52 @@ a{color:inherit;text-decoration:none}
   line-height:1.4;
 }
 .hr{height:1px;background:var(--line);margin:10px 0}
+/* Full-width animated brand in header */
+.brandWide{
+  flex:1;
+  min-width: 0;
+  display:flex;
+  align-items:center;
+}
+
+/* анимации SVG (чтобы не конфликтовало с .wrap сайта) */
+.ks-wrap{
+  transform: translateX(-60px);
+  opacity: 0;
+  animation: ksEnter 650ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+@keyframes ksEnter{
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* тап-шейк */
+#brandSvg.tap .ks-wrap{
+  animation: ksEnter 650ms cubic-bezier(.2,.9,.2,1) forwards, ksTapShake 420ms ease-in-out;
+}
+@keyframes ksTapShake{
+  0%   { transform: translateX(0) rotate(0deg) scale(1); }
+  20%  { transform: translateX(2px) rotate(-1deg) scale(1.01); }
+  45%  { transform: translateX(-2px) rotate(1deg) scale(1.01); }
+  70%  { transform: translateX(1px) rotate(-.5deg) scale(1.005); }
+  100% { transform: translateX(0) rotate(0deg) scale(1); }
+}
+
+/* лёгкая жизнь у кекса */
+.ks-cupcake{
+  transform-origin: 1010px 125px;
+  animation: ksCupcakePulse 3s ease-in-out infinite;
+}
+@keyframes ksCupcakePulse{
+  0%,100%{ transform: scale(1); }
+  50%{ transform: scale(1.02); }
+}
+
+.ks-tetherT{
+  transform-origin: 1035px 115px;
+  animation: ksTPop 3s ease-in-out infinite;
+}
+@keyframes ksTPop{
+  0%,45%,100%{ transform: scale(1); }
+  60%{ transform: scale(1.1); }
+  75%{ transform: scale(1); }
+}
