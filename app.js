@@ -1,288 +1,527 @@
-// ===== KeksSwap Exchange UI (Accordion picker like ANT) =====
+(() => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
 
-const LANGS = ["uk", "en", "pl"];
-let lang = "uk";
+    // безопасные отступы для шапки/низа в Telegram
+    const top = tg.safeAreaInset?.top ?? 10;
+    const bottom = tg.safeAreaInset?.bottom ?? 10;
 
-const t = (obj) => obj?.[lang] ?? obj?.uk ?? obj?.en ?? "";
+    document.documentElement.style.setProperty("--safeTop", `${Math.max(10, top)}px`);
+    document.documentElement.style.setProperty("--safeBottom", `${Math.max(10, bottom)}px`);
 
-const GROUPS = [
-  // 1) USDT/USDC networks (under Tether icon)
-  {
-    id: "stable",
-    title: { uk: "Tether USDT", en: "Tether USDT", pl: "Tether USDT" },
-    icon: "logos/crypto/tether-usdt.png",
-    items: [
-      { id: "usdt-trc", name: { uk: "USDT (TRC20)", en: "USDT (TRC20)", pl: "USDT (TRC20)" }, icon: "logos/crypto/usdt-trc.png", tags: ["USDT"] },
-      { id: "usdt-eth", name: { uk: "USDT (ERC20)", en: "USDT (ERC20)", pl: "USDT (ERC20)" }, icon: "logos/crypto/usdt-eth.png", tags: ["USDT"] },
-      { id: "usdt-bep", name: { uk: "USDT (BEP20)", en: "USDT (BEP20)", pl: "USDT (BEP20)" }, icon: "logos/crypto/usdt-bep.png", tags: ["USDT"] },
-      { id: "usdt-arb", name: { uk: "USDT (ARB)", en: "USDT (ARB)", pl: "USDT (ARB)" }, icon: "logos/crypto/usdt-arb.png", tags: ["USDT"] },
-      { id: "usdt-pol", name: { uk: "USDT (POL)", en: "USDT (POL)", pl: "USDT (POL)" }, icon: "logos/crypto/usdt-pol.png", tags: ["USDT"] },
-      { id: "usdt-sol", name: { uk: "USDT (SOL)", en: "USDT (SOL)", pl: "USDT (SOL)" }, icon: "logos/crypto/usdt-sol.png", tags: ["USDT"] },
-
-      { id: "usdc-eth", name: { uk: "USDC (ETH)", en: "USDC (ETH)", pl: "USDC (ETH)" }, icon: "logos/crypto/usdc-eth.png", tags: ["USDC"] },
-      { id: "usdc-pol", name: { uk: "USDC (POL)", en: "USDC (POL)", pl: "USDC (POL)" }, icon: "logos/crypto/usdc-pol.png", tags: ["USDC"] },
-      { id: "usdc-sol", name: { uk: "USDC (SOL)", en: "USDC (SOL)", pl: "USDC (SOL)" }, icon: "logos/crypto/usdc-sol.png", tags: ["USDC"] },
-    ],
-    // how to show count near header
-    countMode: "items",
-  },
-
-  // 2) Crypto branch (under BTC icon)
-  {
-    id: "crypto",
-    title: { uk: "Криптовалюти", en: "Cryptocurrencies", pl: "Kryptowaluty" },
-    icon: "logos/crypto/BTC.png",
-    items: [
-      { id: "btc", name: { uk: "Bitcoin BTC", en: "Bitcoin BTC", pl: "Bitcoin BTC" }, icon: "logos/crypto/BTC.png", tags: ["BTC"] },
-      { id: "eth", name: { uk: "Ethereum ETH", en: "Ethereum ETH", pl: "Ethereum ETH" }, icon: "logos/crypto/eth.png", tags: ["ETH"] },
-      { id: "ltc", name: { uk: "Litecoin LTC", en: "Litecoin LTC", pl: "Litecoin LTC" }, icon: "logos/crypto/ltc.png", tags: ["LTC"] },
-      { id: "sol", name: { uk: "Solana SOL", en: "Solana SOL", pl: "Solana SOL" }, icon: "logos/crypto/sol.png", tags: ["SOL"] },
-      { id: "trx", name: { uk: "Tron TRX", en: "Tron TRX", pl: "Tron TRX" }, icon: "logos/crypto/trx.png", tags: ["TRX"] },
-      { id: "ton", name: { uk: "TON", en: "TON", pl: "TON" }, icon: "logos/crypto/ton.png", tags: ["TON"] },
-    ],
-    countMode: "items",
-  },
-
-  // 3) Banks UAH branch (under flag icon)
-  {
-    id: "banks",
-    title: { uk: "Банки — UAH", en: "Banks — UAH", pl: "Banki — UAH" },
-    icon: "logos/banks/ukr-banki.png",
-    items: [
-      { id: "mono", name: { uk: "Monobank UAH", en: "Monobank UAH", pl: "Monobank UAH" }, icon: "logos/banks/mono.png", tags: ["UAH", "bank"] },
-      { id: "privat", name: { uk: "Privat24 UAH", en: "Privat24 UAH", pl: "Privat24 UAH" }, icon: "logos/banks/privat.png", tags: ["UAH", "bank"] },
-      { id: "abank", name: { uk: "A-Bank UAH", en: "A-Bank UAH", pl: "A-Bank UAH" }, icon: "logos/banks/a-bank.png", tags: ["UAH", "bank"] },
-      { id: "pumb", name: { uk: "PUMB UAH", en: "PUMB UAH", pl: "PUMB UAH" }, icon: "logos/banks/pumb.png", tags: ["UAH", "bank"] },
-      { id: "oschad", name: { uk: "Oschadbank UAH", en: "Oschadbank UAH", pl: "Oschadbank UAH" }, icon: "logos/banks/oschad.png", tags: ["UAH", "bank"] },
-      { id: "otp", name: { uk: "OTP Bank UAH", en: "OTP Bank UAH", pl: "OTP Bank UAH" }, icon: "logos/banks/otp.png", tags: ["UAH", "bank"] },
-      { id: "raif", name: { uk: "Raiffeisen UAH", en: "Raiffeisen UAH", pl: "Raiffeisen UAH" }, icon: "logos/banks/reyf.png", tags: ["UAH", "bank"] },
-      { id: "sense", name: { uk: "Sense Bank UAH", en: "Sense Bank UAH", pl: "Sense Bank UAH" }, icon: "logos/banks/sense.png", tags: ["UAH", "bank"] },
-      { id: "izi", name: { uk: "IZI Bank UAH", en: "IZI Bank UAH", pl: "IZI Bank UAH" }, icon: "logos/banks/izi.png", tags: ["UAH", "bank"] },
-      { id: "ukrsib", name: { uk: "UkrSibbank UAH", en: "UkrSibbank UAH", pl: "UkrSibbank UAH" }, icon: "logos/banks/ukr-sib.png", tags: ["UAH", "bank"] },
-      { id: "visa", name: { uk: "Visa/MasterCard UAH", en: "Visa/MasterCard UAH", pl: "Visa/MasterCard UAH" }, icon: "logos/banks/visa-master.png", tags: ["UAH", "card"] },
-    ],
-    countMode: "items",
-  },
-
-  // 4) Wallets branch (under valet icon)
-  {
-    id: "wallets",
-    title: { uk: "Електронні гаманці", en: "E-wallets", pl: "Portfele" },
-    icon: "logos/wallets/valet.png",
-    items: [
-      { id: "paypal", name: { uk: "PayPal", en: "PayPal", pl: "PayPal" }, icon: "logos/wallets/paypal.png", tags: ["USD", "EUR"] },
-      { id: "payoneer", name: { uk: "Payoneer", en: "Payoneer", pl: "Payoneer" }, icon: "logos/wallets/payoneer.png", tags: ["USD"] },
-      { id: "revolut", name: { uk: "Revolut", en: "Revolut", pl: "Revolut" }, icon: "logos/wallets/revolut.png", tags: ["USD", "EUR"] },
-      { id: "wise", name: { uk: "Wise", en: "Wise", pl: "Wise" }, icon: "logos/wallets/vise.png", tags: ["USD", "EUR"] },
-    ],
-    countMode: "items",
-  },
-];
-
-// ---- state
-let give = { amount: "", assetId: "usdt-trc" };
-let get = { amount: "", assetId: "mono" };
-let activePicker = null; // "give" | "get"
-let expanded = new Set(["stable"]); // opened groups by default
-let query = "";
-
-// ---- helpers
-const flattenItems = () =>
-  GROUPS.flatMap(g => g.items.map(i => ({...i, groupId: g.id, groupTitle: g.title, groupIcon: g.icon})));
-
-const byId = (id) => flattenItems().find(x => x.id === id);
-
-function escapeHtml(s){return (s??"").replace(/[&<>"']/g,(c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-
-function initTelegram() {
-  try {
-    if (window.Telegram?.WebApp) {
-      Telegram.WebApp.expand();
-      Telegram.WebApp.disableVerticalSwipes?.();
-      Telegram.WebApp.ready();
-    }
-  } catch(e) {}
-}
-
-function swapSides() {
-  const tmp = give;
-  give = get;
-  get = tmp;
-  render();
-}
-
-// ---- UI rendering
-function render() {
-  const giveAsset = byId(give.assetId);
-  const getAsset = byId(get.assetId);
-
-  document.getElementById("app").innerHTML = `
-    <div class="topbar">
-      <div class="brand">
-        <img class="brandLogo" src="logos/banks/ukr-banki.png" alt="logo" onerror="this.style.display='none'"/>
-        <div class="brandText">
-          <div class="brandName">KeksSwap</div>
-          <div class="brandSub">${escapeHtml(t({uk:"Crypto ↔ UAH", en:"Crypto ↔ UAH", pl:"Krypto ↔ UAH"}))}</div>
-        </div>
-      </div>
-
-      <div class="lang">
-        ${LANGS.map(l => `<button class="chip ${l===lang?'active':''}" data-lang="${l}">${l.toUpperCase()}</button>`).join("")}
-      </div>
-
-      <button class="menuBtn" id="menuBtn">☰</button>
-    </div>
-
-    <div class="notice">
-      ⚠️ ${escapeHtml(t({uk:"Заявки після 22:00 обробляються з 08:00 (UTC+2).", en:"Orders after 22:00 are processed from 08:00 (UTC+2).", pl:"Zlecenia po 22:00 są realizowane od 08:00 (UTC+2)."}))}
-    </div>
-
-    <div class="card">
-      <div class="sectionTitle">${escapeHtml(t({uk:"Віддаєте", en:"You send", pl:"Wysyłasz"}))}</div>
-      <div class="row">
-        <input class="amount" inputmode="decimal" placeholder="0.0000" value="${escapeHtml(give.amount)}" id="giveAmount"/>
-        <button class="assetBtn" id="givePick">
-          <img class="icon" src="${escapeHtml(giveAsset?.icon||"")}" onerror="this.style.display='none'"/>
-          <span>${escapeHtml(t(giveAsset?.name)||"—")}</span>
-          <span class="chev">▾</span>
-        </button>
-      </div>
-
-      <div class="swapRow">
-        <button class="swapBtn" id="swapBtn">⇄</button>
-      </div>
-
-      <div class="sectionTitle">${escapeHtml(t({uk:"Отримуєте", en:"You get", pl:"Otrzymujesz"}))}</div>
-      <div class="row">
-        <input class="amount" inputmode="decimal" placeholder="0.0000" value="${escapeHtml(get.amount)}" id="getAmount"/>
-        <button class="assetBtn" id="getPick">
-          <img class="icon" src="${escapeHtml(getAsset?.icon||"")}" onerror="this.style.display='none'"/>
-          <span>${escapeHtml(t(getAsset?.name)||"—")}</span>
-          <span class="chev">▾</span>
-        </button>
-      </div>
-
-      <button class="primary">${escapeHtml(t({uk:"Продовжити", en:"Continue", pl:"Kontynuuj"}))}</button>
-    </div>
-
-    ${activePicker ? renderPicker() : ""}
-  `;
-
-  // events
-  document.querySelectorAll("[data-lang]").forEach(btn => {
-    btn.onclick = () => { lang = btn.dataset.lang; render(); };
-  });
-
-  document.getElementById("givePick").onclick = () => { activePicker = "give"; query=""; render(); };
-  document.getElementById("getPick").onclick = () => { activePicker = "get"; query=""; render(); };
-
-  document.getElementById("swapBtn").onclick = swapSides;
-
-  document.getElementById("giveAmount").oninput = (e) => { give.amount = e.target.value; };
-  document.getElementById("getAmount").oninput = (e) => { get.amount = e.target.value; };
-
-  // picker events (if open)
-  if (activePicker) {
-    document.getElementById("pickerClose").onclick = () => { activePicker = null; render(); };
-    document.getElementById("pickerBackdrop").onclick = () => { activePicker = null; render(); };
-    document.getElementById("pickerSearch").oninput = (e) => { query = e.target.value; updatePickerList(); };
-
-    document.querySelectorAll("[data-group]").forEach(el => {
-      el.onclick = () => {
-        const id = el.dataset.group;
-        if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
-        updatePickerList();
-      };
-    });
-
-    // initial list
-    updatePickerList();
+    try { tg.setHeaderColor?.("#f5f6fb"); } catch {}
+    try { tg.setBackgroundColor?.("#f5f6fb"); } catch {}
   }
-}
 
-function renderPicker() {
-  return `
-    <div class="pickerBackdrop" id="pickerBackdrop"></div>
-    <div class="pickerSheet" role="dialog" aria-modal="true">
-      <div class="pickerHeader">
-        <div class="pickerTitle">${escapeHtml(activePicker==="give" ? t({uk:"Віддаєте",en:"You send",pl:"Wysyłasz"}) : t({uk:"Отримуєте",en:"You get",pl:"Otrzymujesz"}))}</div>
-        <button class="iconBtn" id="pickerClose">✕</button>
-      </div>
+  // ====== ВАЖНО: пути к логотипам ======
+  const LOGO = {
+    brand: "./keksswap-logo.png", // <-- если добавишь свой логотип в корень. Если нет — будет эмодзи.
+    banksDir: "./logos/banks/",
+    walletsDir: "./logos/wallets/",
+    cryptoDir: "./logos/crypto/",
+  };
 
-      <div class="pickerSearchWrap">
-        <input class="pickerSearch" id="pickerSearch" placeholder="${escapeHtml(t({uk:"Пошук…", en:"Search…", pl:"Szukaj…"}))}" value="${escapeHtml(query)}"/>
-      </div>
+  // ====== ДАННЫЕ (под твои файлы) ======
+  // УБЕДИСЬ, что имена файлов совпадают 1:1 (лучше все lowercase).
+  const GROUPS = [
+    {
+      id: "usdt",
+      title: { ua: "Tether USDT", en: "Tether USDT", pl: "Tether USDT" },
+      subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
+      icon: `${LOGO.cryptoDir}tether-usdt.png`,
+      items: [
+        { id: "usdt-trc", name: "Tether (TRC20)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-trc.png`, rateUAH: 41.0 },
+        { id: "usdt-eth", name: "Tether (ERC20)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-eth.png`, rateUAH: 41.0 },
+        { id: "usdt-bep", name: "Tether (BEP20)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-bep.png`, rateUAH: 41.0 },
+        { id: "usdt-arb", name: "Tether (ARB)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-arb.png`, rateUAH: 41.0 },
+        { id: "usdt-pol", name: "Tether (POL)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-pol.png`, rateUAH: 41.0 },
+        { id: "usdt-sol", name: "Tether (SOL)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-sol.png`, rateUAH: 41.0 },
+      ],
+    },
+    {
+      id: "usdc",
+      title: { ua: "USD Coin", en: "USD Coin", pl: "USD Coin" },
+      subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
+      icon: `${LOGO.cryptoDir}usdc-eth.png`,
+      items: [
+        { id: "usdc-eth", name: "USD Coin (ERC20)", sub: "USDC", icon: `${LOGO.cryptoDir}usdc-eth.png`, rateUAH: 41.0 },
+        { id: "usdc-pol", name: "USD Coin (POL)", sub: "USDC", icon: `${LOGO.cryptoDir}usdc-pol.png`, rateUAH: 41.0 },
+        { id: "usdc-sol", name: "USD Coin (SOL)", sub: "USDC", icon: `${LOGO.cryptoDir}usdc-sol.png`, rateUAH: 41.0 },
+      ],
+    },
+    {
+      id: "crypto",
+      title: { ua: "Криптовалюти", en: "Cryptocurrencies", pl: "Kryptowaluty" },
+      subtitle: { ua: "Топ монети", en: "Top coins", pl: "Top monety" },
+      icon: `${LOGO.cryptoDir}btc.png`,
+      items: [
+        { id: "btc", name: "Bitcoin", sub: "BTC", icon: `${LOGO.cryptoDir}btc.png`, rateUAH: 1500000 },
+        { id: "eth", name: "Ethereum", sub: "ETH", icon: `${LOGO.cryptoDir}eth.png`, rateUAH: 170000 },
+        { id: "sol", name: "Solana", sub: "SOL", icon: `${LOGO.cryptoDir}sol.png`, rateUAH: 7000 },
+        { id: "trx", name: "Tron", sub: "TRX", icon: `${LOGO.cryptoDir}trx.png`, rateUAH: 5.0 },
+        { id: "ton", name: "TON", sub: "TON", icon: `${LOGO.cryptoDir}ton.png`, rateUAH: 250 },
+        { id: "ltc", name: "Litecoin", sub: "LTC", icon: `${LOGO.cryptoDir}ltc.png`, rateUAH: 4500 },
+      ],
+    },
+    {
+      id: "banks",
+      title: { ua: "Банки - UAH", en: "Banks - UAH", pl: "Banki - UAH" },
+      subtitle: { ua: "Україна", en: "Ukraine", pl: "Ukraina" },
+      icon: `${LOGO.banksDir}ukr-banki.png`,
+      items: [
+        { id: "monobank", name: "Monobank", sub: "UAH", icon: `${LOGO.banksDir}mono.png` },
+        { id: "privat24", name: "Privat24", sub: "UAH", icon: `${LOGO.banksDir}privat.png` },
+        { id: "visa_master", name: "Visa/MasterCard", sub: "UAH", icon: `${LOGO.banksDir}visa-master.png` },
+        { id: "pumb", name: "PUMB", sub: "UAH", icon: `${LOGO.banksDir}pumb.png` },
+        { id: "a_bank", name: "A-Bank", sub: "UAH", icon: `${LOGO.banksDir}a-bank.png` },
+        { id: "oschad", name: "Oschadbank", sub: "UAH", icon: `${LOGO.banksDir}oschad.png` },
+        { id: "ukrsib", name: "UkrSibbank", sub: "UAH", icon: `${LOGO.banksDir}ukr-sib.png` },
+        { id: "otp", name: "OTP Bank", sub: "UAH", icon: `${LOGO.banksDir}otp.png` },
+        { id: "sense", name: "Sense Bank", sub: "UAH", icon: `${LOGO.banksDir}sense.png` },
+        { id: "reiffeisen", name: "Raiffeisen", sub: "UAH", icon: `${LOGO.banksDir}reyf.png` },
+        { id: "izi", name: "iziBank", sub: "UAH", icon: `${LOGO.banksDir}izi.png` },
+      ],
+    },
+    {
+      id: "wallets",
+      title: { ua: "Е-гаманці", en: "E-wallets", pl: "Portfele" },
+      subtitle: { ua: "USD / EUR", en: "USD / EUR", pl: "USD / EUR" },
+      icon: `${LOGO.walletsDir}valet.png`,
+      items: [
+        { id: "paypal", name: "PayPal", sub: "USD/EUR", icon: `${LOGO.walletsDir}paypal.png` },
+        { id: "payoneer", name: "Payoneer", sub: "USD/EUR", icon: `${LOGO.walletsDir}payoneer.png` },
+        { id: "revolut", name: "Revolut", sub: "USD/EUR", icon: `${LOGO.walletsDir}revolut.png` },
+        { id: "volet", name: "Volet (Advcash)", sub: "EUR", icon: `${LOGO.walletsDir}valet.png` },
+        { id: "wise", name: "Wise", sub: "USD/EUR", icon: `${LOGO.walletsDir}vise.png` },
+      ],
+    },
+  ];
 
-      <div class="pickerList" id="pickerList"></div>
-    </div>
-  `;
-}
+  const I18N = {
+    ua: {
+      cryptoTo: "Crypto → UAH",
+      notice: "Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).",
+      give: "Віддаєте",
+      receive: "Отримуєте",
+      sumAfter: "Сума з урахуванням комісії сервісу",
+      exchange: "Обмін",
+      rate: "Курс",
+      fee: "Комісія сервісу",
+      payout: "До виплати",
+      continue: "Продовжити",
+      rules: "Правила обміну",
+      aml: "AML & KYC",
+      faq: "FAQ",
+      contacts: "Контакти",
+      main: "Головна",
+      search: "Пошук…",
+      choose: "Вибір",
+      notReady: "Демо-режим: реальні платежі/AML/заявки підключимо на сервері.",
+    },
+    en: {
+      cryptoTo: "Crypto → UAH",
+      notice: "Requests created after 22:00 are processed from 08:00 (UTC+2).",
+      give: "You send",
+      receive: "You receive",
+      sumAfter: "Amount including service fee",
+      exchange: "Exchange",
+      rate: "Rate",
+      fee: "Service fee",
+      payout: "Payout",
+      continue: "Continue",
+      rules: "Exchange rules",
+      aml: "AML & KYC",
+      faq: "FAQ",
+      contacts: "Contacts",
+      main: "Home",
+      search: "Search…",
+      choose: "Select",
+      notReady: "Demo mode: real payments/AML/orders will be connected on the server.",
+    },
+    pl: {
+      cryptoTo: "Crypto → UAH",
+      notice: "Wnioski utworzone po 22:00 są przetwarzane od 08:00 (UTC+2).",
+      give: "Oddajesz",
+      receive: "Otrzymujesz",
+      sumAfter: "Kwota z uwzględnieniem prowizji",
+      exchange: "Wymiana",
+      rate: "Kurs",
+      fee: "Prowizja",
+      payout: "Do wypłaty",
+      continue: "Dalej",
+      rules: "Zasady wymiany",
+      aml: "AML & KYC",
+      faq: "FAQ",
+      contacts: "Kontakt",
+      main: "Strona główna",
+      search: "Szukaj…",
+      choose: "Wybierz",
+      notReady: "Tryb demo: płatności/AML/zlecenia podłączymy na serwerze.",
+    },
+  };
 
-function updatePickerList() {
-  const q = (query||"").trim().toLowerCase();
+  // ====== СОСТОЯНИЕ ======
+  const state = {
+    lang: "ua",
+    page: "main",
+    sheetOpen: false,
+    sheetTarget: "give", // give|receive
+    search: "",
+    give: GROUPS[0].items[0],     // usdt-trc
+    receive: GROUPS.find(g=>g.id==="banks").items[0], // monobank
+    giveAmount: "",
+    feePct: 2.5,
+  };
 
-  // build group blocks
-  let html = "";
-  for (const g of GROUPS) {
-    const items = g.items.filter(i => {
-      if (!q) return true;
-      const name = (t(i.name)||"").toLowerCase();
-      const tags = (i.tags||[]).join(" ").toLowerCase();
-      return name.includes(q) || tags.includes(q) || i.id.includes(q);
-    });
+  // ====== ВСПОМОГ ======
+  const $ = (sel, el=document) => el.querySelector(sel);
 
-    // if search active and group has no matches: hide
-    if (q && items.length === 0) continue;
+  function t(key){
+    return I18N[state.lang][key] || key;
+  }
 
-    const isOpen = expanded.has(g.id) || q; // auto-open during search
-    const count = items.length;
+  function num(val){
+    const x = parseFloat(String(val).replace(",", "."));
+    return Number.isFinite(x) ? x : 0;
+  }
 
-    html += `
-      <div class="group">
-        <button class="groupHead" data-group="${g.id}">
-          <div class="groupLeft">
-            <img class="icon" src="${escapeHtml(g.icon||"")}" onerror="this.style.display='none'"/>
-            <span class="groupName">${escapeHtml(t(g.title))}</span>
-            <span class="badge">${count}</span>
-          </div>
-          <span class="chev">${isOpen ? "▴" : "▾"}</span>
-        </button>
+  function formatMoney(x){
+    if (!Number.isFinite(x)) return "—";
+    return x.toLocaleString(state.lang === "ua" ? "uk-UA" : state.lang === "pl" ? "pl-PL" : "en-US", {maximumFractionDigits: 4});
+  }
 
-        ${isOpen ? `
-          <div class="groupItems">
-            ${items.map(i => `
-              <button class="item" data-item="${escapeHtml(i.id)}">
-                <div class="itemLeft">
-                  <img class="icon" src="${escapeHtml(i.icon||"")}" onerror="this.style.display='none'"/>
-                  <div class="itemText">
-                    <div class="itemName">${escapeHtml(t(i.name))}</div>
-                    <div class="itemSub">${escapeHtml(t({uk:"Варіант", en:"Option", pl:"Opcja"}))}</div>
-                  </div>
-                </div>
-                <span class="chev">›</span>
-              </button>
-            `).join("")}
-          </div>
-        ` : ""}
+  // rateUAH: сколько UAH за 1 единицу (для крипты/стейблов)
+  function rateUAH(asset){
+    // банки/кошельки считаем как UAH (1:1), но кошельки USD/EUR — оставим демо 1:1 тоже
+    return asset.rateUAH ?? 1;
+  }
+
+  function calc(){
+    const amount = num(state.giveAmount);
+    if (!amount) return { rate: null, payout: null, fee: null, pair: "" };
+
+    // если отдаём крипту -> получаем банк UAH: payout = amount * rateUAH
+    // если отдаём банк -> получаем крипту: payout = amount / rateUAH(receive)
+    // если обе стороны не крипта: 1:1 демо
+    const giveR = rateUAH(state.give);
+    const recvR = rateUAH(state.receive);
+
+    // пересчёт через UAH как базу
+    const valueUAH = amount * giveR;
+    let out = valueUAH / recvR;
+
+    const fee = out * (state.feePct / 100);
+    const payout = out - fee;
+
+    const pair = `${state.give.sub || state.give.name} → ${state.receive.sub || state.receive.name}`;
+    const shownRate = (giveR / recvR);
+
+    return { rate: shownRate, payout, fee, pair };
+  }
+
+  function openDrawer(open){
+    const drawer = $(".drawer");
+    if (!drawer) return;
+    drawer.classList.toggle("show", !!open);
+  }
+
+  function setPage(page){
+    state.page = page;
+    openDrawer(false);
+    render();
+  }
+
+  function openSheet(target){
+    state.sheetTarget = target;
+    state.search = "";
+    state.sheetOpen = true;
+    render();
+  }
+
+  function closeSheet(){
+    state.sheetOpen = false;
+    render();
+  }
+
+  function setLang(lang){
+    state.lang = lang;
+    render();
+  }
+
+  function pickItem(item){
+    if (state.sheetTarget === "give") state.give = item;
+    else state.receive = item;
+    closeSheet();
+  }
+
+  function swapSides(){
+    const tmp = state.give;
+    state.give = state.receive;
+    state.receive = tmp;
+
+    // перезапуск суммы, чтоб не было странного пересчёта
+    state.giveAmount = "";
+    render();
+  }
+
+  // ====== UI ======
+  function BrandIcon(){
+    // если ты НЕ добавил файл keksswap-logo.png — покажем эмодзи кекс
+    // можешь загрузить свой логотип в корень репо и назвать keksswap-logo.png
+    return `<img src="${LOGO.brand}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" alt="KeksSwap"/>
+            <div class="fallback" style="display:none;width:34px;height:34px;border-radius:12px;background:#fff;box-shadow:0 6px 18px rgba(2,6,23,.10);display:grid;place-items:center;font-weight:900;">🧁</div>`;
+  }
+
+  function chipHTML(item){
+    const title = `${item.name}`;
+    const sub = `${item.sub || ""}`.trim();
+    return `
+      <div class="chip" role="button">
+        <img src="${item.icon}" onerror="this.style.opacity=.2" alt="">
+        <div style="min-width:0">
+          <div class="title">${title}</div>
+          <div class="sub">${sub}</div>
+        </div>
+        <div class="chev"></div>
       </div>
     `;
   }
 
-  const list = document.getElementById("pickerList");
-  list.innerHTML = html;
+  function sheetListHTML(){
+    const q = state.search.trim().toLowerCase();
+    const groups = GROUPS.map(g => {
+      const items = g.items.filter(it => {
+        if (!q) return true;
+        const hay = `${it.name} ${it.sub || ""} ${g.id}`.toLowerCase();
+        return hay.includes(q);
+      });
 
-  // bind item click
-  list.querySelectorAll("[data-item]").forEach(btn => {
-    btn.onclick = () => {
-      const id = btn.dataset.item;
-      if (activePicker === "give") give.assetId = id;
-      else get.assetId = id;
-      activePicker = null;
-      render();
-    };
-  });
-}
+      if (!items.length) return "";
 
-// ---- start
-initTelegram();
-render();
+      return `
+        <div class="group">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0">
+            <img src="${g.icon}" style="width:18px;height:18px;border-radius:6px;object-fit:contain;background:#fff" onerror="this.style.opacity=.2" alt="">
+            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.title[state.lang]}</span>
+          </div>
+          <span>${items.length}</span>
+        </div>
+        ${items.map(it => `
+          <div class="groupRow" data-pick="${it.id}">
+            <div class="left">
+              <img src="${it.icon}" onerror="this.style.opacity=.2" alt="">
+              <div style="min-width:0">
+                <div class="t">${it.name} ${it.sub ? `<span style="color:var(--muted);font-weight:900"> ${it.sub}</span>` : ""}</div>
+                <div class="s">${g.subtitle[state.lang] || ""}</div>
+              </div>
+            </div>
+            <div class="arrow"></div>
+          </div>
+        `).join("")}
+      `;
+    }).join("");
+
+    return groups || `<div style="padding:18px 14px;color:var(--muted);font-weight:800;">Нічого не знайдено</div>`;
+  }
+
+  function findById(id){
+    for (const g of GROUPS){
+      const it = g.items.find(x => x.id === id);
+      if (it) return it;
+    }
+    return null;
+  }
+
+  function mainPageHTML(){
+    const c = calc();
+    const giveChip = chipHTML(state.give);
+    const recvChip = chipHTML(state.receive);
+
+    const disabled = !(num(state.giveAmount) > 0);
+
+    return `
+      <div class="wrap">
+        <div class="topbar">
+          <div class="brand">
+            ${BrandIcon()}
+            <div style="min-width:0">
+              <div class="name">KeksSwap</div>
+              <div class="sub">${t("cryptoTo")}</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="langs">
+              <button class="lang ${state.lang==="ua"?"active":""}" data-lang="ua">UA</button>
+              <button class="lang ${state.lang==="en"?"active":""}" data-lang="en">EN</button>
+              <button class="lang ${state.lang==="pl"?"active":""}" data-lang="pl">PL</button>
+            </div>
+
+            <button class="iconBtn" id="openMenu" aria-label="menu">
+              <div class="burger"><i></i></div>
+            </button>
+          </div>
+        </div>
+
+        <div class="notice">
+          <div class="ico">!</div>
+          <div class="txt">${t("notice")}</div>
+        </div>
+
+        <div class="card">
+          <div class="cardHd">${t("give")}</div>
+          <div class="block">
+            <div class="field">
+              <div class="row">
+                <input class="amountInput" id="giveAmount" inputmode="decimal" placeholder="0.0000" value="${state.giveAmount}">
+              </div>
+              <div style="height:10px"></div>
+              <div id="pickGive">${giveChip}</div>
+              <div class="hint">${state.give.rateUAH ? `≈ ${formatMoney(rateUAH(state.give))} UAH за 1` : ""}</div>
+            </div>
+
+            <div class="swapRow">
+              <button class="swapBtn" id="swapSides" aria-label="swap"><div class="swapIcon"></div></button>
+            </div>
+
+            <div class="cardHd" style="padding:0 0 10px">${t("receive")}</div>
+            <div class="field">
+              <div class="row">
+                <input class="amountInput" id="recvAmount" disabled value="${c.payout ? formatMoney(c.payout) : ""}" placeholder="0.00">
+              </div>
+              <div style="height:10px"></div>
+              <div id="pickReceive">${recvChip}</div>
+              <div class="hint">${t("sumAfter")}</div>
+            </div>
+          </div>
+
+          <div class="summary">
+            <div class="line"><span>${t("exchange")}</span><strong>${c.pair || "—"}</strong></div>
+            <div class="line"><span>${t("rate")}</span><strong>${c.rate ? `1 = ${formatMoney(c.rate)}` : "—"}</strong></div>
+            <div class="line"><span>${t("fee")} ${state.feePct}%</span><strong>${c.fee ? formatMoney(c.fee) : "—"}</strong></div>
+            <div class="line"><span>${t("payout")}</span><strong>${c.payout ? formatMoney(c.payout) : "—"}</strong></div>
+
+            <button class="primaryBtn" id="continue" ${disabled ? "disabled":""}>${t("continue")}</button>
+            <div style="margin-top:10px;color:var(--muted);font-size:12px;font-weight:700;">${t("notReady")}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function textPage(title, body){
+    return `
+      <div class="wrap">
+        <div class="topbar">
+          <div class="brand">
+            ${BrandIcon()}
+            <div style="min-width:0">
+              <div class="name">KeksSwap</div>
+              <div class="sub">${title}</div>
+            </div>
+          </div>
+          <div class="right">
+            <button class="iconBtn" id="openMenu" aria-label="menu">
+              <div class="burger"><i></i></div>
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section">
+            <h2>${title}</h2>
+            ${body}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function pageHTML(){
+    if (state.page === "main") return mainPageHTML();
+    if (state.page === "rules") return textPage(t("rules"),
+      `<p>Тут будуть умови сервісу: мін/макс суми, час обробки, фіксація курсу, повернення платежів тощо.</p>`);
+    if (state.page === "aml") return textPage(t("aml"),
+      `<p>Тут буде AML/KYC політика. У демо-версії просто сторінка, пізніше підключимо бекенд і верифікацію.</p>`);
+    if (state.page === "faq") return textPage(t("faq"),
+      `<p><b>Q:</b> Скільки часу займає обмін?<br><b>A:</b> В середньому 15–180 хв (залежить від банку/мережі).</p>
+       <p><b>Q:</b> Фіксація курсу?<br><b>A:</b> На момент надходження коштів (як у прикладі).</p>`);
+    if (state.page === "contacts") return textPage(t("contacts"),
+      `<p>Додай контакти: Telegram @username, email, години підтримки.</p>`);
+    return mainPageHTML();
+  }
+
+  function drawerHTML(){
+    return `
+      <div class="drawer ${""}">
+        <div class="shade" id="closeDrawer"></div>
+        <div class="panel">
+          <div style="display:flex;align-items:center;gap:10px;padding:0 10px 12px;">
+            <div style="width:36px;height:36px;border-radius:14px;background:#fff;box-shadow:0 10px 20px rgba(2,6,23,.10);display:grid;place-items:center;font-weight:900;">🧁</div>
+            <div style="min-width:0">
+              <div style="font-weight:900">KeksSwap</div>
+              <div style="font-size:12px;color:var(--muted);font-weight:800">Telegram Mini App</div>
+            </div>
+          </div>
+
+          <div class="navItem" data-nav="main"><span class="dot"></span>${t("main")}</div>
+          <div class="navItem" data-nav="rules"><span class="dot"></span>${t("rules")}</div>
+          <div class="navItem" data-nav="aml"><span class="dot"></span>${t("aml")}</div>
+          <div class="navItem" data-nav="faq"><span class="dot"></span>${t("faq")}</div>
+          <div class="navItem" data-nav="contacts"><span class="dot"></span>${t("contacts")}</div>
+
+          <div style="height:10px"></div>
+          <div class="navItem secondary" id="closeMenu"><span class="dot"></span>Закрити</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function sheetHTML(){
+    return `
+      <div class="backdrop ${state.sheetOpen ? "show":""}" id="sheetBackdrop"></div>
+      <div class="sheet ${state.sheetOpen ? "show":""}">
+        <div class="sheetHd">
+          <div class="ttl">${t("choose")} — ${state.sheetTarget === "give" ? t("give") : t("receive")}</div>
+          <div class="close" id="sheetClose"></div>
+        </div>
+        <div class="search">
+          <input id="sheetSearch" placeholder="${t("search")}" value="${state.search}">
+        </div>
+        <div class="list" id="sheetList">
+          ${sheetListHTML()}
+        </div>
+      </div>
+    `;
+  }
+
+  function render(){
+    const app = document.getElementById("app");
+    app.innerHTML = `
+      ${pageHTML()}
+      ${drawerHTML()}
+      ${sheetHTML()}
+    `;
+
+    // Lang buttons
+    document.querySelectorAll("[data-lang]").forEach(btn=>{
+      btn.addEventListener("click", () => setLang(btn.dataset.lang));
+    });
+
+    // Menu
+    const openMenu = document.getElementById("openMenu");
+    if (openMenu) openMenu.addEventListener("click", () => openDrawer(true));
+
+    const closeDrawer = document.getElementById("closeDrawer");
+    if (closeDrawer) closeDrawer.addEventListener("click", () => openDrawer(false));
+
+    const closeMenu = document.getElementById("closeMenu");
+    if (closeMenu) closeMenu.addEventListener("click", () => openDrawer(false));
+
+    document.querySelectorAll("[data-nav]").forEach(el=>{
+      el.addEventListener("click", () => setPage(el.dataset.nav));
+    });
+
+    // Inputs
