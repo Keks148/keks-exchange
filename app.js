@@ -1,4 +1,4 @@
-(() => {
+mi(() => {
   const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
@@ -17,7 +17,7 @@
 
   // ====== ВАЖНО: пути к логотипам ======
   const LOGO = {
-    brand: "./keksswap-logo.png", // <-- если добавишь свой логотип в корень. Если нет — будет эмодзи.
+    brand: "", // <-- если добавишь свой логотип в корень. Если нет — будет эмодзи.
     banksDir: "./logos/banks/",
     walletsDir: "./logos/wallets/",
     cryptoDir: "./logos/crypto/",
