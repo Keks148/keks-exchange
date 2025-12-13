@@ -1,17 +1,12 @@
 (() => {
   const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
+  if (tg) { tg.ready(); tg.expand(); }
 
-  // safe area
   const top = tg?.safeAreaInset?.top ?? 10;
   const bottom = tg?.safeAreaInset?.bottom ?? 10;
   document.documentElement.style.setProperty("--safeTop", `${Math.max(10, top)}px`);
   document.documentElement.style.setProperty("--safeBottom", `${Math.max(10, bottom)}px`);
 
-  // ====== DATA (минимально, дальше расширим) ======
   const LOGO = {
     brand: "./logo.png",
     banksDir: "./logos/banks/",
@@ -19,13 +14,9 @@
     cryptoDir: "./logos/crypto/",
   };
 
-  // группы для модалки "Отдаёте/Получаете"
   const GROUPS = [
     {
       id: "usdt",
-      title: { ua: "Tether USDT", en: "Tether USDT", pl: "Tether USDT" },
-      subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
-      icon: `${LOGO.cryptoDir}tether-usdt.png`,
       items: [
         { id: "usdt-trc", name: "Tether (TRC20)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-trc.png`, rateUAH: 41.0 },
         { id: "usdt-eth", name: "Tether (ERC20)", sub: "USDT", icon: `${LOGO.cryptoDir}usdt-eth.png`, rateUAH: 41.0 },
@@ -36,9 +27,6 @@
     },
     {
       id: "usdc",
-      title: { ua: "USD Coin", en: "USD Coin", pl: "USD Coin" },
-      subtitle: { ua: "Мережі", en: "Networks", pl: "Sieci" },
-      icon: `${LOGO.cryptoDir}usdc-eth.png`,
       items: [
         { id: "usdc-eth", name: "USD Coin (ERC20)", sub: "USDC", icon: `${LOGO.cryptoDir}usdc-eth.png`, rateUAH: 41.0 },
         { id: "usdc-pol", name: "USD Coin (POL)", sub: "USDC", icon: `${LOGO.cryptoDir}usdc-pol.png`, rateUAH: 41.0 },
@@ -47,9 +35,6 @@
     },
     {
       id: "crypto",
-      title: { ua: "Криптовалюти", en: "Cryptocurrencies", pl: "Kryptowaluty" },
-      subtitle: { ua: "Топ монети", en: "Top coins", pl: "Top monety" },
-      icon: `${LOGO.cryptoDir}crypto.png`, // <-- твой crypto.png
       items: [
         { id: "btc", name: "Bitcoin", sub: "BTC", icon: `${LOGO.cryptoDir}btc.png`, rateUAH: 1500000 },
         { id: "eth", name: "Ethereum", sub: "ETH", icon: `${LOGO.cryptoDir}eth.png`, rateUAH: 170000 },
@@ -60,9 +45,6 @@
     },
     {
       id: "banks",
-      title: { ua: "Банки - UAH", en: "Banks - UAH", pl: "Banki - UAH" },
-      subtitle: { ua: "Україна", en: "Ukraine", pl: "Ukraina" },
-      icon: `${LOGO.banksDir}ukr-banki.png`,
       items: [
         { id: "mono", name: "Monobank", sub: "UAH", icon: `${LOGO.banksDir}mono.png`, rateUAH: 1 },
         { id: "privat", name: "PrivatBank", sub: "UAH", icon: `${LOGO.banksDir}privat.png`, rateUAH: 1 },
@@ -70,9 +52,6 @@
     },
     {
       id: "wallets",
-      title: { ua: "Електронні гаманці", en: "E-wallets", pl: "Portfele" },
-      subtitle: { ua: "USD/EUR", en: "USD/EUR", pl: "USD/EUR" },
-      icon: `${LOGO.walletsDir}valet.png`,
       items: [
         { id: "paypal", name: "PayPal", sub: "USD", icon: `${LOGO.walletsDir}paypal.png`, rateUAH: 41.0 },
         { id: "revolut", name: "Revolut", sub: "USD", icon: `${LOGO.walletsDir}revolut.png`, rateUAH: 41.0 },
@@ -80,39 +59,32 @@
     },
   ];
 
-  // ====== STATE ======
   const state = {
     lang: "UA",
-    tab: "swap", // swap | rules | faq | contacts
+    tab: "swap", // swap | rules | faq | contacts | account
+    step: 1,      // 1 = выбор, 2 = подтверждение
     give: { groupId: "banks", itemId: "mono" },
     get:  { groupId: "crypto", itemId: "btc" },
     amountGive: "1000",
-    modal: { open: false, target: "give", q: "" }, // target: give|get
+    modal: { open: false, target: "give", q: "" },
   };
 
-  // ====== HELPERS ======
-  const t = (obj) => obj?.[state.lang.toLowerCase()] ?? obj?.ua ?? "";
   const findGroup = (id) => GROUPS.find(g => g.id === id);
   const findItem = (groupId, itemId) => findGroup(groupId)?.items?.find(i => i.id === itemId);
 
   function calcGetAmount() {
     const giveItem = findItem(state.give.groupId, state.give.itemId);
     const getItem  = findItem(state.get.groupId, state.get.itemId);
-    if (!giveItem || !getItem) return "0";
-
     const x = parseFloat(String(state.amountGive).replace(",", "."));
-    if (!isFinite(x) || x <= 0) return "0";
+    if (!giveItem || !getItem || !isFinite(x) || x <= 0) return "0";
 
-    // переводим "отдаёте" в UAH, потом в "получаете"
     const uah = x * (giveItem.rateUAH ?? 1);
     const out = uah / (getItem.rateUAH ?? 1);
 
-    // красиво форматируем
     if (out >= 1) return out.toFixed(6).replace(/0+$/,"").replace(/\.$/,"");
     return out.toFixed(8).replace(/0+$/,"").replace(/\.$/,"");
   }
 
-  // ====== RENDER (один раз) ======
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="header">
@@ -124,8 +96,15 @@
             preserveAspectRatio="xMidYMid meet"
             style="display:block; width:100%; height:54px; background:transparent; cursor:pointer;">
             <g class="ks-wrap">
-              <text x="40" y="165" font-size="160" font-weight="700" fill="#0B0B0B"
-                font-family="Georgia, serif" letter-spacing="2">KeksSwap</text>
+              <!-- подняли текст выше + baseline alignment -->
+              <text x="40" y="145"
+                font-size="160"
+                font-weight="700"
+                fill="#0B0B0B"
+                font-family="Georgia, serif"
+                dominant-baseline="middle"
+                letter-spacing="2">KeksSwap</text>
+
               <g class="ks-cupcake">
                 <g transform="translate(880,20) scale(1.1)">
                   <path d="M100 40 C130 10, 200 10, 220 40 C260 45, 270 90, 240 110
@@ -155,22 +134,14 @@
         </div>
       </div>
 
-      <div class="notice">
-        <div class="noticeCard">
-          <div class="badgeWarn">!</div>
-          <div>
-            <div class="noticeTitle" id="noticeTitle"></div>
-            <div class="noticeSub" id="noticeSub"></div>
-          </div>
-        </div>
-      </div>
+      <!-- убрали блок "Заявки после 22:00" полностью -->
 
-      <!-- Top menu 1 row (NO AML/KYC, NO Account, NO burger) -->
       <div class="topMenu" id="topMenu">
         <button class="tab active" data-tab="swap">Обмін</button>
-        <button class="tab" data-tab="rules">Правила обміну</button>
+        <button class="tab" data-tab="rules">Правила</button>
         <button class="tab" data-tab="faq">FAQ</button>
         <button class="tab" data-tab="contacts">Контакти</button>
+        <button class="tab" data-tab="account">Аккаунт</button>
       </div>
     </div>
 
@@ -188,7 +159,6 @@
     </div>
   `;
 
-  // ====== EVENTS ======
   const brandSvg = document.getElementById("brandSvg");
   brandSvg?.addEventListener("click", () => {
     brandSvg.classList.remove("tap");
@@ -201,9 +171,6 @@
     if (!btn) return;
     state.lang = btn.dataset.lang;
     [...document.querySelectorAll("#langBtns button")].forEach(b => b.classList.toggle("active", b.dataset.lang === state.lang));
-    renderAllText();
-    renderSwapNumbers();
-    renderList(); // на всякий случай, если модалка открыта
   });
 
   document.getElementById("topMenu").addEventListener("click", (e) => {
@@ -224,95 +191,155 @@
     renderList();
   });
 
-  // ====== RENDERERS ======
-  function renderAllText(){
-    const now = new Date();
-    const noticeMain = {
-      ua: "Заявки, створені після 22:00, обробляються з 08:00 (UTC+2).",
-      en: "Requests created after 22:00 are processed from 08:00 (UTC+2).",
-      pl: "Wnioski utworzone po 22:00 są przetwarzane od 08:00 (UTC+2).",
-    };
-    const noticeSub = { ua:"KeksSwap WebApp", en:"KeksSwap WebApp", pl:"KeksSwap WebApp" };
-    document.getElementById("noticeTitle").textContent = noticeMain[state.lang.toLowerCase()];
-    document.getElementById("noticeSub").textContent = noticeSub[state.lang.toLowerCase()];
-  }
-
   function renderContent(){
     const content = document.getElementById("content");
+
     if (state.tab === "swap") {
+      if (state.step === 1) {
+        content.innerHTML = `
+          <div class="card">
+            <div class="h1">Обмін</div>
+
+            <div class="label">Віддаєте</div>
+            <input id="giveAmount" class="field" inputmode="decimal" placeholder="0" value="${state.amountGive}" />
+
+            <button class="selectBtn" id="pickGive">
+              <div class="selLeft">
+                <img class="icon40" id="giveIcon" alt="">
+                <div style="min-width:0">
+                  <div class="selName" id="giveName"></div>
+                  <div class="selSub" id="giveSub"></div>
+                </div>
+              </div>
+              <div style="font-weight:1000;">▼</div>
+            </button>
+
+            <div class="swapBtn" id="swapSides">⇅</div>
+
+            <div class="label">Отримуєте</div>
+            <input id="getAmount" class="field" readonly value="0" />
+
+            <button class="selectBtn" id="pickGet">
+              <div class="selLeft">
+                <img class="icon40" id="getIcon" alt="">
+                <div style="min-width:0">
+                  <div class="selName" id="getName"></div>
+                  <div class="selSub" id="getSub"></div>
+                </div>
+              </div>
+              <div style="font-weight:1000;">▼</div>
+            </button>
+
+            <button class="primaryBtn" id="btnContinue">Продовжити</button>
+          </div>
+        `;
+
+        const giveAmount = document.getElementById("giveAmount");
+        giveAmount.addEventListener("input", () => {
+          state.amountGive = giveAmount.value;
+          renderSwapNumbers(); // НЕ перерисовываем страницу
+        });
+
+        document.getElementById("pickGive").addEventListener("click", () => openModal("give"));
+        document.getElementById("pickGet").addEventListener("click", () => openModal("get"));
+
+        document.getElementById("swapSides").addEventListener("click", () => {
+          const tmp = state.give; state.give = state.get; state.get = tmp;
+          renderSwapNumbers();
+        });
+
+        document.getElementById("btnContinue").addEventListener("click", () => {
+          state.step = 2;
+          renderContent();
+        });
+
+        renderSwapNumbers();
+        return;
+      }
+
+      // STEP 2 (после Continue)
+      const giveItem = findItem(state.give.groupId, state.give.itemId);
+      const getItem  = findItem(state.get.groupId, state.get.itemId);
+      const out = calcGetAmount();
+
       content.innerHTML = `
         <div class="card">
-          <div class="h1">Обмін</div>
+          <div class="h1">Підтвердження</div>
 
-          <div class="label">Віддаєте</div>
-          <input id="giveAmount" class="field" inputmode="decimal" placeholder="0" value="${state.amountGive}" />
-
-          <button class="selectBtn" id="pickGive">
-            <div class="selLeft">
-              <img class="icon40" id="giveIcon" alt="">
-              <div style="min-width:0">
-                <div class="selName" id="giveName"></div>
-                <div class="selSub" id="giveSub"></div>
-              </div>
+          <div class="label">Ви віддаєте</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img class="icon40" src="${giveItem?.icon || ""}" alt="">
+            <div style="font-weight:1000;font-size:18px;">
+              ${state.amountGive} • ${giveItem?.name || ""} <span style="color:var(--muted)">${giveItem?.sub || ""}</span>
             </div>
-            <div style="font-weight:900;">▼</div>
-          </button>
+          </div>
 
-          <div class="swapBtn" id="swapSides">⇅</div>
+          <div style="height:14px;"></div>
 
-          <div class="label">Отримуєте</div>
-          <input id="getAmount" class="field" readonly value="0" />
-
-          <button class="selectBtn" id="pickGet">
-            <div class="selLeft">
-              <img class="icon40" id="getIcon" alt="">
-              <div style="min-width:0">
-                <div class="selName" id="getName"></div>
-                <div class="selSub" id="getSub"></div>
-              </div>
+          <div class="label">Ви отримуєте</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img class="icon40" src="${getItem?.icon || ""}" alt="">
+            <div style="font-weight:1000;font-size:18px;">
+              ${out} • ${getItem?.name || ""} <span style="color:var(--muted)">${getItem?.sub || ""}</span>
             </div>
-            <div style="font-weight:900;">▼</div>
-          </button>
+          </div>
+
+          <button class="primaryBtn" id="btnBack" style="background:#111827;margin-top:16px;">Назад</button>
+          <button class="primaryBtn" id="btnCreate">Створити заявку</button>
+          <div style="color:var(--muted);font-weight:800;font-size:13px;margin-top:10px;">
+            Поки без оплати/інтеграцій. Далі підключимо.
+          </div>
         </div>
       `;
 
-      // bind swap page events ONCE per render of page content
-      const giveAmount = document.getElementById("giveAmount");
-      giveAmount.addEventListener("input", () => {
-        // ВАЖНО: не делаем полный render, иначе будет выбивать фокус
-        state.amountGive = giveAmount.value;
-        renderSwapNumbers();
+      document.getElementById("btnBack").addEventListener("click", () => {
+        state.step = 1;
+        renderContent();
       });
 
-      document.getElementById("pickGive").addEventListener("click", () => openModal("give"));
-      document.getElementById("pickGet").addEventListener("click", () => openModal("get"));
-
-      document.getElementById("swapSides").addEventListener("click", () => {
-        const tmp = state.give; state.give = state.get; state.get = tmp;
-        renderSwapNumbers();
+      document.getElementById("btnCreate").addEventListener("click", () => {
+        alert("Заявка створена (демо). Далі додамо форму реквізитів і підтвердження.");
       });
 
-      renderSwapNumbers();
       return;
     }
 
     if (state.tab === "rules") {
-      content.innerHTML = `<div class="card"><div class="h1">Правила обміну</div><div style="color:var(--muted);font-weight:700">Тут буде текст правил.</div></div>`;
+      content.innerHTML = `<div class="card"><div class="h1">Правила</div><div style="color:var(--muted);font-weight:800">Додамо текст правил пізніше.</div></div>`;
       return;
     }
     if (state.tab === "faq") {
-      content.innerHTML = `<div class="card"><div class="h1">FAQ</div><div style="color:var(--muted);font-weight:700">Тут буде список питань/відповідей.</div></div>`;
+      content.innerHTML = `<div class="card"><div class="h1">FAQ</div><div style="color:var(--muted);font-weight:800">Додамо FAQ пізніше.</div></div>`;
       return;
     }
     if (state.tab === "contacts") {
-      content.innerHTML = `<div class="card"><div class="h1">Контакти</div><div style="color:var(--muted);font-weight:700">Telegram, Email, графік роботи — додамо.</div></div>`;
+      content.innerHTML = `<div class="card"><div class="h1">Контакти</div><div style="color:var(--muted);font-weight:800">Telegram / Email / графік — додамо.</div></div>`;
+      return;
+    }
+
+    if (state.tab === "account") {
+      content.innerHTML = `
+        <div class="card">
+          <div class="h1">Аккаунт</div>
+          <div style="color:var(--muted);font-weight:800;margin-bottom:12px;">
+            Поки без KYC підключення. Зараз зробимо екран входу/реєстрації (демо).
+          </div>
+          <button class="primaryBtn" id="btnLogin">Войти</button>
+          <button class="primaryBtn" id="btnRegister" style="background:#111827;">Зарегистрироваться</button>
+          <div style="color:var(--muted);font-weight:800;font-size:13px;margin-top:10px;">
+            Далі додамо: email/телефон, пароль, підтвердження, потім KYC.
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btnLogin").addEventListener("click", () => alert("Login (демо)."));
+      document.getElementById("btnRegister").addEventListener("click", () => alert("Register (демо)."));
       return;
     }
   }
 
   function renderSwapNumbers(){
-    // если не на странице swap — не трогаем
-    if (state.tab !== "swap") return;
+    if (state.tab !== "swap" || state.step !== 1) return;
 
     const giveItem = findItem(state.give.groupId, state.give.itemId);
     const getItem  = findItem(state.get.groupId, state.get.itemId);
@@ -361,14 +388,11 @@
     const list = document.getElementById("list");
     const q = state.modal.q.trim().toLowerCase();
 
-    // плоский список: показываем все items со всех групп (как у топовых обменников)
     const rows = [];
     for (const g of GROUPS){
       for (const it of g.items){
-        const txt = `${g.id} ${g.title?.ua||""} ${it.name} ${it.sub||""}`.toLowerCase();
-        if (!q || txt.includes(q)){
-          rows.push({ g, it });
-        }
+        const txt = `${it.name} ${it.sub||""}`.toLowerCase();
+        if (!q || txt.includes(q)) rows.push({ g, it });
       }
     }
 
@@ -377,7 +401,7 @@
         <div class="itemLeft">
           <img class="icon40" src="${it.icon}" alt="">
           <div style="min-width:0">
-            <div class="itemTitle">${it.name} <span style="color:var(--muted);font-weight:900">${it.sub||""}</span></div>
+            <div class="itemTitle">${it.name} <span style="color:var(--muted);font-weight:1000">${it.sub||""}</span></div>
             <div class="itemMeta">min 10 • max 100000</div>
           </div>
         </div>
@@ -399,7 +423,5 @@
     };
   }
 
-  // ====== START ======
-  renderAllText();
   renderContent();
 })();
