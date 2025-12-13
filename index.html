@@ -2,159 +2,181 @@
 <html lang="uk">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#E9E6FF" />
   <title>KeksSwap</title>
-
-  <!-- Font: Manrope (жирный/оригинальный для финтеха) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
+  <div id="app">
+    <!-- HEADER -->
+    <header class="header" id="header">
+      <div class="headerInner">
+        <div class="brand">
+          <img class="brandLogo" src="./logo.png" alt="KeksSwap" />
+          <div class="brandText" aria-label="KeksSwap">KeksSwap</div>
+        </div>
 
-<div class="app">
-
-  <!-- Sticky header -->
-  <header class="header">
-    <div class="header-top">
-      <div class="brand">
-        <!-- ЛОГО БОЛЬШЕ, БЕЗ РАМКИ -->
-        <img src="logo.png" class="logo" alt="KeksSwap">
-        <!-- ТЕКСТ как был: градиент -->
-        <div class="brand-text">KeksSwap</div>
+        <div class="headerRight">
+          <!-- ONE language button -->
+          <button class="langBtn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span id="langBtnText">UA</span>
+            <span class="chev">▾</span>
+          </button>
+        </div>
       </div>
 
-      <!-- ЯЗЫКИ ниже/без налёта: фикс отступы -->
-      <div class="langs" aria-label="Language">
-        <button class="lang active" data-lang="ua">UA</button>
-        <button class="lang" data-lang="en">EN</button>
-        <button class="lang" data-lang="pl">PL</button>
-      </div>
-    </div>
+      <!-- TOP MENU (no scroll, no overflow) -->
+      <nav class="topNav" aria-label="Menu">
+        <button class="pill isActive" data-tab="exchange" type="button">Обмін</button>
+        <button class="pill" data-tab="rules" type="button">Правила</button>
+        <button class="pill" data-tab="account" type="button">Аккаунт</button>
+        <button class="pill" data-tab="more" type="button">Ще</button>
+      </nav>
+    </header>
 
-    <!-- МЕНЮ: компактнее -->
-    <nav class="menu" aria-label="Main menu">
-      <button class="menu-btn active" data-page="exchange">Обмін</button>
-      <button class="menu-btn" data-page="rules">Правила</button>
-      <button class="menu-btn" data-page="reviews">Відгуки</button>
-      <button class="menu-btn" data-page="account">Аккаунт</button>
-    </nav>
-  </header>
+    <!-- CONTENT -->
+    <main class="content">
+      <!-- EXCHANGE -->
+      <section class="screen" id="screen-exchange">
+        <div class="card">
+          <h1 class="h1">Обмін</h1>
 
-  <main class="content">
-
-    <!-- EXCHANGE PAGE -->
-    <section class="page active" id="page-exchange">
-      <div class="card">
-        <div class="card-title">Обмін</div>
-
-        <div class="grid">
-          <!-- GIVE -->
-          <div class="field">
+          <div class="block">
             <div class="label">Віддаєте</div>
 
-            <!-- СНАЧАЛА ВАЛЮТА, потом сумма (как ты просил) -->
-            <button class="select" id="openGive">
-              <span class="sel-left">
-                <img class="coin" src="./logos/crypto/btc.png" alt="">
-                <span class="sel-main">
-                  <span class="sel-name" id="giveName">Monobank</span>
-                  <span class="sel-sub" id="giveSub">UAH</span>
-                </span>
+            <!-- SELECT FIRST -->
+            <button class="selectRow" id="giveSelect" type="button">
+              <span class="coin">
+                <img id="giveIcon" class="coinIcon" alt="" />
               </span>
-              <span class="chev">▾</span>
+              <span class="coinMeta">
+                <span id="giveName" class="coinName">Monobank</span>
+                <span id="giveCode" class="coinCode">UAH</span>
+              </span>
+              <span class="caret">▾</span>
             </button>
 
-            <input class="amount" id="giveAmount" inputmode="decimal" autocomplete="off" placeholder="1000">
+            <!-- AMOUNT SECOND -->
+            <input
+              id="giveAmount"
+              class="amountInput"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="0"
+            />
           </div>
 
-          <!-- SWAP -->
-          <button class="swap" id="swapBtn" aria-label="Swap">
-            <span class="swap-ico">⇄</span>
-          </button>
+          <div class="swapWrap">
+            <button class="swapBtn" id="swapBtn" type="button" aria-label="Swap">
+              <span class="swapIcon" aria-hidden="true">⇄</span>
+            </button>
+          </div>
 
-          <!-- GET -->
-          <div class="field">
+          <div class="block">
             <div class="label">Отримуєте</div>
 
-            <button class="select" id="openGet">
-              <span class="sel-left">
-                <img class="coin" src="./logos/crypto/btc.png" alt="">
-                <span class="sel-main">
-                  <span class="sel-name" id="getName">Bitcoin</span>
-                  <span class="sel-sub" id="getSub">BTC</span>
-                </span>
+            <!-- SELECT FIRST -->
+            <button class="selectRow" id="getSelect" type="button">
+              <span class="coin">
+                <img id="getIcon" class="coinIcon" alt="" />
               </span>
-              <span class="chev">▾</span>
+              <span class="coinMeta">
+                <span id="getName" class="coinName">Bitcoin</span>
+                <span id="getCode" class="coinCode">BTC</span>
+              </span>
+              <span class="caret">▾</span>
             </button>
 
-            <input class="amount" id="getAmount" value="0.00065" readonly>
+            <!-- AMOUNT SECOND (readonly) -->
+            <input
+              id="getAmount"
+              class="amountInput isReadOnly"
+              type="text"
+              readonly
+              value="0"
+            />
           </div>
+
+          <button class="primaryBtn" id="continueBtn" type="button">Продовжити</button>
         </div>
+      </section>
 
-        <button class="primary" id="continueBtn">Продовжити</button>
-      </div>
-    </section>
-
-    <!-- RULES -->
-    <section class="page" id="page-rules">
-      <div class="card">
-        <div class="card-title">Rules</div>
-        <div class="muted">Тут будуть правила обміну. (Поки заглушка)</div>
-      </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section class="page" id="page-reviews">
-      <div class="card">
-        <div class="card-title">Reviews</div>
-        <div class="muted">Тут будуть відгуки (заглушка). Пізніше додамо список + форму.</div>
-      </div>
-    </section>
-
-    <!-- ACCOUNT -->
-    <section class="page" id="page-account">
-      <div class="card">
-        <div class="card-title">Account</div>
-        <div class="muted">
-          Здесь будет вход/регистрация и дальше KYC (пока без подключения).
+      <!-- RULES -->
+      <section class="screen isHidden" id="screen-rules">
+        <div class="card">
+          <h1 class="h1">Rules</h1>
+          <p class="muted">Тут будуть правила обміну. (Поки заглушка)</p>
         </div>
+      </section>
 
-        <div class="btns">
-          <button class="primary">Войти</button>
-          <button class="primary ghost">Регистрация</button>
+      <!-- ACCOUNT -->
+      <section class="screen isHidden" id="screen-account">
+        <div class="card">
+          <h1 class="h1">Account</h1>
+          <p class="muted">Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
+
+          <button class="primaryBtn" type="button">Войти</button>
+          <button class="primaryBtn ghost" type="button">Регистрация</button>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-  </main>
-</div>
-
-<!-- MODAL: SELECT -->
-<div class="modal-bg" id="modalBg" aria-hidden="true">
-  <div class="modal" id="modal">
-    <div class="modal-head">
-      <div class="modal-title" id="modalTitle">Вибір</div>
-      <button class="modal-x" id="closeModal" aria-label="Close">✕</button>
+    <!-- DROPDOWN: LANGUAGE -->
+    <div class="popover isHidden" id="langPopover" role="menu" aria-label="Language picker">
+      <button class="popItem" data-lang="UA" type="button">UA</button>
+      <button class="popItem" data-lang="EN" type="button">EN</button>
+      <button class="popItem" data-lang="PL" type="button">PL</button>
     </div>
 
-    <input class="search" id="searchInput" placeholder="Search..." autocomplete="off" />
+    <!-- BOTTOM SHEET: MORE MENU -->
+    <div class="sheet isHidden" id="moreSheet" aria-hidden="true">
+      <div class="sheetBackdrop" data-close="1"></div>
+      <div class="sheetPanel" role="dialog" aria-label="More">
+        <div class="sheetHandle"></div>
+        <div class="sheetHead">
+          <div class="sheetTitle">Ще</div>
+          <button class="sheetClose" data-close="1" type="button">✕</button>
+        </div>
 
-    <!-- БЫСТРЫЙ ФИЛЬТР (как ты просил) -->
-    <div class="filters" id="filters">
-      <button class="chip active" data-filter="all">All</button>
-      <button class="chip" data-filter="usdt">USDT</button>
-      <button class="chip" data-filter="usdc">USDC</button>
-      <button class="chip" data-filter="banks">Banks</button>
-      <button class="chip" data-filter="top">Top</button>
+        <div class="sheetList">
+          <button class="sheetItem" data-open="reviews" type="button">Відгуки</button>
+          <button class="sheetItem" data-open="faq" type="button">FAQ</button>
+          <button class="sheetItem" data-open="contacts" type="button">Контакти</button>
+          <button class="sheetItem" data-open="aml" type="button">AML &amp; KYC</button>
+        </div>
+      </div>
     </div>
 
-    <div class="list" id="list"></div>
+    <!-- BOTTOM SHEET: CURRENCY PICKER -->
+    <div class="sheet isHidden" id="pickerSheet" aria-hidden="true">
+      <div class="sheetBackdrop" data-close="1"></div>
+      <div class="sheetPanel" role="dialog" aria-label="Picker">
+        <div class="sheetHandle"></div>
+        <div class="sheetHead">
+          <div class="sheetTitle" id="pickerTitle">Вибір</div>
+          <button class="sheetClose" data-close="1" type="button">✕</button>
+        </div>
+
+        <input class="search" id="pickerSearch" type="text" placeholder="Search..." autocomplete="off" />
+
+        <!-- quick filter -->
+        <div class="chips" id="pickerChips">
+          <button class="chip isActive" data-chip="all" type="button">All</button>
+          <button class="chip" data-chip="usdt" type="button">USDT</button>
+          <button class="chip" data-chip="usdc" type="button">USDC</button>
+          <button class="chip" data-chip="banks" type="button">Banks</button>
+          <button class="chip" data-chip="top" type="button">Top</button>
+        </div>
+
+        <div class="list" id="pickerList"></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
