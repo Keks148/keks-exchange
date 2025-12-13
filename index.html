@@ -4,107 +4,156 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>KeksSwap</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-  <div class="bg"></div>
-
-  <div class="wrap">
+  <div id="app" class="app">
+    <!-- Top / Header -->
     <header class="top">
-      <div class="topbar">
-        <img class="brand" src="logo.png" alt="KeksSwap" />
+      <div class="top-inner">
+        <div class="brand">
+          <!-- ЛОГО: положи свой файл сюда. Важно: прозрачный PNG -->
+          <img id="brandLogo" class="brand-logo" src="logos/keks-logo.png" alt="KeksSwap" />
+        </div>
 
-        <button id="langBtn" class="lang" type="button" aria-label="Language">
-          <span id="langText">UA</span> <span class="chev">▾</span>
+        <button id="langBtn" class="lang-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span id="langBtnText">UA</span>
+          <span class="chev">▾</span>
         </button>
+
+        <div id="langMenu" class="lang-menu" role="listbox" aria-label="Language" hidden>
+          <button class="lang-item" data-lang="uk" type="button">UA</button>
+          <button class="lang-item" data-lang="en" type="button">EN</button>
+          <button class="lang-item" data-lang="pl" type="button">PL</button>
+        </div>
       </div>
 
-      <nav class="tabs">
-        <button class="tab active" data-tab="swap" type="button" id="tabSwap"></button>
-        <button class="tab" data-tab="rules" type="button" id="tabRules"></button>
-        <button class="tab" data-tab="account" type="button" id="tabAccount"></button>
-        <button class="tab" data-tab="more" type="button" id="tabMore"></button>
+      <!-- Menu Tabs -->
+      <nav class="tabs" aria-label="Menu">
+        <button class="tab is-active" data-tab="exchange" type="button"><span data-i18n="tab_exchange">Обмін</span></button>
+        <button class="tab" data-tab="rules" type="button"><span data-i18n="tab_rules">Правила</span></button>
+        <button class="tab" data-tab="account" type="button"><span data-i18n="tab_account">Акаунт</span></button>
+        <button class="tab" data-tab="more" type="button"><span data-i18n="tab_more">Ще</span></button>
       </nav>
     </header>
 
+    <!-- Main -->
     <main class="main">
-      <!-- SWAP -->
-      <section class="page active" data-page="swap">
+      <!-- EXCHANGE -->
+      <section class="panel is-active" data-panel="exchange">
         <div class="card">
-          <div class="row">
-            <div class="lbl" id="lblGive"></div>
-
-            <div class="picker">
-              <div class="ico"><img id="giveIcon" alt=""></div>
-              <select id="giveSelect" class="sel"></select>
-              <span class="down">▾</span>
-            </div>
-
-            <div class="amt">
-              <input id="giveAmount" inputmode="decimal" placeholder="0" />
-            </div>
+          <div class="row-title">
+            <span class="label" data-i18n="give">Віддаєте</span>
           </div>
 
-          <div class="swapline">
-            <button id="swapBtn" class="swapbtn" type="button" aria-label="Swap">
-              ⇄
+          <button id="giveSelectBtn" class="select" type="button">
+            <span class="ico"><img id="giveIcon" alt="" /></span>
+            <span class="select-text">
+              <span id="giveName" class="name">Monobank</span>
+              <span id="giveCode" class="sub">UAH</span>
+            </span>
+            <span class="caret">▾</span>
+          </button>
+
+          <div class="amount-wrap">
+            <input id="giveAmount" class="amount" inputmode="decimal" type="text" value="100" />
+          </div>
+
+          <div class="swap-wrap">
+            <button id="swapBtn" class="swap-btn" type="button" aria-label="Swap">
+              <span class="swap-ico">⇄</span>
             </button>
           </div>
 
-          <div class="row">
-            <div class="lbl" id="lblGet"></div>
-
-            <div class="picker">
-              <div class="ico"><img id="getIcon" alt=""></div>
-              <select id="getSelect" class="sel"></select>
-              <span class="down">▾</span>
-            </div>
-
-            <div class="amt">
-              <input id="getAmount" inputmode="decimal" placeholder="0" readonly />
-            </div>
+          <div class="row-title mt">
+            <span class="label" data-i18n="get">Отримуєте</span>
           </div>
 
-          <div class="rate" id="rateLine"></div>
+          <button id="getSelectBtn" class="select" type="button">
+            <span class="ico"><img id="getIcon" alt="" /></span>
+            <span class="select-text">
+              <span id="getName" class="name">Bitcoin</span>
+              <span id="getCode" class="sub">BTC</span>
+            </span>
+            <span class="caret">▾</span>
+          </button>
 
-          <button id="applyBtn" class="cta" type="button"></button>
-          <div class="space"></div>
+          <div class="amount-wrap">
+            <input id="getAmount" class="amount amount-muted" inputmode="decimal" type="text" value="0" />
+          </div>
+
+          <div class="rate-line">
+            <span class="rate-label" data-i18n="rate">Курс:</span>
+            <span id="rateText" class="rate-value">—</span>
+          </div>
+
+          <button id="createOrderBtn" class="cta" type="button">
+            <span data-i18n="create_order">Створити заявку</span>
+          </button>
+
+          <div id="orderToast" class="toast" hidden></div>
         </div>
       </section>
 
       <!-- RULES -->
-      <section class="page" data-page="rules">
-        <div class="card simple">
-          <div class="h" id="rulesTitle"></div>
-          <div class="p" id="rulesText"></div>
+      <section class="panel" data-panel="rules">
+        <div class="card">
+          <h2 class="h2" data-i18n="rules_title">Правила</h2>
+          <p class="p" data-i18n="rules_text">
+            Тут будуть правила обміну (поки заглушка).
+          </p>
         </div>
       </section>
 
       <!-- ACCOUNT -->
-      <section class="page" data-page="account">
-        <div class="card simple">
-          <div class="h" id="accTitle"></div>
-          <div class="p" id="accText"></div>
-          <div class="grid2">
-            <button class="cta small" id="loginBtn" type="button"></button>
-            <button class="btn" id="regBtn" type="button"></button>
+      <section class="panel" data-panel="account">
+        <div class="card">
+          <h2 class="h2" data-i18n="account_title">Акаунт</h2>
+          <p class="p" data-i18n="account_text">
+            Тут буде вхід/реєстрація та далі KYC (поки без підключення).
+          </p>
+
+          <div class="btn-row">
+            <button class="cta small" type="button" id="loginBtn"><span data-i18n="login">Увійти</span></button>
+            <button class="ghost" type="button" id="registerBtn"><span data-i18n="register">Реєстрація</span></button>
           </div>
         </div>
       </section>
 
       <!-- MORE -->
-      <section class="page" data-page="more">
-        <div class="card simple">
-          <div class="h" id="moreTitle"></div>
-          <div class="stack">
-            <button class="btn" id="reviewsBtn" type="button"></button>
-            <button class="btn" id="faqBtn" type="button"></button>
-            <button class="btn" id="contactsBtn" type="button"></button>
+      <section class="panel" data-panel="more">
+        <div class="card">
+          <h2 class="h2" data-i18n="more_title">Ще</h2>
+          <div class="list">
+            <button class="list-item" type="button" id="faqBtn"><span data-i18n="faq">FAQ</span></button>
+            <button class="list-item" type="button" id="contactsBtn"><span data-i18n="contacts">Контакти</span></button>
+            <button class="list-item" type="button" id="reviewsBtn"><span data-i18n="reviews">Відгуки</span></button>
           </div>
         </div>
       </section>
     </main>
+
+    <!-- Bottom Sheet (НЕ блокирует клики, только когда открыт) -->
+    <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+
+    <div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-label="Select">
+      <div class="sheet-head">
+        <div id="sheetTitle" class="sheet-title">Вибір</div>
+        <button id="sheetClose" class="sheet-close" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <div class="sheet-search">
+        <input id="sheetSearch" type="text" class="sheet-input" placeholder="Пошук..." />
+      </div>
+
+      <div class="sheet-tabs" aria-label="Types">
+        <button class="sheet-tab is-active" data-type="banks" type="button"><span data-i18n="type_banks">Банки</span></button>
+        <button class="sheet-tab" data-type="wallets" type="button"><span data-i18n="type_wallets">Гаманці</span></button>
+        <button class="sheet-tab" data-type="crypto" type="button"><span data-i18n="type_crypto">Крипто</span></button>
+      </div>
+
+      <div id="sheetList" class="sheet-list"></div>
+    </div>
   </div>
 
   <script src="app.js"></script>
