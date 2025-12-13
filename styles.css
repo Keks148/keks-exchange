@@ -32,8 +32,7 @@ body{
 
 #app{
   min-height:100%;
-  /* ВАЖНО: опускаем всё ниже телеграм-кнопок + делаем шапку “дышать” */
-  padding: calc(26px + var(--safe-top)) 14px calc(16px + var(--safe-bottom));
+  padding: calc(22px + var(--safe-top)) 14px calc(16px + var(--safe-bottom));
 }
 
 .container{ max-width: 440px; margin: 0 auto; }
@@ -51,74 +50,63 @@ body{
   position: sticky;
   top: 0;
   z-index: 20;
-  /* ШАПКА ЧУТЬ БОЛЬШЕ */
-  padding: 16px 14px 12px;
+
+  /* ШАПКА “СЛИВАЕТСЯ” — меньше стекла/рамки */
+  background: linear-gradient(180deg, #ffffff9a, #ffffff66);
+  border: 1px solid #ffffff80;
+  box-shadow: 0 12px 34px rgba(30,26,72,.10);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  padding: 14px 14px 12px;
   margin-bottom: 14px;
+  border-radius: 34px;
 }
 
 .topRow{
   display:flex;
   align-items:center;
-  gap: 12px;
-  position: relative;
+  gap: 10px;
 }
-
-.closeBtn{
-  width: 44px;
-  height: 38px;
-  border-radius: 999px;
-  border: 1px solid var(--stroke);
-  background: #ffffffa0;
-  box-shadow: 0 8px 20px rgba(30,26,72,.10);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  user-select:none;
-}
-.closeBtn:active{ transform: translateY(1px); }
 
 .brand{
-  flex:1;
   display:flex;
   align-items:center;
-  justify-content:center;
   gap: 10px;
-  padding: 4px 6px;
-  min-width: 0;
+  padding: 2px 0;
 }
 
 .brandLogo{
-  /* ЛОГО КЕКС БОЛЬШЕ + ФОН-ПЛАШКА */
-  width: 46px;
-  height: 46px;
-  border-radius: 18px;
-  overflow:hidden;
+  /* ЛОГО +150% и БЕЗ ФОНА/РАМОК */
+  width: 70px;
+  height: 70px;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  flex: 0 0 auto;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 14px 28px rgba(30,26,72,.18);
-  background: linear-gradient(180deg, #ffffff, #ffffffcc);
-  border: 1px solid var(--stroke);
-  flex: 0 0 auto;
 }
 .brandLogo img{
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.18);
+  transform: none;
 }
 
 .brandTitle{
+  display:flex;
+  flex-direction: column;
+  line-height: 0.92;
+  gap: 2px;
+
   font-family: Unbounded, Rubik, system-ui, sans-serif;
-  font-weight: 800;
-  /* ЧТОБ “KeksSwap” ВСЕГДА ВЛАЗИЛ */
+  font-weight: 900;
   font-size: 22px;
-  line-height: 1;
   letter-spacing: .2px;
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
 
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 260% 260%;
@@ -127,40 +115,47 @@ body{
   color: transparent;
   animation: gradMove 6s ease-in-out infinite;
 }
+.brandTitle span{ white-space: nowrap; }
 
+.langWrap{
+  margin-left: auto;
+  position: relative;
+}
+
+/* КНОПКА ЯЗЫКА В 2 РАЗА МЕНЬШЕ */
 .langBtn{
-  height: 36px;
-  min-width: 60px;
-  padding: 0 10px;
+  height: 28px;
+  min-width: 42px;
+  padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid var(--stroke);
-  background: #ffffffa8;
-  box-shadow: 0 8px 20px rgba(30,26,72,.10);
+  border: 1px solid #ffffffaa;
+  background: #ffffff88;
+  box-shadow: 0 8px 18px rgba(30,26,72,.08);
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 8px;
+  gap: 6px;
   cursor:pointer;
   user-select:none;
 }
+.langBtn .code{
+  font-weight: 900;
+  font-size: 11px;
+  color: rgba(20,20,30,.65);
+}
 .langBtn .chev{
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid rgba(20,20,30,.55);
-  border-bottom: 2px solid rgba(20,20,30,.55);
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(20,20,30,.50);
+  border-bottom: 2px solid rgba(20,20,30,.50);
   transform: rotate(45deg);
   margin-top: -2px;
-}
-.langBtn .code{
-  font-weight: 700;
-  font-size: 12px;
-  color: rgba(20,20,30,.7);
 }
 
 .langMenu{
   position: absolute;
-  right: 10px;
-  top: 52px;
+  right: 0;
+  top: 34px;
   width: 140px;
   border-radius: 18px;
   border: 1px solid var(--stroke);
@@ -175,33 +170,33 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  font-weight: 700;
+  font-weight: 800;
 }
 .langItem:hover{ background:#f2f1ff; }
 .langItem small{
-  font-weight: 600;
+  font-weight: 700;
   color: rgba(20,20,30,.55);
 }
 .langItem.active{
-  background: linear-gradient(90deg, rgba(122,92,255,.18), rgba(165,107,255,.18));
+  background: linear-gradient(90deg, rgba(122,92,255,.16), rgba(165,107,255,.16));
 }
 
 .navRow{
-  margin-top: 12px;
+  margin-top: 10px;
   display:flex;
   gap: 10px;
 }
 
 .pillBtn{
   flex: 1;
-  height: 42px;
+  height: 40px;
   border-radius: 999px;
-  border: 1px solid var(--stroke);
-  background: #ffffffb0;
-  box-shadow: 0 10px 22px rgba(30,26,72,.10);
+  border: 1px solid #ffffffaa;
+  background: #ffffff90;
+  box-shadow: 0 10px 22px rgba(30,26,72,.08);
   cursor:pointer;
-  font-weight: 800;
-  font-size: 14px;
+  font-weight: 900;
+  font-size: 13px;
   letter-spacing: .2px;
   user-select:none;
   display:flex;
@@ -216,7 +211,7 @@ body{
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 280% 280%;
   animation: gradMove 6s ease-in-out infinite;
-  box-shadow: 0 18px 50px rgba(122,92,255,.25);
+  box-shadow: 0 18px 50px rgba(122,92,255,.22);
 }
 
 @keyframes gradMove{
@@ -243,13 +238,13 @@ body{
 .sub{
   margin: 0 0 10px 0;
   color: rgba(20,20,30,.55);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .sectionLabel{
   margin: 14px 0 8px 2px;
   color: rgba(20,20,30,.55);
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing:.2px;
 }
 
@@ -303,15 +298,15 @@ body{
 .selectBtn .code{
   margin-top: 2px;
   color: rgba(20,20,30,.55);
-  font-weight: 800;
+  font-weight: 900;
   font-size: 12px;
 }
 .selectBtn .right{ display:flex; align-items:center; gap: 8px; }
 
-/* TAG: только Банк/Крипто (кошелек не покажем в JS) */
+/* TAG справа в селекте оставляем (Банк/Крипто) */
 .tag{
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 900;
   padding: 6px 10px;
   border-radius: 999px;
   background: #ffffffaa;
@@ -327,9 +322,12 @@ body{
   margin-top: -3px;
 }
 
-/* СУММА: делаем “ячейку” как у селекта (меньше/тоньше), и цифры чуть меньше */
+/* СУММА: уменьшить высоту в половину */
 .field.amountField{
-  padding: 8px 12px;
+  padding: 4px 12px;
+  min-height: 44px;
+  display:flex;
+  align-items:center;
 }
 .input{
   width: 100%;
@@ -338,18 +336,18 @@ body{
   background: transparent;
   font-family: Unbounded, Rubik, system-ui, sans-serif;
   font-weight: 800;
-  font-size: 34px; /* было 40 */
+  font-size: 30px;
   color: rgba(10,10,20,.85);
   padding: 0;
 }
 
 .swapRow{ display:flex; justify-content:center; margin: 10px 0 8px; }
 
-/* SWAP: обычные стрелки ↔, градиент, тот же размер */
+/* SWAP: на 40% меньше + знак обмена */
 .swapBtn{
-  width: 58px;
-  height: 58px;
-  border-radius: 22px;
+  width: 35px;   /* было 58 */
+  height: 35px;  /* было 58 */
+  border-radius: 14px;
   border: 1px solid transparent;
   cursor:pointer;
   user-select:none;
@@ -357,7 +355,7 @@ body{
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 280% 280%;
   animation: gradMove 6s ease-in-out infinite;
-  box-shadow: 0 18px 50px rgba(122,92,255,.25);
+  box-shadow: 0 14px 34px rgba(122,92,255,.22);
 
   display:flex;
   align-items:center;
@@ -366,9 +364,9 @@ body{
 .swapBtn:active{ transform: translateY(1px); }
 .swapArrow{
   font-family: Unbounded, Rubik, system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 24px;
-  color: rgba(255,255,255,.96);
+  font-weight: 900;
+  font-size: 18px;
+  color: rgba(255,255,255,.98);
   transform: translateY(-1px);
 }
 
@@ -379,7 +377,7 @@ body{
   justify-content:space-between;
   gap: 10px;
   color: rgba(20,20,30,.50);
-  font-weight: 800;
+  font-weight: 900;
   font-size: 13px;
 }
 .rateLine .value{ color: rgba(20,20,30,.70); }
@@ -401,7 +399,7 @@ body{
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 280% 280%;
   animation: gradMove 6s ease-in-out infinite;
-  box-shadow: 0 18px 50px rgba(122,92,255,.25);
+  box-shadow: 0 18px 50px rgba(122,92,255,.22);
 }
 .primaryBtn:active{ transform: translateY(1px); }
 
@@ -464,7 +462,7 @@ body{
 }
 .sheetHeader .t{
   font-family: Unbounded, Rubik, system-ui, sans-serif;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 18px;
 }
 .sheetHeader .x{
@@ -487,7 +485,7 @@ body{
   background: #f6f6ff;
   outline:none;
   padding: 0 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .sheetList{
@@ -515,26 +513,19 @@ body{
   text-overflow: ellipsis;
 }
 .item .meta .c{
-  font-weight: 800;
+  font-weight: 900;
   color: rgba(20,20,30,.55);
   font-size: 12px;
   margin-top: 2px;
 }
 
-.item .pill{
-  font-size: 12px;
-  font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(120,120,180,.18);
-  background:#ffffffcc;
-  color: rgba(20,20,30,.55);
-}
+/* ВАЖНО: ПРАВЫЕ ПЛАШКИ В МОДАЛКЕ УБИРАЕМ — поэтому pill скрываем */
+.item .pill{ display:none; }
 
 .smallHint{
   margin-top: 8px;
   color: rgba(20,20,30,.45);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 12px;
 }
 .hrSpace{ height: 8px; }
