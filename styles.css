@@ -51,7 +51,6 @@ body{
   top: 0;
   z-index: 20;
 
-  /* ШАПКА “СЛИВАЕТСЯ” — меньше стекла/рамки */
   background: linear-gradient(180deg, #ffffff9a, #ffffff66);
   border: 1px solid #ffffff80;
   box-shadow: 0 12px 34px rgba(30,26,72,.10);
@@ -72,12 +71,11 @@ body{
 .brand{
   display:flex;
   align-items:center;
-  gap: 10px;
+  gap: 6px; /* было 10 — лого ближе к надписи */
   padding: 2px 0;
 }
 
 .brandLogo{
-  /* ЛОГО +150% и БЕЗ ФОНА/РАМОК */
   width: 70px;
   height: 70px;
   border-radius: 0;
@@ -94,7 +92,6 @@ body{
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: none;
 }
 
 .brandTitle{
@@ -241,8 +238,9 @@ body{
   font-weight: 800;
 }
 
+/* Поднимаем секции ближе друг к другу */
 .sectionLabel{
-  margin: 14px 0 8px 2px;
+  margin: 10px 0 6px 2px; /* было 14/8 */
   color: rgba(20,20,30,.55);
   font-weight: 900;
   letter-spacing:.2px;
@@ -303,7 +301,6 @@ body{
 }
 .selectBtn .right{ display:flex; align-items:center; gap: 8px; }
 
-/* TAG справа в селекте оставляем (Банк/Крипто) */
 .tag{
   font-size: 12px;
   font-weight: 900;
@@ -313,6 +310,7 @@ body{
   border: 1px solid var(--stroke);
   color: rgba(20,20,30,.55);
 }
+
 .chevDown{
   width: 12px;
   height: 12px;
@@ -322,10 +320,10 @@ body{
   margin-top: -3px;
 }
 
-/* СУММА: уменьшить высоту в половину */
+/* СУММА: меньше высота + меньше шрифт на ~35% */
 .field.amountField{
   padding: 4px 12px;
-  min-height: 44px;
+  min-height: 42px;   /* чуть компактнее */
   display:flex;
   align-items:center;
 }
@@ -335,26 +333,34 @@ body{
   outline: none;
   background: transparent;
   font-family: Unbounded, Rubik, system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 30px;
+  font-weight: 850;
+  font-size: 20px; /* было 30px */
   color: rgba(10,10,20,.85);
   padding: 0;
 }
 
-.swapRow{ display:flex; justify-content:center; margin: 10px 0 8px; }
+/* меньше вертикальных "прокладок" */
+.hrSpace{ height: 6px; }
 
-/* SWAP: на 40% меньше + знак обмена */
+.swapRow{
+  display:flex;
+  justify-content:center;
+  margin: 6px 0 6px; /* было 10/8 — ближе */
+}
+
+/* SWAP: оставляем размер как у тебя сейчас (как на скрине),
+   но добавляем микро-пульс (очень мягко) */
 .swapBtn{
-  width: 35px;   /* было 58 */
-  height: 35px;  /* было 58 */
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
   border: 1px solid transparent;
   cursor:pointer;
   user-select:none;
 
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 280% 280%;
-  animation: gradMove 6s ease-in-out infinite;
+  animation: gradMove 6s ease-in-out infinite, swapPulse 2.6s ease-in-out infinite;
   box-shadow: 0 14px 34px rgba(122,92,255,.22);
 
   display:flex;
@@ -362,34 +368,40 @@ body{
   justify-content:center;
 }
 .swapBtn:active{ transform: translateY(1px); }
+
+@keyframes swapPulse{
+  0%,100%{ transform: translateY(0) scale(1); }
+  50%{ transform: translateY(-1px) scale(1.03); }
+}
+
 .swapArrow{
   font-family: Unbounded, Rubik, system-ui, sans-serif;
   font-weight: 900;
-  font-size: 18px;
+  font-size: 20px;
   color: rgba(255,255,255,.98);
   transform: translateY(-1px);
 }
 
 .rateLine{
-  margin-top: 8px;
+  margin-top: 6px; /* было 8 — ближе */
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap: 10px;
-  color: rgba(20,20,30,.50);
+  color: rgba(20,20,30,.45);
   font-weight: 900;
-  font-size: 13px;
+  font-size: 12px;
 }
-.rateLine .value{ color: rgba(20,20,30,.70); }
+.rateLine .value{ color: rgba(20,20,30,.65); }
 
 .primaryBtn{
   width:100%;
-  height: 54px;
+  height: 52px; /* немного компактнее */
   border-radius: 999px;
   border: 0;
   cursor:pointer;
   user-select:none;
-  margin-top: 12px;
+  margin-top: 10px; /* ближе к курсу */
 
   font-weight: 900;
   font-size: 16px;
@@ -519,7 +531,7 @@ body{
   margin-top: 2px;
 }
 
-/* ВАЖНО: ПРАВЫЕ ПЛАШКИ В МОДАЛКЕ УБИРАЕМ — поэтому pill скрываем */
+/* правые плашки в модалке скрыты */
 .item .pill{ display:none; }
 
 .smallHint{
@@ -528,4 +540,3 @@ body{
   font-weight: 800;
   font-size: 12px;
 }
-.hrSpace{ height: 8px; }
