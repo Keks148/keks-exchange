@@ -1,234 +1,333 @@
-// ---------- DATA ----------
-const ASSETS = {
+// ====== DATA ======
+// IMPORTANT: проверь названия файлов в /logos/ (путь должен совпадать!)
+const DATA = {
   banks: [
-    { id:"monobank", name:"Monobank", code:"UAH", icon:"logos/banks/monobank.png" },
-    { id:"privat", name:"PrivatBank", code:"UAH", icon:"logos/banks/privat.png" },
-    { id:"oschad", name:"Oschadbank", code:"UAH", icon:"logos/banks/oschadbank.png" }
+    { id: "monobank", name: "Monobank", code: "UAH", icon: "logos/banks/monobank.png" },
+    { id: "privatbank", name: "PrivatBank", code: "UAH", icon: "logos/banks/privatbank.png" },
+    { id: "oschadbank", name: "Oschadbank", code: "UAH", icon: "logos/banks/oschadbank.png" },
+    { id: "pumb", name: "PUMB", code: "UAH", icon: "logos/banks/pumb.png" },
+    { id: "abank", name: "A-Bank", code: "UAH", icon: "logos/banks/abank.png" },
+    { id: "sense", name: "Sense Bank", code: "UAH", icon: "logos/banks/sense.png" }
   ],
   crypto: [
-    { id:"btc", name:"Bitcoin", code:"BTC", icon:"logos/crypto/btc.png" },
-    { id:"eth", name:"Ethereum", code:"ETH", icon:"logos/crypto/eth.png" },
-    { id:"usdt", name:"Tether", code:"USDT", icon:"logos/crypto/usdt.png" }
+    { id: "btc", name: "Bitcoin", code: "BTC", icon: "logos/crypto/btc.png" },
+    { id: "eth", name: "Ethereum", code: "ETH", icon: "logos/crypto/eth.png" },
+    { id: "usdt", name: "Tether", code: "USDT", icon: "logos/crypto/usdt.png" }
   ]
 };
 
+// ====== I18N ======
 const I18N = {
-  UA: {
-    menu: { swap:"Обмін", rules:"Правила", faq:"FAQ", contacts:"Контакти", account:"Акаунт" },
-    give:"Віддаєте",
-    get:"Отримуєте",
-    ratePrefix:"Курс:",
-    submit:"Створити заявку",
-    pickerGive:"Вибір (віддаєте)",
-    pickerGet:"Вибір (отримуєте)",
-    search:"Пошук..."
+  ua: {
+    tabs: { exchange: "Обмін", rules: "Правила", account: "Акаунт", more: "Ще" },
+    give: "Віддаєте",
+    get: "Отримуєте",
+    rate: "Курс:",
+    submit: "Створити заявку",
+    rulesTitle: "Правила",
+    rulesText: "Тут будуть правила обміну. (Поки заглушка)",
+    accTitle: "Акаунт",
+    accText: "Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
+    login: "Увійти",
+    register: "Реєстрація",
+    moreTitle: "Ще",
+    reviews: "Відгуки",
+    faq: "FAQ",
+    contacts: "Контакти",
+    modalGive: "Вибір (віддаєте)",
+    modalGet: "Вибір (отримуєте)",
+    search: "Пошук..."
   },
-  EN: {
-    menu: { swap:"Exchange", rules:"Rules", faq:"FAQ", contacts:"Contacts", account:"Account" },
-    give:"You send",
-    get:"You get",
-    ratePrefix:"Rate:",
-    submit:"Create request",
-    pickerGive:"Select (send)",
-    pickerGet:"Select (get)",
-    search:"Search..."
+  en: {
+    tabs: { exchange: "Exchange", rules: "Rules", account: "Account", more: "More" },
+    give: "You give",
+    get: "You get",
+    rate: "Rate:",
+    submit: "Create request",
+    rulesTitle: "Rules",
+    rulesText: "Exchange rules will be here. (Placeholder)",
+    accTitle: "Account",
+    accText: "Login/registration and then KYC (not connected yet).",
+    login: "Log in",
+    register: "Sign up",
+    moreTitle: "More",
+    reviews: "Reviews",
+    faq: "FAQ",
+    contacts: "Contacts",
+    modalGive: "Select (you give)",
+    modalGet: "Select (you get)",
+    search: "Search..."
   },
-  PL: {
-    menu: { swap:"Wymiana", rules:"Zasady", faq:"FAQ", contacts:"Kontakty", account:"Konto" },
-    give:"Oddajesz",
-    get:"Otrzymujesz",
-    ratePrefix:"Kurs:",
-    submit:"Utwórz zgłoszenie",
-    pickerGive:"Wybór (oddajesz)",
-    pickerGet:"Wybór (otrzymujesz)",
-    search:"Szukaj..."
+  pl: {
+    tabs: { exchange: "Wymiana", rules: "Zasady", account: "Konto", more: "Więcej" },
+    give: "Oddajesz",
+    get: "Otrzymujesz",
+    rate: "Kurs:",
+    submit: "Utwórz zlecenie",
+    rulesTitle: "Zasady",
+    rulesText: "Tutaj będą zasady wymiany. (Zaślepka)",
+    accTitle: "Konto",
+    accText: "Logowanie/rejestracja i później KYC (jeszcze niepodłączone).",
+    login: "Zaloguj",
+    register: "Rejestracja",
+    moreTitle: "Więcej",
+    reviews: "Opinie",
+    faq: "FAQ",
+    contacts: "Kontakt",
+    modalGive: "Wybór (oddajesz)",
+    modalGet: "Wybór (otrzymujesz)",
+    search: "Szukaj..."
   }
 };
 
-// ---------- STATE ----------
-let lang = "UA";
-let give = ASSETS.banks[0];
-let get = ASSETS.crypto[0];
-
-// ---------- DOM ----------
-const pages = {
-  swap: document.getElementById("page-swap"),
-  rules: document.getElementById("page-rules"),
-  faq: document.getElementById("page-faq"),
-  contacts: document.getElementById("page-contacts"),
-  account: document.getElementById("page-account"),
+// ====== STATE ======
+let state = {
+  lang: "ua",
+  page: "exchange",
+  give: DATA.banks[0],
+  get: DATA.crypto[0],
+  giveAmount: 100
 };
 
-const menuBtns = [...document.querySelectorAll(".menu-btn")];
+let modalMode = "give"; // "give" | "get"
 
-const giveSelect = document.getElementById("giveSelect");
-const getSelect = document.getElementById("getSelect");
+// ====== HELPERS ======
+function $(id){ return document.getElementById(id); }
 
-const giveIcon = document.getElementById("giveIcon");
-const giveName = document.getElementById("giveName");
-const giveCode = document.getElementById("giveCode");
-
-const getIcon = document.getElementById("getIcon");
-const getName = document.getElementById("getName");
-const getCode = document.getElementById("getCode");
-
-const giveAmount = document.getElementById("giveAmount");
-const getAmount = document.getElementById("getAmount");
-const swapBtn = document.getElementById("swapBtn");
-
-const rateText = document.getElementById("rateText");
-const submitBtn = document.getElementById("submitBtn");
-
-const labels = [...document.querySelectorAll(".label")];
-const pageTitle = document.querySelector("#page-swap .page-title");
-
-const pills = [...document.querySelectorAll(".pill")];
-
-const pickerModal = document.getElementById("pickerModal");
-const pickerTitle = document.getElementById("pickerTitle");
-const pickerClose = document.getElementById("pickerClose");
-const pickerBackdrop = document.getElementById("pickerBackdrop");
-const pickerSearch = document.getElementById("pickerSearch");
-const pickerList = document.getElementById("pickerList");
-
-let pickerMode = "give"; // give | get
-
-// ---------- HELPERS ----------
-function showPage(key){
-  Object.keys(pages).forEach(k => pages[k].classList.toggle("hidden", k !== key));
-  menuBtns.forEach(b => b.classList.toggle("active", b.dataset.page === key));
+function setImgSafe(imgEl, src){
+  imgEl.src = src;
+  imgEl.onerror = () => {
+    // fallback: просто пустая "плашка", чтобы не было битой картинки
+    imgEl.onerror = null;
+    imgEl.src =
+      "data:image/svg+xml;charset=utf-8," +
+      encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+        <rect width="100%" height="100%" rx="36" ry="36" fill="#f1f1f7"/>
+        <path d="M22 44l8-10 7 9 6-7 9 12" fill="none" stroke="#c9c9d8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`);
+  };
 }
 
-function applyLang(){
-  const t = I18N[lang];
+function formatRate(uah, assetCode){
+  // заглушка: просто пример, чтобы выглядело как на скрине
+  // можно потом подключить реальный курс
+  let r = 0.000000625;
+  if (assetCode === "ETH") r = 0.000019;
+  if (assetCode === "USDT") r = 0.024;
+  return `1 UAH ≈ ${r} ${assetCode}`;
+}
 
-  // menu
-  menuBtns.forEach(b=>{
-    const k = b.dataset.page;
-    b.textContent = t.menu[k] ?? b.textContent;
+function calcGetAmount(giveAmount, assetCode){
+  let r = 0.000000625;
+  if (assetCode === "ETH") r = 0.000019;
+  if (assetCode === "USDT") r = 0.024;
+  const x = Number(giveAmount || 0) * r;
+  // показываем красиво
+  if (assetCode === "USDT") return x.toFixed(2);
+  return x.toFixed(9).replace(/0+$/,'').replace(/\.$/,'');
+}
+
+function renderTexts(){
+  const t = I18N[state.lang];
+
+  $("tabExchange").textContent = t.tabs.exchange;
+  $("tabRules").textContent = t.tabs.rules;
+  $("tabAccount").textContent = t.tabs.account;
+  $("tabMore").textContent = t.tabs.more;
+
+  $("lblGive").textContent = t.give;
+  $("lblGet").textContent = t.get;
+  $("rateLbl").textContent = t.rate;
+
+  $("submitBtn").textContent = t.submit;
+
+  $("rulesTitle").textContent = t.rulesTitle;
+  $("rulesText").textContent = t.rulesText;
+
+  $("accTitle").textContent = t.accTitle;
+  $("accText").textContent = t.accText;
+  $("btnLogin").textContent = t.login;
+  $("btnRegister").textContent = t.register;
+
+  $("moreTitle").textContent = t.moreTitle;
+  $("btnReviews").textContent = t.reviews;
+  $("btnFaq").textContent = t.faq;
+  $("btnContacts").textContent = t.contacts;
+
+  $("modalSearch").placeholder = t.search;
+}
+
+function renderExchange(){
+  // give
+  $("giveName").textContent = state.give.name;
+  $("giveCode").textContent = state.give.code;
+  setImgSafe($("giveIcon"), state.give.icon);
+
+  // get
+  $("getName").textContent = state.get.name;
+  $("getCode").textContent = state.get.code;
+  setImgSafe($("getIcon"), state.get.icon);
+
+  // amounts
+  $("giveAmount").value = String(state.giveAmount ?? "");
+  $("getAmount").value = calcGetAmount(state.giveAmount, state.get.code);
+
+  // rate
+  $("rateValue").textContent = formatRate(1, state.get.code);
+}
+
+function setPage(page){
+  state.page = page;
+
+  // tabs ui
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.classList.toggle("active", b.dataset.page === page);
   });
 
-  // labels and buttons
-  labels[0].textContent = t.give;
-  labels[1].textContent = t.get;
-
-  pageTitle.textContent = t.menu.swap; // заголовок страницы обмен
-  submitBtn.textContent = t.submit;
-
-  pickerSearch.placeholder = t.search;
-
-  // rate prefix
-  updateRate();
+  // pages
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("page-active"));
+  if (page === "exchange") $("pageExchange").classList.add("page-active");
+  if (page === "rules") $("pageRules").classList.add("page-active");
+  if (page === "account") $("pageAccount").classList.add("page-active");
+  if (page === "more") $("pageMore").classList.add("page-active");
 }
 
-function updateUI(){
-  // apply selected assets
-  giveIcon.src = give.icon;
-  giveName.textContent = give.name;
-  giveCode.textContent = give.code;
+function openModal(mode){
+  modalMode = mode;
+  const t = I18N[state.lang];
 
-  getIcon.src = get.icon;
-  getName.textContent = get.name;
-  getCode.textContent = get.code;
+  $("modalTitle").textContent = (mode === "give") ? t.modalGive : t.modalGet;
+  $("modalSearch").value = "";
+  $("modal").classList.remove("hidden");
+  $("modal").setAttribute("aria-hidden", "false");
 
-  updateRate();
+  renderModalList();
+  setTimeout(()=> $("modalSearch").focus(), 50);
 }
 
-function updateRate(){
-  // заглушка (потом подключим реальные курсы)
-  // сейчас просто показывает красивый текст
-  const t = I18N[lang];
-  rateText.textContent = `${t.ratePrefix} 1 ${give.code} ≈ 0.0000000625 ${get.code}`;
+function closeModal(){
+  $("modal").classList.add("hidden");
+  $("modal").setAttribute("aria-hidden", "true");
 }
 
-function openPicker(mode){
-  pickerMode = mode;
-  const t = I18N[lang];
-  pickerTitle.textContent = mode === "give" ? t.pickerGive : t.pickerGet;
-  pickerSearch.value = "";
-  renderPickerList();
-  pickerModal.classList.remove("hidden");
-}
+function renderModalList(){
+  const q = ($("modalSearch").value || "").toLowerCase().trim();
+  const list = (modalMode === "give") ? DATA.banks : DATA.crypto;
 
-function closePicker(){
-  pickerModal.classList.add("hidden");
-}
-
-function renderPickerList(){
-  const q = pickerSearch.value.trim().toLowerCase();
-  const items = pickerMode === "give" ? ASSETS.banks : ASSETS.crypto;
-
-  const filtered = items.filter(a =>
-    a.name.toLowerCase().includes(q) || a.code.toLowerCase().includes(q)
+  const filtered = list.filter(x =>
+    x.name.toLowerCase().includes(q) || x.code.toLowerCase().includes(q)
   );
 
-  pickerList.innerHTML = filtered.map(a => `
-    <button class="item" data-id="${a.id}">
-      <img class="asset-icon" src="${a.icon}" alt="">
-      <div>
-        <div class="item-title">${a.name}</div>
-        <div class="item-sub">${a.code}</div>
-      </div>
-    </button>
-  `).join("");
+  const root = $("modalList");
+  root.innerHTML = "";
 
-  // attach
-  [...pickerList.querySelectorAll(".item")].forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const id = btn.dataset.id;
-      const list = (pickerMode === "give" ? ASSETS.banks : ASSETS.crypto);
-      const selected = list.find(x => x.id === id);
-      if(!selected) return;
+  filtered.forEach(item=>{
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "item";
+    row.innerHTML = `
+      <span class="item-left">
+        <img class="item-icon" alt="" />
+        <span class="item-text">
+          <span class="item-title">${item.name}</span>
+          <span class="item-sub">${item.code}</span>
+        </span>
+      </span>
+    `;
+    const img = row.querySelector("img");
+    setImgSafe(img, item.icon);
 
-      if(pickerMode === "give") give = selected;
-      else get = selected;
+    row.addEventListener("click", ()=>{
+      if (modalMode === "give") state.give = item;
+      else state.get = item;
 
-      updateUI();
-      closePicker();
+      closeModal();
+      renderExchange();
     });
+
+    root.appendChild(row);
   });
 }
 
-// ---------- EVENTS ----------
+function toggleLangMenu(force){
+  const menu = $("langMenu");
+  const willOpen = (typeof force === "boolean") ? force : menu.classList.contains("hidden");
+  menu.classList.toggle("hidden", !willOpen);
+}
 
-// menu
-menuBtns.forEach(b => b.addEventListener("click", ()=> showPage(b.dataset.page)));
-
-// language pills
-pills.forEach(p=>{
-  p.addEventListener("click", ()=>{
-    pills.forEach(x=>x.classList.remove("active"));
-    p.classList.add("active");
-    lang = p.dataset.lang;
-    applyLang();
+// ====== EVENTS ======
+function bind(){
+  // tabs
+  document.querySelectorAll(".tab").forEach(btn=>{
+    btn.addEventListener("click", ()=> setPage(btn.dataset.page));
   });
-});
 
-// selects -> open picker
-giveSelect.addEventListener("click", ()=> openPicker("give"));
-getSelect.addEventListener("click", ()=> openPicker("get"));
+  // selects
+  $("giveSelect").addEventListener("click", ()=> openModal("give"));
+  $("getSelect").addEventListener("click", ()=> openModal("get"));
 
-// picker close
-pickerClose.addEventListener("click", closePicker);
-pickerBackdrop.addEventListener("click", closePicker);
-pickerSearch.addEventListener("input", renderPickerList);
+  // amount input
+  $("giveAmount").addEventListener("input", (e)=>{
+    const raw = String(e.target.value).replace(",", ".");
+    const num = Number(raw);
+    if (!Number.isFinite(num)) return;
+    state.giveAmount = raw;
+    $("getAmount").value = calcGetAmount(raw, state.get.code);
+  });
 
-// swap button
-swapBtn.addEventListener("click", ()=>{
-  const tmp = give;
-  // swap type allowed? здесь просто меняем местами выбранные элементы
-  // но чтобы не ставить крипту в "банки", делаем swap только значений сум
-  const ga = giveAmount.value;
-  giveAmount.value = getAmount.value;
-  getAmount.value = ga;
-});
+  // swap button
+  $("swapBtn").addEventListener("click", ()=>{
+    const tmp = state.give;
+    state.give = state.get;
+    state.get = tmp;
+    // если вдруг поменялись местами банк/крипто — подчищаем:
+    if (!DATA.banks.some(b=>b.id===state.give.id)) state.give = DATA.banks[0];
+    if (!DATA.crypto.some(c=>c.id===state.get.id)) state.get = DATA.crypto[0];
 
-// submit
-submitBtn.addEventListener("click", ()=>{
-  alert("Заявку створено (демо).");
-});
+    renderExchange();
+  });
 
-// ---------- INIT ----------
-showPage("swap");
-applyLang();
-updateUI();
+  // submit button
+  $("submitBtn").addEventListener("click", ()=>{
+    // пока заглушка
+    alert("Заявка: (заглушка) ✅");
+  });
+
+  // modal
+  $("modalClose").addEventListener("click", closeModal);
+  $("modalBackdrop").addEventListener("click", closeModal);
+  $("modalSearch").addEventListener("input", renderModalList);
+
+  // language
+  $("langBtn").addEventListener("click", (e)=>{
+    e.stopPropagation();
+    toggleLangMenu();
+  });
+
+  document.querySelectorAll(".lang-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      state.lang = b.dataset.lang;
+      $("langLabel").textContent = state.lang.toUpperCase();
+      toggleLangMenu(false);
+      renderTexts();
+      renderExchange();
+    });
+  });
+
+  // close lang menu on outside click
+  document.addEventListener("click", ()=>{
+    toggleLangMenu(false);
+  });
+
+  // prevent closing when clicking inside menu
+  $("langMenu").addEventListener("click", (e)=> e.stopPropagation());
+}
+
+// ====== INIT ======
+(function init(){
+  $("langLabel").textContent = state.lang.toUpperCase();
+  bind();
+  renderTexts();
+  setPage("exchange");
+  renderExchange();
+})();
