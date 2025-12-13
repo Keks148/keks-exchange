@@ -1,15 +1,10 @@
 :root{
   --bg1:#f3f1ff;
   --bg2:#eceaff;
-  --card:#ffffffcc;
-
   --ink:#0f1220;
-  --muted:#6a6f86;
 
   --stroke:#ffffffb8;
   --stroke2:#cfd3ff66;
-
-  --pill:#ffffffb0;
 
   --g1:#7a5cff;
   --g2:#a56bff;
@@ -17,9 +12,6 @@
 
   --shadow: 0 18px 60px rgba(30, 26, 72, .16);
   --shadow2: 0 10px 30px rgba(30, 26, 72, .10);
-
-  --r: 26px;
-  --r2: 22px;
 
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
@@ -40,13 +32,11 @@ body{
 
 #app{
   min-height:100%;
-  padding: calc(12px + var(--safe-top)) 14px calc(16px + var(--safe-bottom));
+  /* ВАЖНО: опускаем всё ниже телеграм-кнопок + делаем шапку “дышать” */
+  padding: calc(26px + var(--safe-top)) 14px calc(16px + var(--safe-bottom));
 }
 
-.container{
-  max-width: 440px;
-  margin: 0 auto;
-}
+.container{ max-width: 440px; margin: 0 auto; }
 
 .glass{
   background: linear-gradient(180deg, #ffffffb0, #ffffff80);
@@ -61,20 +51,21 @@ body{
   position: sticky;
   top: 0;
   z-index: 20;
-  padding: 12px 12px 10px;
+  /* ШАПКА ЧУТЬ БОЛЬШЕ */
+  padding: 16px 14px 12px;
   margin-bottom: 14px;
 }
 
 .topRow{
   display:flex;
   align-items:center;
-  gap: 10px;
+  gap: 12px;
   position: relative;
 }
 
 .closeBtn{
-  width: 42px;
-  height: 36px;
+  width: 44px;
+  height: 38px;
   border-radius: 999px;
   border: 1px solid var(--stroke);
   background: #ffffffa0;
@@ -98,15 +89,16 @@ body{
 }
 
 .brandLogo{
-  width: 38px;               /* (увеличили в ~2-3 раза относительно прошлых) */
-  height: 38px;
-  border-radius: 14px;
+  /* ЛОГО КЕКС БОЛЬШЕ + ФОН-ПЛАШКА */
+  width: 46px;
+  height: 46px;
+  border-radius: 18px;
   overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 10px 24px rgba(30,26,72,.16);
-  background: #ffffffcc;
+  box-shadow: 0 14px 28px rgba(30,26,72,.18);
+  background: linear-gradient(180deg, #ffffff, #ffffffcc);
   border: 1px solid var(--stroke);
   flex: 0 0 auto;
 }
@@ -114,18 +106,19 @@ body{
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transform: scale(1.15);
+  transform: scale(1.18);
 }
 
 .brandTitle{
   font-family: Unbounded, Rubik, system-ui, sans-serif;
   font-weight: 800;
+  /* ЧТОБ “KeksSwap” ВСЕГДА ВЛАЗИЛ */
   font-size: 22px;
   line-height: 1;
   letter-spacing: .2px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
   background-size: 260% 260%;
@@ -136,8 +129,8 @@ body{
 }
 
 .langBtn{
-  height: 34px;              /* уменьшили */
-  min-width: 58px;           /* уменьшили */
+  height: 36px;
+  min-width: 60px;
   padding: 0 10px;
   border-radius: 999px;
   border: 1px solid var(--stroke);
@@ -164,11 +157,10 @@ body{
   color: rgba(20,20,30,.7);
 }
 
-/* dropdown lang */
 .langMenu{
   position: absolute;
-  right: 8px;
-  top: 44px;
+  right: 10px;
+  top: 52px;
   width: 140px;
   border-radius: 18px;
   border: 1px solid var(--stroke);
@@ -195,17 +187,17 @@ body{
 }
 
 .navRow{
-  margin-top: 10px;
+  margin-top: 12px;
   display:flex;
   gap: 10px;
 }
 
 .pillBtn{
   flex: 1;
-  height: 42px;              /* меню чуть меньше */
+  height: 42px;
   border-radius: 999px;
   border: 1px solid var(--stroke);
-  background: var(--pill);
+  background: #ffffffb0;
   box-shadow: 0 10px 22px rgba(30,26,72,.10);
   cursor:pointer;
   font-weight: 800;
@@ -218,7 +210,6 @@ body{
   color: rgba(10,10,20,.85);
 }
 .pillBtn:active{ transform: translateY(1px); }
-
 .pillBtn.active{
   border-color: transparent;
   color: white;
@@ -267,17 +258,13 @@ body{
   border: 1px solid var(--stroke2);
   background: #ffffffb8;
   box-shadow: 0 10px 24px rgba(30,26,72,.08);
-  padding: 10px 12px;        /* сделали тоньше */
+  padding: 10px 12px;
 }
 
-.row{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-}
+.row{ display:flex; align-items:center; gap: 10px; }
 
 .iconCircle{
-  width: 38px;               /* компактнее */
+  width: 38px;
   height: 38px;
   border-radius: 16px;
   background: #ffffffcc;
@@ -305,9 +292,7 @@ body{
   user-select:none;
   min-width:0;
 }
-.selectBtn .left{
-  min-width:0;
-}
+.selectBtn .left{ min-width:0; }
 .selectBtn .name{
   font-weight: 900;
   font-size: 18px;
@@ -321,11 +306,9 @@ body{
   font-weight: 800;
   font-size: 12px;
 }
-.selectBtn .right{
-  display:flex;
-  align-items:center;
-  gap: 8px;
-}
+.selectBtn .right{ display:flex; align-items:center; gap: 8px; }
+
+/* TAG: только Банк/Крипто (кошелек не покажем в JS) */
 .tag{
   font-size: 12px;
   font-weight: 800;
@@ -344,6 +327,10 @@ body{
   margin-top: -3px;
 }
 
+/* СУММА: делаем “ячейку” как у селекта (меньше/тоньше), и цифры чуть меньше */
+.field.amountField{
+  padding: 8px 12px;
+}
 .input{
   width: 100%;
   border: none;
@@ -351,21 +338,17 @@ body{
   background: transparent;
   font-family: Unbounded, Rubik, system-ui, sans-serif;
   font-weight: 800;
-  font-size: 40px;           /* крупно, но поле тоньше */
+  font-size: 34px; /* было 40 */
   color: rgba(10,10,20,.85);
-  padding: 2px 0;
+  padding: 0;
 }
 
-.swapRow{
-  display:flex;
-  justify-content:center;
-  margin: 10px 0 8px;
-}
+.swapRow{ display:flex; justify-content:center; margin: 10px 0 8px; }
 
-/* новая swap кнопка (не стрелки) */
+/* SWAP: обычные стрелки ↔, градиент, тот же размер */
 .swapBtn{
   width: 58px;
-  height: 58px;              /* меньше в ~2 раза */
+  height: 58px;
   border-radius: 22px;
   border: 1px solid transparent;
   cursor:pointer;
@@ -381,44 +364,12 @@ body{
   justify-content:center;
 }
 .swapBtn:active{ transform: translateY(1px); }
-.swapIcon{
-  width: 26px;
-  height: 26px;
-  position: relative;
-}
-.swapIcon:before, .swapIcon:after{
-  content:"";
-  position:absolute;
-  left: 2px;
-  right: 2px;
-  height: 8px;
-  border: 3px solid rgba(255,255,255,.95);
-  border-left: 0;
-  border-radius: 999px;
-}
-.swapIcon:before{
-  top: 2px;
-  transform: rotate(0deg);
-}
-.swapIcon:after{
-  bottom: 2px;
-  transform: rotate(180deg);
-}
-.swapIcon i{
-  position:absolute;
-  width:0; height:0;
-  border-top:6px solid transparent;
-  border-bottom:6px solid transparent;
-}
-.swapIcon i.a{
-  right: -1px;
-  top: 4px;
-  border-left: 8px solid rgba(255,255,255,.95);
-}
-.swapIcon i.b{
-  left: -1px;
-  bottom: 4px;
-  border-right: 8px solid rgba(255,255,255,.95);
+.swapArrow{
+  font-family: Unbounded, Rubik, system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: rgba(255,255,255,.96);
+  transform: translateY(-1px);
 }
 
 .rateLine{
@@ -429,11 +380,9 @@ body{
   gap: 10px;
   color: rgba(20,20,30,.50);
   font-weight: 800;
-  font-size: 13px;           /* курс компактнее */
+  font-size: 13px;
 }
-.rateLine .value{
-  color: rgba(20,20,30,.70);
-}
+.rateLine .value{ color: rgba(20,20,30,.70); }
 
 .primaryBtn{
   width:100%;
@@ -473,7 +422,7 @@ body{
 }
 .secondaryBtn:active{ transform: translateY(1px); }
 
-/* MODAL (selection) - no click issues */
+/* MODAL */
 .modalOverlay{
   position: fixed;
   inset: 0;
@@ -529,9 +478,7 @@ body{
   line-height: 1;
 }
 
-.searchBox{
-  padding: 12px 14px 10px;
-}
+.searchBox{ padding: 12px 14px 10px; }
 .searchBox input{
   width:100%;
   height: 44px;
@@ -560,10 +507,7 @@ body{
 }
 .item:hover{ background: #f2f1ff; }
 
-.item .meta{
-  min-width:0;
-  flex:1;
-}
+.item .meta{ min-width:0; flex:1; }
 .item .meta .n{
   font-weight: 900;
   white-space: nowrap;
@@ -593,5 +537,4 @@ body{
   font-weight: 700;
   font-size: 12px;
 }
-
 .hrSpace{ height: 8px; }
