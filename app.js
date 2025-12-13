@@ -1,299 +1,145 @@
-(() => {
-  // ===== State =====
-  const state = {
-    lang: "UA",
-    tab: "exchange",
-    modalOpen: false,
-    modalTarget: null, // "give" | "get"
-    quickFilter: "ALL",
-    search: "",
-    give: null,
-    get: null,
-    giveAmount: "",
-  };
+// Pages
+const menuBtns = document.querySelectorAll(".menu-btn");
+const pages = {
+  exchange: document.getElementById("page-exchange"),
+  rules: document.getElementById("page-rules"),
+  reviews: document.getElementById("page-reviews"),
+  account: document.getElementById("page-account"),
+};
 
-  // ===== Assets dataset (минимальный набор + пример структуры) =====
-  // paths: подставь свои реальные, у тебя уже есть ./logos/crypto/btc.png и т.д.
-  // Важно: НЕ уменьшаем иконки в CSS, как ты просил.
-  const ASSETS = [
-    // Banks
-    { id: "mono_uah", name: "Monobank", code: "UAH", type: "BANKS", icon: "./logos/banks/mono.png" },
+menuBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    menuBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-    // Top crypto
-    { id: "btc", name: "Bitcoin", code: "BTC", type: "TOP", icon: "./logos/crypto/btc.png" },
-    { id: "eth", name: "Ethereum", code: "ETH", type: "TOP", icon: "./logos/crypto/eth.png" },
+    Object.values(pages).forEach(p => p.classList.remove("active"));
+    pages[btn.dataset.page].classList.add("active");
+  });
+});
 
-    // Stablecoins
-    { id: "usdt_erc20", name: "Tether (ERC20)", code: "USDT", type: "USDT", icon: "./logos/usdt/erc20.png" },
-    { id: "usdt_bep20", name: "Tether (BEP20)", code: "USDT", type: "USDT", icon: "./logos/usdt/bep20.png" },
-    { id: "usdc_erc20", name: "USD Coin (ERC20)", code: "USDC", type: "USDC", icon: "./logos/usdc/erc20.png" },
-    { id: "usdc_sol", name: "USD Coin (SOL)", code: "USDC", type: "USDC", icon: "./logos/usdc/sol.png" },
-  ];
+// Modal
+const modalBg = document.getElementById("modalBg");
+const modal = document.getElementById("modal");
+const closeModalBtn = document.getElementById("closeModal");
+const openGive = document.getElementById("openGive");
+const openGet = document.getElementById("openGet");
+const modalTitle = document.getElementById("modalTitle");
+const list = document.getElementById("list");
+const searchInput = document.getElementById("searchInput");
+const filters = document.getElementById("filters");
 
-  // дефолты (как на твоих скринах)
-  state.give = ASSETS.find(a => a.id === "mono_uah") || ASSETS[0];
-  state.get  = ASSETS.find(a => a.id === "btc") || ASSETS[1];
+let currentTarget = "give"; // "give" | "get"
+let currentFilter = "all";
+let query = "";
 
-  // ===== DOM =====
-  const $ = (id) => document.getElementById(id);
+// Demo data (заменишь на свои реальные массивы)
+const items = [
+  { group: "banks", name: "Monobank", sub: "UAH", icon: "./logos/crypto/btc.png" },
+  { group: "top", name: "Bitcoin", sub: "BTC", icon: "./logos/crypto/btc.png" },
+  { group: "usdt", name: "Tether", sub: "USDT (ERC20)", icon: "./logos/crypto/btc.png" },
+  { group: "usdc", name: "USD Coin", sub: "USDC (ERC20)", icon: "./logos/crypto/btc.png" },
+];
 
-  const brandTitle = $("brandTitle");
+function showModal(title, target){
+  currentTarget = target;
+  modalTitle.textContent = title;
 
-  const tabs = document.querySelectorAll(".tab");
-  const panels = {
-    exchange: $("panel-exchange"),
-    rules: $("panel-rules"),
-    reviews: $("panel-reviews"),
-    account: $("panel-account"),
-  };
+  modalBg.classList.add("show");
+  modalBg.setAttribute("aria-hidden", "false");
 
-  const giveSelect = $("giveSelect");
-  const getSelect = $("getSelect");
+  // сброс поиска
+  searchInput.value = "";
+  query = "";
 
-  const giveIcon = $("giveIcon");
-  const giveName = $("giveName");
-  const giveSub  = $("giveSub");
+  // фокус не обязателен, но удобно
+  setTimeout(() => searchInput.focus(), 50);
 
-  const getIcon = $("getIcon");
-  const getName = $("getName");
-  const getSub  = $("getSub");
+  renderList();
+}
 
-  const giveAmount = $("giveAmount");
-  const getAmount  = $("getAmount");
+function hideModal(){
+  modalBg.classList.remove("show");
+  modalBg.setAttribute("aria-hidden", "true");
+}
 
-  const swapBtn = $("swapBtn");
+openGive.addEventListener("click", () => showModal("Вибір (Віддаєте)", "give"));
+openGet.addEventListener("click", () => showModal("Вибір (Отримуєте)", "get"));
 
-  // modal
-  const modalBackdrop = $("modalBackdrop");
-  const modalClose = $("modalClose");
-  const modalTitle = $("modalTitle");
-  const modalSearch = $("modalSearch");
-  const modalList = $("modalList");
+closeModalBtn.addEventListener("click", hideModal);
 
-  const quickFilters = $("quickFilters");
+// ВАЖНО: закрытие по клику на затемнение (backdrop)
+modalBg.addEventListener("click", (e) => {
+  if (e.target === modalBg) hideModal();
+});
 
-  // ===== Helpers =====
-  function setActiveTab(tab) {
-    state.tab = tab;
-    tabs.forEach(btn => btn.classList.toggle("is-active", btn.dataset.tab === tab));
-    Object.keys(panels).forEach(k => panels[k].classList.toggle("is-active", k === tab));
+// чтобы клики внутри модалки не закрывали её
+modal.addEventListener("click", (e) => e.stopPropagation());
+
+searchInput.addEventListener("input", (e) => {
+  query = e.target.value.trim().toLowerCase();
+  renderList();
+});
+
+filters.addEventListener("click", (e) => {
+  const btn = e.target.closest(".chip");
+  if (!btn) return;
+
+  document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  currentFilter = btn.dataset.filter;
+  renderList();
+});
+
+function match(item){
+  const qOk = !query || (item.name + " " + item.sub).toLowerCase().includes(query);
+  const fOk = currentFilter === "all" || item.group === currentFilter;
+  return qOk && fOk;
+}
+
+function renderList(){
+  list.innerHTML = "";
+
+  const filtered = items.filter(match);
+  if (!filtered.length){
+    const div = document.createElement("div");
+    div.className = "item";
+    div.textContent = "Нічого не знайдено";
+    list.appendChild(div);
+    return;
   }
 
-  function setLang(lang) {
-    state.lang = lang;
-    document.querySelectorAll(".lang-btn").forEach(b => b.classList.toggle("is-active", b.dataset.lang === lang));
-    // Пока без доп. добавок/контента — просто переключаем тексты шапки/табов в минималке
-    const labels = {
-      UA: { exchange:"Обмін", rules:"Правила", reviews:"Відгуки", account:"Аккаунт", give:"Віддаєте", get:"Отримуєте" },
-      EN: { exchange:"Exchange", rules:"Rules", reviews:"Reviews", account:"Account", give:"You send", get:"You get" },
-      PL: { exchange:"Wymiana", rules:"Zasady", reviews:"Opinie", account:"Konto", give:"Wysyłasz", get:"Otrzymujesz" },
-    }[lang];
-
-    $("tabExchange").textContent = labels.exchange;
-    $("tabRules").textContent = labels.rules;
-    $("tabReviews").textContent = labels.reviews;
-    $("tabAccount").textContent = labels.account;
-    $("lblGive").textContent = labels.give;
-    $("lblGet").textContent = labels.get;
-  }
-
-  function renderAssetInto(target, asset) {
-    if (target === "give") {
-      giveIcon.src = asset.icon;
-      giveIcon.alt = asset.code;
-      giveName.textContent = asset.name;
-      giveSub.textContent = asset.code;
-    } else {
-      getIcon.src = asset.icon;
-      getIcon.alt = asset.code;
-      getName.textContent = asset.name;
-      getSub.textContent = asset.code;
-    }
-  }
-
-  function openModal(target) {
-    state.modalOpen = true;
-    state.modalTarget = target;
-    state.search = "";
-    state.quickFilter = "ALL";
-
-    modalTitle.textContent = (target === "give")
-      ? (state.lang === "UA" ? "Віддаєте" : state.lang === "PL" ? "Wysyłasz" : "You send")
-      : (state.lang === "UA" ? "Отримуєте" : state.lang === "PL" ? "Otrzymujesz" : "You get");
-
-    // reset UI
-    modalSearch.value = "";
-    quickFilters.querySelectorAll(".quick-btn").forEach(b => b.classList.toggle("is-active", b.dataset.qf === "ALL"));
-
-    modalBackdrop.hidden = false;
-    requestAnimationFrame(() => modalSearch.focus());
-    renderModalList();
-  }
-
-  function closeModal() {
-    state.modalOpen = false;
-    state.modalTarget = null;
-    modalBackdrop.hidden = true;
-  }
-
-  function filterAssets() {
-    const q = (state.search || "").trim().toLowerCase();
-    const f = state.quickFilter;
-
-    return ASSETS.filter(a => {
-      const okFilter =
-        f === "ALL" ||
-        (f === "BANKS" && a.type === "BANKS") ||
-        (f === "TOP" && a.type === "TOP") ||
-        (f === "USDT" && a.type === "USDT") ||
-        (f === "USDC" && a.type === "USDC");
-
-      if (!okFilter) return false;
-
-      if (!q) return true;
-      return (a.name + " " + a.code).toLowerCase().includes(q);
+  filtered.forEach(it => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `<strong>${it.name}</strong> · <span style="color:#64748b">${it.sub}</span>`;
+    div.addEventListener("click", () => {
+      if (currentTarget === "give") {
+        document.getElementById("giveName").textContent = it.name;
+        document.getElementById("giveSub").textContent = it.sub;
+      } else {
+        document.getElementById("getName").textContent = it.name;
+        document.getElementById("getSub").textContent = it.sub;
+      }
+      hideModal();
     });
-  }
-
-  function renderModalList() {
-    const list = filterAssets();
-    modalList.innerHTML = "";
-
-    list.forEach(a => {
-      const row = document.createElement("div");
-      row.className = "item";
-      row.tabIndex = 0;
-
-      row.innerHTML = `
-        <div class="item-left">
-          <img class="asset-ico" src="${a.icon}" alt="${a.code}">
-          <div style="min-width:0">
-            <div class="item-title">${escapeHtml(a.name)} <span style="opacity:.7">${escapeHtml(a.code)}</span></div>
-            <div class="item-sub">${badgeText(a)}</div>
-          </div>
-        </div>
-        <div class="item-right">›</div>
-      `;
-
-      row.addEventListener("click", () => {
-        if (state.modalTarget === "give") state.give = a;
-        if (state.modalTarget === "get") state.get = a;
-
-        renderAssetInto("give", state.give);
-        renderAssetInto("get", state.get);
-        recalc();
-        closeModal();
-      });
-
-      row.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          row.click();
-        }
-      });
-
-      modalList.appendChild(row);
-    });
-  }
-
-  function badgeText(a){
-    if (a.type === "BANKS") return "Banks";
-    if (a.type === "TOP") return "Top";
-    return a.type; // USDT/USDC
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  // ===== расчёт (заглушка курса, но форма работает) =====
-  function recalc() {
-    // здесь потом подключишь реальные курсы
-    const amount = parseFloat((state.giveAmount || "0").replace(",", "."));
-    const safeAmount = isFinite(amount) ? amount : 0;
-
-    // супер простая заглушка: UAH -> BTC условно
-    // чтобы UI не пустой
-    let rate = 0.00000067;
-    if (state.give.code === "BTC" && state.get.code === "UAH") rate = 1 / 0.00000067;
-    if (state.give.code === state.get.code) rate = 1;
-
-    const out = safeAmount * rate;
-    getAmount.value = formatSmart(out);
-  }
-
-  function formatSmart(n){
-    if (!isFinite(n)) return "0";
-    if (Math.abs(n) >= 1) return String(Math.round(n * 100) / 100);
-    // для мелких — до 8 знаков
-    return n.toFixed(8).replace(/0+$/,"").replace(/\.$/,"");
-  }
-
-  // ===== Events =====
-  // Tabs
-  tabs.forEach(btn => btn.addEventListener("click", () => setActiveTab(btn.dataset.tab)));
-
-  // Lang
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.addEventListener("click", () => setLang(btn.dataset.lang));
+    list.appendChild(div);
   });
+}
 
-  // Open modal
-  giveSelect.addEventListener("click", () => openModal("give"));
-  getSelect.addEventListener("click", () => openModal("get"));
+// Swap logic
+const swapBtn = document.getElementById("swapBtn");
+swapBtn.addEventListener("click", () => {
+  // меняем местами названия/сабы (суммы не трогаю — ты можешь потом добавить пересчёт)
+  const giveName = document.getElementById("giveName");
+  const giveSub = document.getElementById("giveSub");
+  const getName = document.getElementById("getName");
+  const getSub = document.getElementById("getSub");
 
-  // Close modal
-  modalClose.addEventListener("click", closeModal);
-  modalBackdrop.addEventListener("click", (e) => {
-    if (e.target === modalBackdrop) closeModal();
-  });
-
-  // Search
-  modalSearch.addEventListener("input", () => {
-    state.search = modalSearch.value;
-    renderModalList();
-  });
-
-  // Quick filters
-  quickFilters.addEventListener("click", (e) => {
-    const btn = e.target.closest(".quick-btn");
-    if (!btn) return;
-    state.quickFilter = btn.dataset.qf;
-
-    quickFilters.querySelectorAll(".quick-btn").forEach(b =>
-      b.classList.toggle("is-active", b.dataset.qf === state.quickFilter)
-    );
-
-    renderModalList();
-  });
-
-  // Swap (меняем валюты местами + пересчёт)
-  swapBtn.addEventListener("click", () => {
-    const tmp = state.give;
-    state.give = state.get;
-    state.get = tmp;
-
-    renderAssetInto("give", state.give);
-    renderAssetInto("get", state.get);
-    recalc();
-  });
-
-  // Input focus FIX: не пересоздаем DOM при вводе
-  giveAmount.addEventListener("input", () => {
-    state.giveAmount = giveAmount.value;
-    recalc();
-  });
-
-  // ===== Init =====
-  function init() {
-    renderAssetInto("give", state.give);
-    renderAssetInto("get", state.get);
-    setLang("UA");
-    setActiveTab("exchange");
-    recalc();
-  }
-
-  init();
-})();
+  const tmpN = giveName.textContent;
+  const tmpS = giveSub.textContent;
+  giveName.textContent = getName.textContent;
+  giveSub.textContent = getSub.textContent;
+  getName.textContent = tmpN;
+  getSub.textContent = tmpS;
+});
