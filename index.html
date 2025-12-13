@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeksSwap</title>
 
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <img src="logo.png" alt="KeksSwap" class="logo" />
+
+    <div class="lang">
+      UA
+    </div>
+  </div>
+
+  <nav class="menu">
+    <button class="tab active" data-tab="exchange">Обмін</button>
+    <button class="tab" data-tab="rules">Правила</button>
+    <button class="tab" data-tab="account">Акаунт</button>
+    <button class="tab" data-tab="more">Ще</button>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- EXCHANGE -->
+  <section id="exchange" class="page active">
+    <h1>Обмін</h1>
+
+    <label>Віддаєте</label>
+    <div class="select-box">
+      <img src="logos/banks/mono.png" />
+      <span>Monobank (UAH)</span>
+    </div>
+
+    <input type="number" placeholder="0" class="amount" />
+
+    <button class="swap">⇅</button>
+
+    <label>Отримуєте</label>
+    <div class="select-box">
+      <img src="logos/crypto/btc.png" />
+      <span>Bitcoin (BTC)</span>
+    </div>
+
+    <input type="text" placeholder="0.000000" class="amount" disabled />
+  </section>
+
+  <!-- RULES -->
+  <section id="rules" class="page">
+    <h1>Правила</h1>
+    <p>Тут будуть правила обміну. (Поки заглушка)</p>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section id="account" class="page">
+    <h1>Акаунт</h1>
+    <p>Тут буде вхід / реєстрація і KYC (поки без підключення).</p>
+
+    <button class="primary">Увійти</button>
+    <button class="secondary">Реєстрація</button>
+  </section>
+
+  <!-- MORE -->
+  <section id="more" class="page">
+    <h1>Ще</h1>
+
+    <button class="list">Відгуки</button>
+    <button class="list">FAQ</button>
+    <button class="list">Контакти</button>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
