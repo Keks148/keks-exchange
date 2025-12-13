@@ -49,9 +49,6 @@
       faq: "FAQ",
       contacts: "Контакти",
       pickSection: "Вибери розділ.",
-      type_bank: "Банк",
-      type_crypto: "Крипто",
-      type_tether: "Крипто",
     },
     en: {
       exchange: "Swap",
@@ -75,9 +72,6 @@
       faq: "FAQ",
       contacts: "Contacts",
       pickSection: "Pick a section.",
-      type_bank: "Bank",
-      type_crypto: "Crypto",
-      type_tether: "Crypto",
     },
     pl: {
       exchange: "Wymiana",
@@ -101,9 +95,6 @@
       faq: "FAQ",
       contacts: "Kontakty",
       pickSection: "Wybierz sekcję.",
-      type_bank: "Bank",
-      type_crypto: "Krypto",
-      type_tether: "Krypto",
     }
   };
 
@@ -142,13 +133,6 @@
     return (giveP / getP);
   }
 
-  function typeLabel(lang, itemType){
-    const t = I18N[lang];
-    if (itemType === "bank") return t.type_bank;
-    if (itemType === "tether") return t.type_tether;
-    return t.type_crypto;
-  }
-
   function allItems(){
     return [...DATA.banks, ...DATA.crypto];
   }
@@ -175,8 +159,6 @@
 
         <div class="headerBlock">
           <div class="topRow">
-            <!-- ИКС УБРАН -->
-
             <div class="brand">
               <div class="brandLogo">
                 <img src="logo.png" alt="Keks" onerror="this.style.display='none'">
@@ -276,7 +258,7 @@
                 <div class="code">${escapeHtml(state.give.code)}</div>
               </div>
               <div class="right">
-                <span class="tag">${typeLabel(state.lang, state.give.type)}</span>
+                <!-- УБРАЛИ ТЕГ БАНК/КРИПТО -->
                 <span class="chevDown"></span>
               </div>
             </div>
@@ -307,7 +289,7 @@
                 <div class="code">${escapeHtml(state.get.code)}</div>
               </div>
               <div class="right">
-                <span class="tag">${typeLabel(state.lang, state.get.type)}</span>
+                <!-- УБРАЛИ ТЕГ БАНК/КРИПТО -->
                 <span class="chevDown"></span>
               </div>
             </div>
@@ -361,7 +343,6 @@
   }
 
   function renderItem(it){
-    // ПРАВАЯ ПЛАШКА В МОДАЛКЕ УБРАНА (CSS тоже скрывает .pill)
     return `
       <div class="item" data-pick="${it.id}">
         <div class="iconCircle">
