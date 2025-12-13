@@ -1,1 +1,907 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>KeksSwap</title>
 
+  <!-- ШРИФТ: Rubik Spray Paint (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#e9e7ff;
+      --bg2:#d8d4ff;
+      --card:#f7f7ff;
+      --stroke: rgba(22, 24, 32, 0.10);
+      --text:#141821;
+      --muted: rgba(20,24,33,0.60);
+
+      --p1:#6f3cff;
+      --p2:#9a66ff;
+      --p3:#4b52ff;
+
+      --shadow: 0 20px 60px rgba(20,24,33,0.12);
+      --shadowSoft: 0 10px 30px rgba(20,24,33,0.10);
+
+      --radiusXL: 26px;
+      --radiusL: 22px;
+      --radiusM: 18px;
+      --radiusS: 14px;
+
+      --hpad: 16px;
+      --thinH: 56px;     /* тонкие поля (в 2–3 раза тоньше, чем раньше) */
+      --tabH: 42px;      /* компактные табы */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 800px at 20% 0%, rgba(111,60,255,0.28), transparent 55%),
+        radial-gradient(900px 700px at 90% 15%, rgba(154,102,255,0.22), transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* чтобы в Telegram не было “мертвых зон” из-за наложений */
+    .app{ min-height:100vh; padding: 10px var(--hpad) 26px; }
+
+    /* TOP BAR */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding-top: 8px;
+      padding-bottom: 10px;
+      background: linear-gradient(180deg, rgba(216,212,255,0.92), rgba(233,231,255,0.65));
+      backdrop-filter: blur(14px);
+      border-bottom-left-radius: var(--radiusXL);
+      border-bottom-right-radius: var(--radiusXL);
+      box-shadow: 0 10px 28px rgba(20,24,33,0.08);
+      margin: 0 calc(var(--hpad) * -1);
+      padding-left: var(--hpad);
+      padding-right: var(--hpad);
+    }
+
+    .brandRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 0 8px;
+    }
+
+    .brandLeft{
+      display:flex; align-items:center; gap:12px;
+      min-width: 0;
+    }
+
+    /* Лого кекса x2.5 и без рамки */
+    .brandLogo{
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      overflow:hidden;
+      flex: 0 0 auto;
+      background: transparent;
+      box-shadow: none;
+    }
+    .brandLogo img{
+      width:100%; height:100%;
+      object-fit: contain;
+      display:block;
+    }
+
+    /* Название: градиент, но не влазит -> уменьшили и сделали гибким */
+    .brandTitle{
+      font-family: "Rubik Spray Paint", Inter, sans-serif;
+      font-size: 42px;            /* меньше чем было */
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58vw;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--p1), var(--p2), var(--p3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 8px 18px rgba(111,60,255,0.20));
+    }
+
+    /* Язык: в 2 раза меньше, ближе к правому краю, чуть другой цвет */
+    .langBtn{
+      position: relative;
+      flex: 0 0 auto;
+      height: 34px;
+      min-width: 72px;
+      padding: 0 10px;
+      border: 1px solid rgba(20,24,33,0.10);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(20,24,33,0.10);
+      display:flex; align-items:center; justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .langDot{
+      width:8px;height:8px;border-radius:50%;
+      background: linear-gradient(135deg, rgba(111,60,255,0.85), rgba(154,102,255,0.60));
+      box-shadow: 0 6px 14px rgba(111,60,255,0.22);
+    }
+    .langText{ font-weight:800; font-size:13px; color: rgba(20,24,33,0.78); }
+    .chev{ font-size: 12px; opacity: 0.75; transform: translateY(-1px); }
+
+    .langMenu{
+      position:absolute;
+      top: 42px;
+      right: 0;
+      width: 120px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(20,24,33,0.10);
+      border-radius: 16px;
+      box-shadow: var(--shadowSoft);
+      padding: 6px;
+      display:none;
+      z-index: 50;
+    }
+    .langMenu button{
+      width:100%;
+      border:0;
+      background: transparent;
+      padding: 10px 10px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align:left;
+      cursor:pointer;
+    }
+    .langMenu button:hover{ background: rgba(111,60,255,0.08); }
+    .langMenu button.active{ background: rgba(111,60,255,0.14); color: var(--p1); }
+
+    /* TABS */
+    .tabs{
+      display:flex;
+      gap: 10px;
+      padding: 6px 0 12px;
+      overflow:hidden; /* без скрола и без выхода за поля */
+    }
+    .tab{
+      height: var(--tabH);
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px rgba(20,24,33,0.08);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 800;
+      color: rgba(20,24,33,0.78);
+      cursor:pointer;
+      user-select:none;
+      white-space: nowrap;
+      flex: 1 1 0;   /* чтобы всё влезло */
+      min-width: 0;
+      font-size: 14px; /* чуть меньше */
+    }
+    .tab.active{
+      border: 0;
+      color: #fff;
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      box-shadow: 0 14px 32px rgba(111,60,255,0.26);
+    }
+
+    /* PAGE */
+    .page{
+      padding-top: 14px;
+    }
+
+    .card{
+      background: rgba(247,247,255,0.75);
+      border: 1px solid rgba(20,24,33,0.08);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .h1{
+      margin:0 0 10px;
+      font-size: 56px;
+      letter-spacing: -1px;
+    }
+    .label{
+      margin: 14px 0 8px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    /* THIN FIELDS */
+    .row{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .field{
+      height: var(--thinH);
+      border-radius: 22px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px rgba(20,24,33,0.08);
+      display:flex;
+      align-items:center;
+      padding: 10px 14px;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .assetIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      overflow:hidden;
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(20,24,33,0.08);
+    }
+    .assetIcon img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    .assetMain{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+    }
+    .assetName{
+      font-weight: 900;
+      font-size: 18px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 54vw;
+    }
+    .assetSub{
+      font-weight: 800;
+      font-size: 13px;
+      color: rgba(20,24,33,0.50);
+      margin-top: 3px;
+    }
+
+    .fieldRight{
+      margin-left:auto;
+      display:flex; align-items:center; gap:10px;
+      flex: 0 0 auto;
+      color: rgba(20,24,33,0.60);
+      font-weight: 800;
+      font-size: 14px;
+      white-space:nowrap;
+    }
+
+    .pickerBtn{
+      border:0;
+      background: transparent;
+      cursor:pointer;
+      padding: 6px 8px;
+      border-radius: 12px;
+      font-weight: 900;
+      color: rgba(20,24,33,0.70);
+      display:flex; align-items:center; gap:8px;
+    }
+    .pickerBtn:hover{ background: rgba(111,60,255,0.08); }
+
+    .amountInput{
+      width: 100%;
+      border:0;
+      outline: none;
+      background: transparent;
+      font-size: 40px;
+      font-weight: 900;
+      color: rgba(20,24,33,0.78);
+      letter-spacing: -0.5px;
+    }
+
+    /* SWAP BUTTON */
+    .swapWrap{
+      display:flex;
+      justify-content:center;
+      padding: 18px 0 6px;
+    }
+    .swapBtn{
+      width: 92px; height: 92px;
+      border-radius: 28px;
+      border:0;
+      cursor:pointer;
+      color:#fff;
+      background: linear-gradient(135deg, var(--p1), var(--p2), var(--p3));
+      box-shadow: 0 18px 44px rgba(111,60,255,0.30);
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+      overflow:hidden;
+      user-select:none;
+    }
+    .swapBtn:before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      transform: rotate(20deg);
+      animation: shine 3.2s linear infinite;
+    }
+    @keyframes shine{
+      0%{ transform: translateX(-60%) rotate(20deg); opacity: 0.0; }
+      15%{ opacity: 1.0; }
+      45%{ opacity: 0.0; }
+      100%{ transform: translateX(60%) rotate(20deg); opacity: 0.0; }
+    }
+    .swapIcon{
+      position:relative;
+      width: 34px; height: 34px;
+      opacity: 0.98;
+      filter: drop-shadow(0 8px 16px rgba(20,24,33,0.18));
+    }
+
+    /* RATE LINE (только курс) */
+    .rateLine{
+      margin-top: 10px;
+      display:flex; align-items:center; justify-content:center;
+      gap: 10px;
+      color: rgba(20,24,33,0.60);
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .rateDot{
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(111,60,255,0.65);
+      box-shadow: 0 6px 14px rgba(111,60,255,0.20);
+    }
+
+    /* BUTTONS */
+    .btn{
+      width:100%;
+      height: 62px;
+      border-radius: 20px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 12px 26px rgba(20,24,33,0.10);
+      font-weight: 900;
+      font-size: 18px;
+      cursor:pointer;
+    }
+    .btn.primary{
+      border:0;
+      color:#fff;
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      box-shadow: 0 18px 44px rgba(111,60,255,0.28);
+    }
+
+    /* “More” list */
+    .moreList{ display:flex; flex-direction:column; gap: 12px; }
+
+    /* BOTTOM SHEET (выбор валюты/банка/кошелька) */
+    .sheetBackdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(15,18,30,0.30);
+      backdrop-filter: blur(8px);
+      display:none;
+      z-index: 80;
+    }
+    .sheet{
+      position:fixed;
+      left:0; right:0; bottom:-100%;
+      z-index: 90;
+      transition: bottom .22s ease;
+      padding: 10px var(--hpad) calc(18px + env(safe-area-inset-bottom));
+      pointer-events:none; /* чтобы не блокировать когда скрыта */
+    }
+    .sheet.open{ bottom: 0; pointer-events:auto; }
+    .sheetCard{
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(20,24,33,0.10);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      max-height: 78vh;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .sheetHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px;
+    }
+    .sheetTitle{
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.3px;
+    }
+    .xBtn{
+      width: 42px; height: 42px;
+      border-radius: 16px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.65);
+      cursor:pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .search{
+      height: 44px;
+      border-radius: 18px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.75);
+      padding: 0 14px;
+      outline:none;
+      font-weight: 800;
+    }
+
+    .filters{
+      display:flex;
+      gap: 10px;
+      overflow:hidden;
+    }
+    .chip{
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(20,24,33,0.10);
+      background: rgba(255,255,255,0.65);
+      cursor:pointer;
+      font-weight: 900;
+      white-space:nowrap;
+    }
+    .chip.active{
+      border:0;
+      color:#fff;
+      background: linear-gradient(90deg, var(--p1), var(--p2));
+      box-shadow: 0 14px 30px rgba(111,60,255,0.22);
+    }
+
+    .list{
+      margin-top: 4px;
+      overflow:auto;
+      border-radius: 18px;
+      border: 1px solid rgba(20,24,33,0.08);
+      background: rgba(255,255,255,0.55);
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 12px;
+      border-bottom: 1px solid rgba(20,24,33,0.06);
+      cursor:pointer;
+    }
+    .item:last-child{ border-bottom:0; }
+    .item:hover{ background: rgba(111,60,255,0.06); }
+    .itemName{ font-weight: 900; }
+    .itemSub{ font-size: 12px; font-weight: 800; color: rgba(20,24,33,0.55); margin-top: 2px; }
+    .itemRight{ margin-left:auto; font-weight: 900; color: rgba(20,24,33,0.60); }
+
+    /* helper */
+    .hidden{ display:none !important; }
+
+    @media (max-width: 380px){
+      .brandTitle{ font-size: 36px; max-width: 52vw; }
+      .brandLogo{ width: 52px; height: 52px; }
+      .h1{ font-size: 50px; }
+      .amountInput{ font-size: 36px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brandRow">
+        <div class="brandLeft">
+          <div class="brandLogo" aria-label="Keks logo">
+            <img src="logo.png" alt="Keks logo">
+          </div>
+          <div class="brandTitle" title="KeksSwap">KeksSwap</div>
+        </div>
+
+        <div class="langBtn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="langDot"></span>
+          <span class="langText" id="langText">UA</span>
+          <span class="chev">▼</span>
+
+          <div class="langMenu" id="langMenu" role="menu" aria-label="Language menu">
+            <button data-lang="UA" class="active" type="button">UA</button>
+            <button data-lang="EN" type="button">EN</button>
+            <button data-lang="PL" type="button">PL</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Main navigation">
+        <div class="tab active" data-page="exchange" role="tab" aria-selected="true">Обмін</div>
+        <div class="tab" data-page="rules" role="tab" aria-selected="false">Правила</div>
+        <div class="tab" data-page="account" role="tab" aria-selected="false">Аккаунт</div>
+        <div class="tab" data-page="more" role="tab" aria-selected="false">Ще</div>
+      </div>
+    </div>
+
+    <!-- PAGES -->
+    <div class="page" id="page-exchange">
+      <div class="card">
+        <h2 class="h1">Обмін</h2>
+
+        <div class="label">Віддаєте</div>
+        <div class="row">
+          <div class="field" id="givePicker">
+            <div class="assetIcon"><img id="giveIcon" alt=""></div>
+            <div class="assetMain">
+              <div class="assetName" id="giveName"></div>
+              <div class="assetSub" id="giveSub"></div>
+            </div>
+
+            <div class="fieldRight">
+              <button class="pickerBtn" type="button" data-open-picker="give">
+                Вибір <span class="chev">▼</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <input class="amountInput" id="giveAmount" inputmode="decimal" placeholder="0" value="0" />
+          </div>
+        </div>
+
+        <div class="swapWrap">
+          <button class="swapBtn" type="button" id="swapBtn" aria-label="Swap">
+            <!-- аккуратные стрелки -->
+            <svg class="swapIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 7h12m0 0-3-3m3 3-3 3" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17 17H5m0 0 3 3m-3-3 3-3" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="rateLine" id="rateLine">
+          <span class="rateDot"></span>
+          <span id="rateText">Курс: —</span>
+          <span style="opacity:.7" id="rateAge"></span>
+        </div>
+
+        <div class="label" style="margin-top:18px;">Отримуєте</div>
+        <div class="row">
+          <div class="field" id="getPicker">
+            <div class="assetIcon"><img id="getIcon" alt=""></div>
+            <div class="assetMain">
+              <div class="assetName" id="getName"></div>
+              <div class="assetSub" id="getSub"></div>
+            </div>
+
+            <div class="fieldRight">
+              <button class="pickerBtn" type="button" data-open-picker="get">
+                Вибір <span class="chev">▼</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <input class="amountInput" id="getAmount" inputmode="decimal" placeholder="0.0000" value="0.0000" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page hidden" id="page-rules">
+      <div class="card">
+        <h2 class="h1" style="font-size:58px;">Rules</h2>
+        <div style="font-size:18px;font-weight:800;color:var(--muted);line-height:1.35;">
+          Тут будуть правила обміну. (Поки заглушка)
+        </div>
+      </div>
+    </div>
+
+    <div class="page hidden" id="page-account">
+      <div class="card">
+        <h2 class="h1" style="font-size:58px;">Account</h2>
+        <div style="font-size:18px;font-weight:800;color:var(--muted);line-height:1.35;margin-bottom:16px;">
+          Тут буде вхід/реєстрація і далі KYC (поки без підключення).
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <button class="btn primary" type="button">Войти</button>
+          <button class="btn" type="button">Регистрация</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page hidden" id="page-more">
+      <div class="card">
+        <h2 class="h1" style="font-size:58px;">More</h2>
+        <div class="moreList">
+          <button class="btn" type="button">Відгуки</button>
+          <button class="btn" type="button">FAQ</button>
+          <button class="btn" type="button">Контакти</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM SHEET -->
+  <div class="sheetBackdrop" id="sheetBackdrop"></div>
+
+  <div class="sheet" id="sheet">
+    <div class="sheetCard">
+      <div class="sheetHead">
+        <div class="sheetTitle" id="sheetTitle">Вибір</div>
+        <button class="xBtn" type="button" id="sheetClose">✕</button>
+      </div>
+
+      <input class="search" id="sheetSearch" type="text" placeholder="Search..." />
+
+      <div class="filters" role="tablist" aria-label="Filters">
+        <button class="chip active" type="button" data-filter="all">All</button>
+        <button class="chip" type="button" data-filter="crypto">Crypto</button>
+        <button class="chip" type="button" data-filter="banks">Banks</button>
+        <button class="chip" type="button" data-filter="wallets">Wallets</button>
+      </div>
+
+      <div class="list" id="sheetList" role="listbox" aria-label="Assets list"></div>
+    </div>
+  </div>
+
+  <script>
+    // ====== DATA (из твоих папок) ======
+    const DATA = {
+      crypto: [
+        { id:"btc",  name:"Bitcoin", sub:"BTC", logo:"logos/crypto/btc.png" },
+        { id:"eth",  name:"Ethereum", sub:"ETH", logo:"logos/crypto/eth.png" },
+        { id:"ltc",  name:"Litecoin", sub:"LTC", logo:"logos/crypto/ltc.png" },
+        { id:"sol",  name:"Solana", sub:"SOL", logo:"logos/crypto/sol.png" },
+        { id:"ton",  name:"TON", sub:"TON", logo:"logos/crypto/ton.png" },
+        { id:"trx",  name:"TRON", sub:"TRX", logo:"logos/crypto/trx.png" },
+
+        { id:"usdt-trc", name:"Tether", sub:"USDT (TRC20)", logo:"logos/crypto/usdt-trc.png" },
+        { id:"usdt-eth", name:"Tether", sub:"USDT (ERC20)", logo:"logos/crypto/usdt-eth.png" },
+        { id:"usdt-bep", name:"Tether", sub:"USDT (BEP20)", logo:"logos/crypto/usdt-bep.png" },
+        { id:"usdt-arb", name:"Tether", sub:"USDT (Arbitrum)", logo:"logos/crypto/usdt-arb.png" },
+        { id:"usdt-pol", name:"Tether", sub:"USDT (Polygon)", logo:"logos/crypto/usdt-pol.png" },
+        { id:"usdt-sol", name:"Tether", sub:"USDT (Solana)", logo:"logos/crypto/usdt-sol.png" },
+
+        { id:"usdc-eth", name:"USD Coin", sub:"USDC (ERC20)", logo:"logos/crypto/usdc-eth.png" },
+        { id:"usdc-pol", name:"USD Coin", sub:"USDC (Polygon)", logo:"logos/crypto/usdc-pol.png" },
+        { id:"usdc-sol", name:"USD Coin", sub:"USDC (Solana)", logo:"logos/crypto/usdc-sol.png" },
+
+        { id:"crypto", name:"Crypto", sub:"All crypto", logo:"logos/crypto/crypto.png" },
+        { id:"tether", name:"Tether", sub:"USDT", logo:"logos/crypto/tether-usdt.png" },
+      ],
+      banks: [
+        { id:"mono", name:"Monobank", sub:"UAH", logo:"logos/banks/mono.png" },
+        { id:"privat", name:"PrivatBank", sub:"UAH", logo:"logos/banks/privat.png" },
+        { id:"oschad", name:"Oschadbank", sub:"UAH", logo:"logos/banks/oschad.png" },
+        { id:"pumb", name:"PUMB", sub:"UAH", logo:"logos/banks/pumb.png" },
+        { id:"otp", name:"OTP Bank", sub:"UAH", logo:"logos/banks/otp.png" },
+        { id:"a-bank", name:"A-Bank", sub:"UAH", logo:"logos/banks/a-bank.png" },
+        { id:"sense", name:"Sense Bank", sub:"UAH", logo:"logos/banks/sense.png" },
+        { id:"reif", name:"Raiffeisen", sub:"UAH", logo:"logos/banks/reyf.png" },
+        { id:"izi", name:"iZi", sub:"UAH", logo:"logos/banks/izi.png" },
+        { id:"ukr-banki", name:"UKR Banki", sub:"UAH", logo:"logos/banks/ukr-banki.png" },
+        { id:"ukr-sib", name:"UKRSIBBANK", sub:"UAH", logo:"logos/banks/ukr-sib.png" },
+        { id:"visa-master", name:"Visa/Mastercard", sub:"Cards", logo:"logos/banks/visa-master.png" },
+      ],
+      wallets: [
+        { id:"payoneer", name:"Payoneer", sub:"USD/EUR", logo:"logos/wallets/payoneer.png" },
+        { id:"paypal", name:"PayPal", sub:"USD/EUR", logo:"logos/wallets/paypal.png" },
+        { id:"revolut", name:"Revolut", sub:"USD/EUR", logo:"logos/wallets/revolut.png" },
+        { id:"valet", name:"Valet", sub:"Wallet", logo:"logos/wallets/valet.png" },
+        { id:"vise", name:"Wise", sub:"USD/EUR", logo:"logos/wallets/vise.png" },
+      ]
+    };
+
+    // ====== STATE ======
+    let activePage = "exchange";
+    let activeLang = "UA";
+
+    // по умолчанию как “биржа”: отдаёте банк, получаете крипту
+    let give = DATA.banks.find(x=>x.id==="mono");
+    let get  = DATA.crypto.find(x=>x.id==="btc");
+    let pickerTarget = "give"; // give/get
+    let filter = "all";
+    let lastRateTs = Date.now();
+
+    // ====== HELPERS ======
+    const $ = (id)=>document.getElementById(id);
+
+    function setActivePage(page){
+      activePage = page;
+
+      document.querySelectorAll(".tab").forEach(t=>{
+        const on = t.dataset.page === page;
+        t.classList.toggle("active", on);
+        t.setAttribute("aria-selected", on ? "true":"false");
+      });
+
+      ["exchange","rules","account","more"].forEach(p=>{
+        $("page-"+p).classList.toggle("hidden", p!==page);
+      });
+    }
+
+    function renderAssets(){
+      // give
+      $("giveIcon").src = give.logo;
+      $("giveIcon").alt = give.name;
+      $("giveName").textContent = give.name;
+      $("giveSub").textContent = give.sub || "";
+
+      // get
+      $("getIcon").src = get.logo;
+      $("getIcon").alt = get.name;
+      $("getName").textContent = get.name;
+      $("getSub").textContent = get.sub || "";
+    }
+
+    function swap(){
+      const tmp = give;
+      give = get;
+      get = tmp;
+      renderAssets();
+      updateRate();
+    }
+
+    function updateRate(){
+      // Тут пока заглушка курса (ты писал: "только курс")
+      // В будущем можно подцепить API и обновлять реальным.
+      lastRateTs = Date.now();
+      const g = give.sub ? give.sub : "";
+      const r = `Курс: 1 ${get.sub?.split(" ")[0] || "—"} = … ${g || "—"}`;
+      $("rateText").textContent = r;
+      $("rateAge").textContent = "• оновлено щойно";
+      // таймер
+      clearInterval(window.__rateInt);
+      window.__rateInt = setInterval(()=>{
+        const sec = Math.max(1, Math.floor((Date.now()-lastRateTs)/1000));
+        $("rateAge").textContent = `• оновлено ${sec} сек`;
+      }, 1000);
+    }
+
+    // ====== LANG DROPDOWN ======
+    const langBtn = $("langBtn");
+    const langMenu = $("langMenu");
+    langBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      const opened = langMenu.style.display === "block";
+      langMenu.style.display = opened ? "none" : "block";
+      langBtn.setAttribute("aria-expanded", opened ? "false":"true");
+    });
+
+    langMenu.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-lang]");
+      if(!btn) return;
+      activeLang = btn.dataset.lang;
+      $("langText").textContent = activeLang;
+
+      langMenu.querySelectorAll("button").forEach(b=>b.classList.toggle("active", b.dataset.lang===activeLang));
+      langMenu.style.display = "none";
+      langBtn.setAttribute("aria-expanded","false");
+    });
+
+    document.addEventListener("click", ()=>{
+      langMenu.style.display = "none";
+      langBtn.setAttribute("aria-expanded","false");
+    });
+
+    // ====== TABS ======
+    document.querySelectorAll(".tab").forEach(t=>{
+      t.addEventListener("click", ()=>setActivePage(t.dataset.page));
+    });
+
+    // ====== PICKER SHEET ======
+    const sheet = $("sheet");
+    const backdrop = $("sheetBackdrop");
+    const sheetList = $("sheetList");
+    const sheetSearch = $("sheetSearch");
+
+    function openSheet(target){
+      pickerTarget = target;
+      $("sheetTitle").textContent = "Вибір";
+      backdrop.style.display = "block";
+      sheet.classList.add("open");
+      sheetSearch.value = "";
+      filter = "all";
+      document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", c.dataset.filter===filter));
+      renderSheetList();
+      setTimeout(()=>sheetSearch.focus(), 120);
+    }
+
+    function closeSheet(){
+      sheet.classList.remove("open");
+      backdrop.style.display = "none";
+    }
+
+    $("sheetClose").addEventListener("click", closeSheet);
+    backdrop.addEventListener("click", closeSheet);
+
+    document.querySelectorAll("[data-open-picker]").forEach(btn=>{
+      btn.addEventListener("click", (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        openSheet(btn.dataset.openPicker);
+      });
+    });
+
+    document.querySelectorAll(".chip").forEach(c=>{
+      c.addEventListener("click", ()=>{
+        filter = c.dataset.filter;
+        document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active", x.dataset.filter===filter));
+        renderSheetList();
+      });
+    });
+
+    sheetSearch.addEventListener("input", renderSheetList);
+
+    function allItems(){
+      return [
+        ...DATA.crypto.map(x=>({ ...x, type:"crypto" })),
+        ...DATA.banks.map(x=>({ ...x, type:"banks" })),
+        ...DATA.wallets.map(x=>({ ...x, type:"wallets" })),
+      ];
+    }
+
+    function renderSheetList(){
+      const q = sheetSearch.value.trim().toLowerCase();
+      let items = allItems();
+
+      if(filter !== "all"){
+        items = items.filter(x=>x.type===filter);
+      }
+      if(q){
+        items = items.filter(x=>{
+          const a = (x.name+" "+(x.sub||"")+" "+x.id).toLowerCase();
+          return a.includes(q);
+        });
+      }
+
+      sheetList.innerHTML = items.map(x=>`
+        <div class="item" data-id="${x.id}" data-type="${x.type}">
+          <div class="assetIcon"><img src="${x.logo}" alt="${x.name}"></div>
+          <div style="min-width:0;">
+            <div class="itemName">${x.name}</div>
+            <div class="itemSub">${x.sub || ""}</div>
+          </div>
+          <div class="itemRight">▶</div>
+        </div>
+      `).join("");
+
+      sheetList.querySelectorAll(".item").forEach(it=>{
+        it.addEventListener("click", ()=>{
+          const id = it.dataset.id;
+          const type = it.dataset.type;
+          const src = DATA[type].find(z=>z.id===id);
+
+          if(pickerTarget === "give") give = src;
+          else get = src;
+
+          renderAssets();
+          updateRate();
+          closeSheet();
+        });
+      });
+    }
+
+    // ====== SWAP BTN ======
+    $("swapBtn").addEventListener("click", ()=>{
+      swap();
+    });
+
+    // ====== INIT ======
+    renderAssets();
+    updateRate();
+    setActivePage("exchange");
+
+  </script>
+</body>
+</html>
