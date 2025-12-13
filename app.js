@@ -1,488 +1,542 @@
-(() => {
-  const DATA = {
-    banks: [
-      { id: "mono", name: "Monobank", code: "UAH", type: "bank", logo: "logos/banks/mono.png" },
-      { id: "privat", name: "PrivatBank", code: "UAH", type: "bank", logo: "logos/banks/privat.png" },
-      { id: "oschad", name: "Oschadbank", code: "UAH", type: "bank", logo: "logos/banks/oschad.png" },
-      { id: "pumb", name: "PUMB", code: "UAH", type: "bank", logo: "logos/banks/pumb.png" },
-      { id: "a-bank", name: "A-Bank", code: "UAH", type: "bank", logo: "logos/banks/a-bank.png" },
-      { id: "sense", name: "Sense Bank", code: "UAH", type: "bank", logo: "logos/banks/sense.png" },
-      { id: "otp", name: "OTP Bank", code: "UAH", type: "bank", logo: "logos/banks/otp.png" }
-    ],
-    crypto: [
-      { id: "btc", name: "Bitcoin", code: "BTC", type: "crypto", logo: "logos/crypto/btc.png" },
-      { id: "eth", name: "Ethereum", code: "ETH", type: "crypto", logo: "logos/crypto/eth.png" },
-      { id: "ltc", name: "Litecoin", code: "LTC", type: "crypto", logo: "logos/crypto/ltc.png" },
-      { id: "sol", name: "Solana", code: "SOL", type: "crypto", logo: "logos/crypto/sol.png" },
-      { id: "ton", name: "Toncoin", code: "TON", type: "crypto", logo: "logos/crypto/ton.png" },
-      { id: "trx", name: "TRON", code: "TRX", type: "crypto", logo: "logos/crypto/trx.png" },
+// KeksSwap — single-file app (no frameworks)
+// Works with: index.html подключает styles.css и app.js
 
-      { id: "usdt-trc", name: "USDT (TRC20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-trc.png" },
-      { id: "usdt-eth", name: "USDT (ERC20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-eth.png" },
-      { id: "usdt-bep", name: "USDT (BEP20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-bep.png" },
-      { id: "usdt-sol", name: "USDT (SOL)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-sol.png" },
-      { id: "usdt-pol", name: "USDT (POL)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-pol.png" },
-      { id: "usdt-arb", name: "USDT (ARB)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-arb.png" }
-    ],
-  };
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  const I18N = {
-    uk: {
-      exchange: "Обмін",
-      rules: "Правила",
-      account: "Акаунт",
-      more: "Ще",
-      give: "Віддаєте",
-      get: "Отримуєте",
-      amount: "Сума",
-      rate: "Курс",
-      create: "Створити заявку",
-      choose: "Виберіть",
-      search: "Пошук...",
-      selectGive: "Вибір (віддаєте)",
-      selectGet: "Вибір (отримуєте)",
-      rulesText: "Тут будуть правила обміну. (Поки заглушка)",
-      accText: "Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
-      login: "Увійти",
-      signup: "Реєстрація",
-      reviews: "Відгуки",
-      faq: "FAQ",
-      contacts: "Контакти",
-      pickSection: "Вибери розділ.",
-    },
-    en: {
-      exchange: "Swap",
-      rules: "Rules",
-      account: "Account",
-      more: "More",
-      give: "You give",
-      get: "You get",
-      amount: "Amount",
-      rate: "Rate",
-      create: "Create order",
-      choose: "Choose",
-      search: "Search...",
-      selectGive: "Select (give)",
-      selectGet: "Select (get)",
-      rulesText: "Exchange rules will be here. (Stub for now)",
-      accText: "Login/registration and then KYC (not connected yet).",
-      login: "Log in",
-      signup: "Sign up",
-      reviews: "Reviews",
-      faq: "FAQ",
-      contacts: "Contacts",
-      pickSection: "Pick a section.",
-    },
-    pl: {
-      exchange: "Wymiana",
-      rules: "Zasady",
-      account: "Konto",
-      more: "Więcej",
-      give: "Oddajesz",
-      get: "Otrzymujesz",
-      amount: "Kwota",
-      rate: "Kurs",
-      create: "Utwórz zlecenie",
-      choose: "Wybierz",
-      search: "Szukaj...",
-      selectGive: "Wybór (oddajesz)",
-      selectGet: "Wybór (otrzymujesz)",
-      rulesText: "Tutaj będą zasady wymiany. (Tymczasowo)",
-      accText: "Logowanie/rejestracja i KYC (na razie bez podłączenia).",
-      login: "Zaloguj",
-      signup: "Rejestracja",
-      reviews: "Opinie",
-      faq: "FAQ",
-      contacts: "Kontakty",
-      pickSection: "Wybierz sekcję.",
-    }
-  };
+/* ----------------- Data ----------------- */
+const ITEMS = [
+  // Banks
+  { id:"mono", type:"bank", name:{ua:"Monobank",en:"Monobank",pl:"Monobank"}, code:"UAH", logo:"logos/banks/mono.png" },
+  { id:"privat", type:"bank", name:{ua:"PrivatBank",en:"PrivatBank",pl:"PrivatBank"}, code:"UAH", logo:"logos/banks/privat.png" },
+  { id:"oschad", type:"bank", name:{ua:"Oschadbank",en:"Oschadbank",pl:"Oschadbank"}, code:"UAH", logo:"logos/banks/oschad.png" },
+  { id:"pumb", type:"bank", name:{ua:"PUMB",en:"PUMB",pl:"PUMB"}, code:"UAH", logo:"logos/banks/pumb.png" },
+  { id:"a-bank", type:"bank", name:{ua:"A-Bank",en:"A-Bank",pl:"A-Bank"}, code:"UAH", logo:"logos/banks/a-bank.png" },
+  { id:"sense", type:"bank", name:{ua:"Sense Bank",en:"Sense Bank",pl:"Sense Bank"}, code:"UAH", logo:"logos/banks/sense.png" },
+  { id:"otp", type:"bank", name:{ua:"OTP Bank",en:"OTP Bank",pl:"OTP Bank"}, code:"UAH", logo:"logos/banks/otp.png" },
+  { id:"reif", type:"bank", name:{ua:"Raiffeisen",en:"Raiffeisen",pl:"Raiffeisen"}, code:"UAH", logo:"logos/banks/reyf.png" },
+  { id:"izi", type:"bank", name:{ua:"izibank",en:"izibank",pl:"izibank"}, code:"UAH", logo:"logos/banks/izi.png" },
+  { id:"ukrsib", type:"bank", name:{ua:"UkrSibbank",en:"UkrSibbank",pl:"UkrSibbank"}, code:"UAH", logo:"logos/banks/ukr-sib.png" },
+  { id:"ukrbanki", type:"bank", name:{ua:"Ukrbanki",en:"Ukrbanki",pl:"Ukrbanki"}, code:"UAH", logo:"logos/banks/ukr-banki.png" },
+  { id:"visamaster", type:"bank", name:{ua:"Visa/Master",en:"Visa/Master",pl:"Visa/Master"}, code:"UAH", logo:"logos/banks/visa-master.png" },
 
-  const $ = (sel, root = document) => root.querySelector(sel);
+  // Crypto (core)
+  { id:"btc", type:"crypto", name:{ua:"Bitcoin",en:"Bitcoin",pl:"Bitcoin"}, code:"BTC", logo:"logos/crypto/btc.png" },
+  { id:"eth", type:"crypto", name:{ua:"Ethereum",en:"Ethereum",pl:"Ethereum"}, code:"ETH", logo:"logos/crypto/eth.png" },
+  { id:"ltc", type:"crypto", name:{ua:"Litecoin",en:"Litecoin",pl:"Litecoin"}, code:"LTC", logo:"logos/crypto/ltc.png" },
+  { id:"sol", type:"crypto", name:{ua:"Solana",en:"Solana",pl:"Solana"}, code:"SOL", logo:"logos/crypto/sol.png" },
+  { id:"ton", type:"crypto", name:{ua:"TON",en:"TON",pl:"TON"}, code:"TON", logo:"logos/crypto/ton.png" },
+  { id:"trx", type:"crypto", name:{ua:"TRON",en:"TRON",pl:"TRON"}, code:"TRX", logo:"logos/crypto/trx.png" },
+  { id:"usdt", type:"crypto", name:{ua:"Tether",en:"Tether",pl:"Tether"}, code:"USDT", logo:"logos/crypto/tether-usdt.png" },
 
-  function clampNum(val) {
-    const s = String(val || "").replace(",", ".");
-    const n = parseFloat(s);
-    if (Number.isNaN(n)) return 0;
-    return n;
+  // USDT networks
+  { id:"usdt-eth", type:"crypto", name:{ua:"USDT (ERC20)",en:"USDT (ERC20)",pl:"USDT (ERC20)"}, code:"USDT", logo:"logos/crypto/usdt-eth.png" },
+  { id:"usdt-trc", type:"crypto", name:{ua:"USDT (TRC20)",en:"USDT (TRC20)",pl:"USDT (TRC20)"}, code:"USDT", logo:"logos/crypto/usdt-trc.png" },
+  { id:"usdt-bep", type:"crypto", name:{ua:"USDT (BEP20)",en:"USDT (BEP20)",pl:"USDT (BEP20)"}, code:"USDT", logo:"logos/crypto/usdt-bep.png" },
+  { id:"usdt-arb", type:"crypto", name:{ua:"USDT (Arbitrum)",en:"USDT (Arbitrum)",pl:"USDT (Arbitrum)"}, code:"USDT", logo:"logos/crypto/usdt-arb.png" },
+  { id:"usdt-pol", type:"crypto", name:{ua:"USDT (Polygon)",en:"USDT (Polygon)",pl:"USDT (Polygon)"}, code:"USDT", logo:"logos/crypto/usdt-pol.png" },
+  { id:"usdt-sol", type:"crypto", name:{ua:"USDT (Solana)",en:"USDT (Solana)",pl:"USDT (Solana)"}, code:"USDT", logo:"logos/crypto/usdt-sol.png" },
+
+  // USDC networks
+  { id:"usdc-eth", type:"crypto", name:{ua:"USDC (ERC20)",en:"USDC (ERC20)",pl:"USDC (ERC20)"}, code:"USDC", logo:"logos/crypto/usdc-eth.png" },
+  { id:"usdc-pol", type:"crypto", name:{ua:"USDC (Polygon)",en:"USDC (Polygon)",pl:"USDC (Polygon)"}, code:"USDC", logo:"logos/crypto/usdc-pol.png" },
+  { id:"usdc-sol", type:"crypto", name:{ua:"USDC (Solana)",en:"USDC (Solana)",pl:"USDC (Solana)"}, code:"USDC", logo:"logos/crypto/usdc-sol.png" },
+
+  // Wallets
+  { id:"paypal", type:"wallet", name:{ua:"PayPal",en:"PayPal",pl:"PayPal"}, code:"", logo:"logos/wallets/paypal.png" },
+  { id:"payoneer", type:"wallet", name:{ua:"Payoneer",en:"Payoneer",pl:"Payoneer"}, code:"", logo:"logos/wallets/payoneer.png" },
+  { id:"revolut", type:"wallet", name:{ua:"Revolut",en:"Revolut",pl:"Revolut"}, code:"", logo:"logos/wallets/revolut.png" },
+  { id:"wise", type:"wallet", name:{ua:"Wise",en:"Wise",pl:"Wise"}, code:"", logo:"logos/wallets/vise.png" },
+  { id:"wallet", type:"wallet", name:{ua:"Wallet",en:"Wallet",pl:"Wallet"}, code:"", logo:"logos/wallets/valet.png" },
+];
+
+/* ----------------- i18n ----------------- */
+const I18N = {
+  ua:{
+    tabs:{swap:"Обмін", rules:"Правила", account:"Акаунт", more:"Ще"},
+    swapTitle:"Обмін",
+    give:"Віддаєте",
+    get:"Отримуєте",
+    search:"Пошук...",
+    chooseGive:"Вибір (віддаєте)",
+    chooseGet:"Вибір (отримуєте)",
+    all:"Все",
+    crypto:"Крипто",
+    banks:"Банки",
+    wallets:"Гаманці",
+    rate:"Курс:",
+    create:"Створити заявку",
+    rulesTitle:"Правила",
+    rulesText:"Тут будуть правила обміну. (Поки заглушка)",
+    accTitle:"Акаунт",
+    accText:"Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
+    login:"Увійти",
+    register:"Реєстрація",
+    moreTitle:"More",
+    reviews:"Відгуки",
+    faq:"FAQ",
+    contacts:"Контакти",
+    chooseSection:"Вибери розділ."
+  },
+  en:{
+    tabs:{swap:"Swap", rules:"Rules", account:"Account", more:"More"},
+    swapTitle:"Swap",
+    give:"You give",
+    get:"You get",
+    search:"Search...",
+    chooseGive:"Select (you give)",
+    chooseGet:"Select (you get)",
+    all:"All",
+    crypto:"Crypto",
+    banks:"Banks",
+    wallets:"Wallets",
+    rate:"Rate:",
+    create:"Create request",
+    rulesTitle:"Rules",
+    rulesText:"Exchange rules will be here. (Placeholder)",
+    accTitle:"Account",
+    accText:"Login/registration and then KYC (not connected yet).",
+    login:"Login",
+    register:"Register",
+    moreTitle:"More",
+    reviews:"Reviews",
+    faq:"FAQ",
+    contacts:"Contacts",
+    chooseSection:"Choose a section."
+  },
+  pl:{
+    tabs:{swap:"Wymiana", rules:"Zasady", account:"Konto", more:"Więcej"},
+    swapTitle:"Wymiana",
+    give:"Oddajesz",
+    get:"Otrzymujesz",
+    search:"Szukaj...",
+    chooseGive:"Wybór (oddajesz)",
+    chooseGet:"Wybór (otrzymujesz)",
+    all:"Wszystko",
+    crypto:"Krypto",
+    banks:"Banki",
+    wallets:"Portfele",
+    rate:"Kurs:",
+    create:"Utwórz zlecenie",
+    rulesTitle:"Zasady",
+    rulesText:"Tutaj będą zasady wymiany. (Placeholder)",
+    accTitle:"Konto",
+    accText:"Logowanie/rejestracja i dalej KYC (jeszcze nie podłączone).",
+    login:"Zaloguj",
+    register:"Rejestracja",
+    moreTitle:"Więcej",
+    reviews:"Opinie",
+    faq:"FAQ",
+    contacts:"Kontakt",
+    chooseSection:"Wybierz sekcję."
   }
+};
 
-  function fmt(n, digits = 8) {
-    if (!isFinite(n)) return "0";
-    if (n === 0) return "0";
-    const abs = Math.abs(n);
-    if (abs >= 1000) return n.toFixed(2);
-    if (abs >= 1) return n.toFixed(6).replace(/0+$/,"").replace(/\.$/,"");
-    return n.toFixed(digits).replace(/0+$/,"").replace(/\.$/,"");
-  }
+let state = {
+  lang: "ua",
+  tab: "swap",
+  give: ITEMS.find(x=>x.id==="mono"),
+  get: ITEMS.find(x=>x.id==="btc"),
+  giveAmount: 100,
+  filter: "all",
+  modalOpen: false,
+  modalTarget: "give", // give|get
+  query: ""
+};
 
-  function calcRate(give, get) {
-    if (!give || !get) return 0;
-    const priceUAH = {
-      BTC: 1600000,
-      ETH: 90000,
-      LTC: 4500,
-      SOL: 9000,
-      TON: 260,
-      TRX: 6,
-      USDT: 41,
-      UAH: 1
-    };
-    const giveP = priceUAH[give.code] ?? 1;
-    const getP  = priceUAH[get.code] ?? 1;
-    return (giveP / getP);
-  }
-
-  function allItems(){
-    return [...DATA.banks, ...DATA.crypto];
-  }
-
-  const state = {
-    lang: "uk",
-    page: "exchange",
-    give: DATA.banks[0],
-    get: DATA.crypto.find(x => x.id === "btc") || DATA.crypto[0],
-    giveAmount: "100",
-    getAmount: "0",
-    modalOpen: false,
-    modalTarget: "give",
-    modalSearch: "",
-  };
-
-  function render() {
-    const t = I18N[state.lang];
-    document.documentElement.lang = state.lang;
-
-    const app = $("#app");
-    app.innerHTML = `
-      <div class="container">
-
-        <div class="headerBlock">
-          <div class="topRow">
-            <div class="brand">
-              <div class="brandLogo">
-                <img src="logo.png" alt="Keks" onerror="this.style.display='none'">
+/* ----------------- Mount ----------------- */
+function mount(){
+  document.body.innerHTML = `
+    <div class="app">
+      <div class="shell">
+        <div class="topbar">
+          <div class="topbarInner">
+            <div class="brandRow">
+              <div class="brandLeft">
+                <div class="brandLogoWrap">
+                  <img class="brandLogo" src="logo.png" alt="Keks logo">
+                </div>
+                <div class="brandTitle" aria-label="KeksSwap">
+                  <span class="line" id="brandLine1">Keks</span>
+                  <span class="line" id="brandLine2">Swap</span>
+                </div>
               </div>
-              <div class="brandTitle" aria-label="KeksSwap">
-                <span>Keks</span>
-                <span>Swap</span>
-              </div>
-            </div>
 
-            <div class="langWrap">
-              <button class="langBtn" id="langBtn" aria-label="Language">
-                <span class="code">${state.lang.toUpperCase()}</span>
-                <span class="chev"></span>
+              <button class="langBtn" id="langBtn" type="button">
+                <span id="langCode">UA</span><span class="chev"></span>
               </button>
-              <div class="langMenu" id="langMenu" style="display:none;">
-                ${langItem("uk","Українська")}
-                ${langItem("en","English")}
-                ${langItem("pl","Polski")}
-              </div>
             </div>
-          </div>
 
-          <div class="navRow">
-            ${navBtn("exchange", t.exchange)}
-            ${navBtn("rules", t.rules)}
-            ${navBtn("account", t.account)}
-            ${navBtn("more", t.more)}
+            <div class="tabs" id="tabs"></div>
           </div>
         </div>
 
-        ${renderPage()}
-
+        <div id="page"></div>
       </div>
 
-      <div class="modalOverlay ${state.modalOpen ? "open":""}" id="modalOverlay"></div>
-      <div class="modalSheet ${state.modalOpen ? "open":""}" id="modalSheet">
-        ${renderModal()}
-      </div>
-    `;
-
-    wire();
-    recalc();
-  }
-
-  function langItem(code, label){
-    const active = state.lang === code ? "active" : "";
-    return `<div class="langItem ${active}" data-lang="${code}">
-      <span>${label}</span><small>${code.toUpperCase()}</small>
-    </div>`;
-  }
-
-  function navBtn(key, label){
-    const active = state.page === key ? "active" : "";
-    return `<button class="pillBtn ${active}" data-page="${key}">${label}</button>`;
-  }
-
-  function renderPage(){
-    const t = I18N[state.lang];
-
-    if (state.page === "rules"){
-      return `<div class="card"><div class="h1">${t.rules}</div><div class="sub">${t.rulesText}</div></div>`;
-    }
-    if (state.page === "account"){
-      return `
-        <div class="card">
-          <div class="h1">${t.account}</div>
-          <div class="sub">${t.accText}</div>
-          <button class="primaryBtn" id="loginBtn">${t.login}</button>
-          <button class="secondaryBtn" id="signupBtn">${t.signup}</button>
-        </div>`;
-    }
-    if (state.page === "more"){
-      return `
-        <div class="card">
-          <div class="h1">${t.more}</div>
-          <button class="secondaryBtn" id="reviewsBtn">${t.reviews}</button>
-          <button class="secondaryBtn" id="faqBtn">${t.faq}</button>
-          <button class="secondaryBtn" id="contactsBtn">${t.contacts}</button>
-          <div class="smallHint">${t.pickSection}</div>
-        </div>`;
-    }
-
-    return `
-      <div class="card">
-        <div class="h1">${t.exchange}</div>
-
-        <div class="sectionLabel">${t.give}</div>
-        <div class="field">
-          <div class="row">
-            <div class="iconCircle">
-              <img src="${state.give.logo}" alt="" onerror="this.style.display='none'">
-            </div>
-            <div class="selectBtn" id="pickGive" role="button" tabindex="0">
-              <div class="left">
-                <div class="name">${escapeHtml(state.give.name)}</div>
-                <div class="code">${escapeHtml(state.give.code)}</div>
-              </div>
-              <div class="right">
-                <!-- УБРАЛИ ТЕГ БАНК/КРИПТО -->
-                <span class="chevDown"></span>
-              </div>
-            </div>
+      <div class="modalBack" id="modalBack"></div>
+      <div class="modal" id="modal">
+        <div class="modalSheet">
+          <div class="modalTop">
+            <div class="modalTitle" id="modalTitle"></div>
+            <button class="modalClose" id="modalClose" type="button">✕</button>
           </div>
-        </div>
 
-        <div class="hrSpace"></div>
+          <input class="search" id="search" type="text" autocomplete="off"/>
 
-        <div class="field amountField">
-          <input class="input" id="giveAmount" inputmode="decimal" value="${escapeAttr(state.giveAmount)}" aria-label="${t.amount}">
-        </div>
+          <div class="filterTabs" id="filterTabs"></div>
 
-        <div class="swapRow">
-          <button class="swapBtn" id="swapBtn" aria-label="swap">
-            <span class="swapArrow">⇄</span>
-          </button>
-        </div>
-
-        <div class="sectionLabel">${t.get}</div>
-        <div class="field">
-          <div class="row">
-            <div class="iconCircle">
-              <img src="${state.get.logo}" alt="" onerror="this.style.display='none'">
-            </div>
-            <div class="selectBtn" id="pickGet" role="button" tabindex="0">
-              <div class="left">
-                <div class="name">${escapeHtml(state.get.name)}</div>
-                <div class="code">${escapeHtml(state.get.code)}</div>
-              </div>
-              <div class="right">
-                <!-- УБРАЛИ ТЕГ БАНК/КРИПТО -->
-                <span class="chevDown"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hrSpace"></div>
-
-        <div class="field amountField">
-          <input class="input" id="getAmount" inputmode="decimal" value="${escapeAttr(state.getAmount)}" aria-label="${t.amount}">
-        </div>
-
-        <div class="rateLine">
-          <span>${t.rate}:</span>
-          <span class="value" id="rateValue">—</span>
-        </div>
-
-        <button class="primaryBtn" id="createBtn">${t.create}</button>
-      </div>
-    `;
-  }
-
-  function renderModal(){
-    const t = I18N[state.lang];
-    if (!state.modalOpen) return "";
-
-    const title = state.modalTarget === "give" ? t.selectGive : t.selectGet;
-    const list = allItems().filter(item => {
-      const q = state.modalSearch.trim().toLowerCase();
-      if (!q) return true;
-      return (item.name + " " + item.code).toLowerCase().includes(q);
-    });
-
-    return `
-      <div class="sheet">
-        <div class="sheetHeader">
-          <div class="t">${title}</div>
-          <button class="x" id="modalClose">✕</button>
-        </div>
-
-        <div class="searchBox">
-          <input id="modalSearch" placeholder="${t.search}" value="${escapeAttr(state.modalSearch)}" />
-          <div class="smallHint">${t.choose}</div>
-        </div>
-
-        <div class="sheetList" id="sheetList">
-          ${list.map(renderItem).join("")}
+          <div class="list" id="list"></div>
         </div>
       </div>
-    `;
-  }
+    </div>
+  `;
 
-  function renderItem(it){
-    return `
-      <div class="item" data-pick="${it.id}">
-        <div class="iconCircle">
-          <img src="${it.logo}" alt="" onerror="this.style.display='none'">
-        </div>
-        <div class="meta">
-          <div class="n">${escapeHtml(it.name)}</div>
-          <div class="c">${escapeHtml(it.code)}</div>
-        </div>
-        <div class="pill"></div>
-      </div>
-    `;
-  }
-
-  function wire(){
-    document.querySelectorAll("[data-page]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        state.page = btn.getAttribute("data-page");
-        render();
-      });
-    });
-
-    const langBtn = $("#langBtn");
-    const langMenu = $("#langMenu");
-    langBtn?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = langMenu.style.display === "block";
-      langMenu.style.display = open ? "none" : "block";
-    });
-    document.addEventListener("click", () => {
-      if (langMenu) langMenu.style.display = "none";
-    });
-    langMenu?.querySelectorAll(".langItem").forEach(item => {
-      item.addEventListener("click", (e) => {
-        e.stopPropagation();
-        state.lang = item.getAttribute("data-lang");
-        langMenu.style.display = "none";
-        render();
-      });
-    });
-
-    $("#pickGive")?.addEventListener("click", () => openModal("give"));
-    $("#pickGet")?.addEventListener("click", () => openModal("get"));
-
-    $("#swapBtn")?.addEventListener("click", () => {
-      const g = state.give;
-      state.give = state.get;
-      state.get = g;
-      const ga = state.giveAmount;
-      state.giveAmount = state.getAmount;
-      state.getAmount = ga;
-      render();
-    });
-
-    $("#giveAmount")?.addEventListener("input", (e) => {
-      state.giveAmount = e.target.value;
-      recalc();
-    });
-
-    $("#getAmount")?.addEventListener("input", (e) => {
-      state.getAmount = e.target.value;
-      const rate = calcRate(state.give, state.get);
-      if (rate > 0) {
-        const g = clampNum(state.getAmount) / rate;
-        state.giveAmount = fmt(g, 8);
-        $("#giveAmount").value = state.giveAmount;
-      }
-      recalc();
-    });
-
-    $("#createBtn")?.addEventListener("click", () => alert("OK ✅"));
-
-    const overlay = $("#modalOverlay");
-    overlay?.addEventListener("click", closeModal);
-    $("#modalClose")?.addEventListener("click", closeModal);
-
-    $("#modalSearch")?.addEventListener("input", (e) => {
-      state.modalSearch = e.target.value;
-      $("#modalSheet").innerHTML = renderModal();
-      wireModalOnly();
-    });
-
-    wireModalOnly();
-  }
-
-  function wireModalOnly(){
-    document.querySelectorAll(".item[data-pick]").forEach(el => {
-      el.addEventListener("click", () => {
-        const id = el.getAttribute("data-pick");
-        const it = allItems().find(x => x.id === id);
-        if (!it) return;
-
-        if (state.modalTarget === "give") state.give = it;
-        else state.get = it;
-
-        closeModal();
-        render();
-      });
-    });
-    $("#modalClose")?.addEventListener("click", closeModal);
-  }
-
-  function openModal(target){
-    state.modalTarget = target;
-    state.modalSearch = "";
-    state.modalOpen = true;
-    render();
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal(){
-    state.modalOpen = false;
-    document.body.style.overflow = "";
-    render();
-  }
-
-  function recalc(){
-    if (state.page !== "exchange") return;
-
-    const rate = calcRate(state.give, state.get);
-    const g = clampNum(state.giveAmount);
-    const getVal = g * rate;
-
-    state.getAmount = fmt(getVal, 8);
-    const getInput = $("#getAmount");
-    if (getInput) getInput.value = state.getAmount;
-
-    const rateEl = $("#rateValue");
-    if (rateEl) rateEl.textContent = rate > 0 ? `1 ${state.give.code} ≈ ${fmt(rate, 10)} ${state.get.code}` : "—";
-  }
-
-  function escapeHtml(str){
-    return String(str ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-  function escapeAttr(str){ return escapeHtml(str).replaceAll("\n"," "); }
-
+  bind();
   render();
-})();
+}
+
+function t(){ return I18N[state.lang]; }
+
+/* ----------------- Render ----------------- */
+function render(){
+  renderTabs();
+  renderPage();
+  renderModal();
+  renderLangBtn();
+  renderBrand();
+}
+
+function renderBrand(){
+  // Делаем "Keks" / "Swap" — и на другом языке можно оставить бренд одинаковым
+  $("#brandLine1").textContent = "Keks";
+  $("#brandLine2").textContent = "Swap";
+}
+
+function renderLangBtn(){
+  const map = {ua:"UA", en:"EN", pl:"PL"};
+  $("#langCode").textContent = map[state.lang] || "UA";
+}
+
+function renderTabs(){
+  const L = t().tabs;
+  const tabs = [
+    {k:"swap", label:L.swap},
+    {k:"rules", label:L.rules},
+    {k:"account", label:L.account},
+    {k:"more", label:L.more}
+  ];
+  const el = $("#tabs");
+  el.innerHTML = tabs.map(x=>`
+    <button class="tab ${state.tab===x.k?"active":""}" data-tab="${x.k}" type="button">${x.label}</button>
+  `).join("");
+}
+
+function renderPage(){
+  const el = $("#page");
+  if(state.tab==="swap"){
+    el.innerHTML = renderSwap();
+  }else if(state.tab==="rules"){
+    el.innerHTML = `
+      <div class="card">
+        <div class="pageTitle">${t().rulesTitle}</div>
+        <div class="pageText">${t().rulesText}</div>
+      </div>
+    `;
+  }else if(state.tab==="account"){
+    el.innerHTML = `
+      <div class="card">
+        <div class="pageTitle">${t().accTitle}</div>
+        <div class="pageText">${t().accText}</div>
+        <div style="height:14px"></div>
+        <button class="cta" type="button">${t().login}</button>
+        <div style="height:10px"></div>
+        <button class="tab" type="button">${t().register}</button>
+      </div>
+    `;
+  }else{
+    el.innerHTML = `
+      <div class="card">
+        <div class="pageTitle">${t().moreTitle}</div>
+        <div style="height:14px"></div>
+        <button class="tab" type="button">${t().reviews}</button>
+        <div style="height:10px"></div>
+        <button class="tab" type="button">${t().faq}</button>
+        <div style="height:10px"></div>
+        <button class="tab" type="button">${t().contacts}</button>
+        <div style="height:12px"></div>
+        <div class="pageText">${t().chooseSection}</div>
+      </div>
+    `;
+  }
+
+  // bind swap controls after render
+  if(state.tab==="swap") bindSwapControls();
+}
+
+function renderSwap(){
+  const give = state.give;
+  const get = state.get;
+
+  const giveName = give.name[state.lang] || give.name.ua;
+  const getName  = get.name[state.lang]  || get.name.ua;
+
+  const giveCode = give.code || "";
+  const getCode  = get.code || "";
+
+  const rate = getRate(give, get);           // per 1 give
+  const receive = (Number(state.giveAmount||0) * rate);
+
+  return `
+    <div class="card">
+      <div class="h1">${t().swapTitle}</div>
+
+      <div class="rowLabel">${t().give}</div>
+      <button class="pickerBtn" id="pickGive" type="button">
+        <div class="pickerIcon"><img src="${give.logo}" alt=""></div>
+        <div class="pickerMain">
+          <div class="pickerName">${giveName}</div>
+          <div class="pickerCode">${giveCode}</div>
+        </div>
+        <div class="pickerRight">
+          <div class="drop"></div>
+        </div>
+      </button>
+
+      <input class="amount" id="giveAmount" inputmode="decimal" value="${escapeHtml(String(state.giveAmount ?? ""))}"/>
+
+      <div class="swapWrap">
+        <button class="swapBtn" id="swapBtn" type="button" aria-label="Swap">
+          <!-- classic exchange arrows -->
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M7 7h13m0 0-3-3m3 3-3 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17 17H4m0 0 3 3m-3-3 3-3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="rowLabel">${t().get}</div>
+      <button class="pickerBtn" id="pickGet" type="button">
+        <div class="pickerIcon"><img src="${get.logo}" alt=""></div>
+        <div class="pickerMain">
+          <div class="pickerName">${getName}</div>
+          <div class="pickerCode">${getCode}</div>
+        </div>
+        <div class="pickerRight">
+          <div class="drop"></div>
+        </div>
+      </button>
+
+      <input class="amount" id="getAmount" value="${formatReceive(receive)}" readonly/>
+
+      <div class="rateRow">
+        <div>${t().rate}</div>
+        <div class="val">${formatRateText(give, get, rate)}</div>
+      </div>
+
+      <button class="cta" id="createBtn" type="button">${t().create}</button>
+    </div>
+  `;
+}
+
+/* ----------------- Modal ----------------- */
+function renderModal(){
+  const back = $("#modalBack");
+  const modal = $("#modal");
+  back.classList.toggle("show", state.modalOpen);
+  modal.classList.toggle("show", state.modalOpen);
+
+  $("#modalTitle").textContent = state.modalTarget==="give" ? t().chooseGive : t().chooseGet;
+  $("#search").placeholder = t().search;
+  $("#search").value = state.query;
+
+  const filterTabs = [
+    {k:"all", label:t().all},
+    {k:"crypto", label:t().crypto},
+    {k:"bank", label:t().banks},
+    {k:"wallet", label:t().wallets},
+  ];
+  $("#filterTabs").innerHTML = filterTabs.map(x=>`
+    <button type="button" data-filter="${x.k}" class="${state.filter===x.k?"active":""}">
+      ${x.label}
+    </button>
+  `).join("");
+
+  const list = filteredItems();
+  $("#list").innerHTML = list.map(item=>{
+    const nm = item.name[state.lang] || item.name.ua;
+    const cd = item.code || "";
+    return `
+      <div class="item" data-id="${item.id}">
+        <div class="icon"><img src="${item.logo}" alt=""></div>
+        <div class="t">
+          <div class="name">${escapeHtml(nm)}</div>
+          <div class="code">${escapeHtml(cd)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function filteredItems(){
+  let arr = ITEMS.slice();
+
+  // filter
+  if(state.filter !== "all"){
+    arr = arr.filter(x => x.type === state.filter);
+  }
+
+  // search
+  const q = (state.query||"").trim().toLowerCase();
+  if(q){
+    arr = arr.filter(x=>{
+      const nm = (x.name[state.lang] || x.name.ua).toLowerCase();
+      return nm.includes(q) || (x.code||"").toLowerCase().includes(q) || x.id.toLowerCase().includes(q);
+    });
+  }
+
+  // if picking "give": allow everything; if "get": allow everything тоже (как в твоем UI)
+  return arr;
+}
+
+/* ----------------- Events ----------------- */
+function bind(){
+  document.addEventListener("click", (e)=>{
+    const tabBtn = e.target.closest("[data-tab]");
+    if(tabBtn){
+      state.tab = tabBtn.dataset.tab;
+      render();
+      return;
+    }
+
+    const langBtn = e.target.closest("#langBtn");
+    if(langBtn){
+      // cycle ua -> en -> pl
+      state.lang = state.lang === "ua" ? "en" : state.lang === "en" ? "pl" : "ua";
+      render();
+      return;
+    }
+
+    if(e.target.closest("#modalBack") || e.target.closest("#modalClose")){
+      closeModal();
+      return;
+    }
+
+    const filterBtn = e.target.closest("[data-filter]");
+    if(filterBtn){
+      state.filter = filterBtn.dataset.filter;
+      renderModal();
+      return;
+    }
+
+    const itemEl = e.target.closest(".item[data-id]");
+    if(itemEl){
+      const id = itemEl.dataset.id;
+      const it = ITEMS.find(x=>x.id===id);
+      if(!it) return;
+
+      if(state.modalTarget==="give") state.give = it;
+      else state.get = it;
+
+      closeModal();
+      render(); // updates UI and amounts
+      return;
+    }
+  });
+
+  document.addEventListener("input", (e)=>{
+    if(e.target && e.target.id==="search"){
+      state.query = e.target.value;
+      renderModal();
+    }
+  });
+}
+
+function bindSwapControls(){
+  $("#pickGive").addEventListener("click", ()=>openModal("give"));
+  $("#pickGet").addEventListener("click", ()=>openModal("get"));
+
+  $("#swapBtn").addEventListener("click", ()=>{
+    const tmp = state.give;
+    state.give = state.get;
+    state.get = tmp;
+    render();
+  });
+
+  $("#giveAmount").addEventListener("input", (e)=>{
+    const v = String(e.target.value || "").replace(",", ".");
+    state.giveAmount = v;
+    // update only receive box + rate line fast
+    const give = state.give;
+    const get = state.get;
+    const rate = getRate(give, get);
+    const receive = (Number(state.giveAmount||0) * rate);
+    $("#getAmount").value = formatReceive(receive);
+    $(".rateRow .val").textContent = formatRateText(give, get, rate);
+  });
+
+  $("#createBtn").addEventListener("click", ()=>{
+    // placeholder action
+    // можно потом сделать "статус заявки" после подачи
+    alert("✅ " + t().create);
+  });
+}
+
+/* ----------------- Modal controls ----------------- */
+function openModal(target){
+  state.modalTarget = target;
+  state.modalOpen = true;
+  state.query = "";
+  state.filter = "all";
+  renderModal();
+  // focus search
+  setTimeout(()=>$("#search")?.focus(), 50);
+}
+function closeModal(){
+  state.modalOpen = false;
+  renderModal();
+}
+
+/* ----------------- Rate logic (stub) ----------------- */
+function getRate(give, get){
+  // Пример: UAH -> BTC как у тебя на скрине: 100 UAH => 0.000000625 BTC
+  // => 1 UAH => 0.00000000625 BTC
+  if(give.code==="UAH" && get.code==="BTC") return 0.00000000625;
+
+  // Если UAH -> USDT (примерно)
+  if(give.code==="UAH" && get.code==="USDT") return 1/40;
+
+  // Если BTC -> UAH
+  if(give.code==="BTC" && get.code==="UAH") return 1 / 0.00000000625;
+
+  // fallback
+  return 1;
+}
+
+function formatRateText(give, get, rate){
+  const left = give.code || give.id.toUpperCase();
+  const right = get.code || get.id.toUpperCase();
+  // show "1 UAH ≈ 0.00000000625 BTC" like premium
+  return `1 ${left} ≈ ${trimNum(rate)} ${right}`;
+}
+
+function formatReceive(n){
+  if(!isFinite(n)) return "0";
+  // if very small, keep up to 10 decimals
+  if(Math.abs(n) < 1) return trimNum(n, 10);
+  return trimNum(n, 6);
+}
+
+function trimNum(x, maxDec=10){
+  const s = Number(x).toFixed(maxDec);
+  return s.replace(/\.?0+$/,"");
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, (c)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+/* ----------------- Start ----------------- */
+mount();
