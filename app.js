@@ -1,226 +1,396 @@
-(() => {
-  const $ = (id) => document.getElementById(id);
+/* =========================
+   KeksSwap — app.js
+   - без “оверлея”, который ломает клики
+   - одна кнопка языка (dropdown)
+   - корректные пути к логотипам
+   - полный список (добавляй сколько хочешь)
+========================= */
 
-  // --- DATA (пути как у тебя в репо) ---
-  const banks = [
-    { id: "mono", name: { UA:"Monobank", EN:"Monobank", PL:"Monobank" }, code: "UAH", icon: "logos/banks/mono.png" },
-    { id: "privat", name: { UA:"PrivatBank", EN:"PrivatBank", PL:"PrivatBank" }, code: "UAH", icon: "logos/banks/privat.png" },
-    { id: "oschad", name: { UA:"Oschadbank", EN:"Oschadbank", PL:"Oschadbank" }, code: "UAH", icon: "logos/banks/oschad.png" },
-    { id: "pumb", name: { UA:"PUMB", EN:"PUMB", PL:"PUMB" }, code: "UAH", icon: "logos/banks/pumb.png" },
-    { id: "abank", name: { UA:"A-Bank", EN:"A-Bank", PL:"A-Bank" }, code: "UAH", icon: "logos/banks/a-bank.png" },
-    { id: "sense", name: { UA:"Sense Bank", EN:"Sense Bank", PL:"Sense Bank" }, code: "UAH", icon: "logos/banks/sense.png" },
-  ];
+const state = {
+  lang: "UA",
+  tab: "exchange",
+  give: { type: "bank", key: "privat", amount: 100 },
+  get:  { type: "crypto", key: "btc",  amount: 0 },
+  modal: { open:false, mode:"give", query:"" }
+};
 
-  const crypto = [
-    { id:"btc", name:{UA:"Bitcoin", EN:"Bitcoin", PL:"Bitcoin"}, code:"BTC", icon:"logos/crypto/btc.png" },
-    { id:"eth", name:{UA:"Ethereum", EN:"Ethereum", PL:"Ethereum"}, code:"ETH", icon:"logos/crypto/eth.png" },
-    { id:"ton", name:{UA:"TON", EN:"TON", PL:"TON"}, code:"TON", icon:"logos/crypto/ton.png" },
-    { id:"sol", name:{UA:"Solana", EN:"Solana", PL:"Solana"}, code:"SOL", icon:"logos/crypto/sol.png" },
-    { id:"trx", name:{UA:"TRON", EN:"TRON", PL:"TRON"}, code:"TRX", icon:"logos/crypto/trx.png" },
-    { id:"usdt-trc", name:{UA:"Tether (TRC20)", EN:"Tether (TRC20)", PL:"Tether (TRC20)"}, code:"USDT", icon:"logos/crypto/usdt-trc.png" },
-  ];
+// === ПУТИ К ЛОГО ===
+// ВАЖНО: у тебя структура такая:
+// logos/banks/*.png
+// logos/crypto/*.png
+// logos/wallets/*.png
+// + logo.png в корне (или замени на свой файл)
+const PATHS = {
+  brandLogo: "logo.png", // если у тебя другое имя — поменяй тут
+  banks:   "logos/banks/",
+  crypto:  "logos/crypto/",
+  wallets: "logos/wallets/",
+};
 
-  // --- i18n ---
-  const i18n = {
-    UA: {
-      menu: { swap:"Обмін", rules:"Правила", account:"Акаунт", more:"Ще" },
-      give:"Віддаєте",
-      get:"Отримуєте",
-      rulesTitle:"Правила",
-      rulesText:"Тут будуть правила обміну. (Поки заглушка)",
-      accTitle:"Акаунт",
-      accText:"Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
-      login:"Увійти",
-      reg:"Реєстрація",
-      moreTitle:"Ще",
-      reviews:"Відгуки",
-      faq:"FAQ",
-      contacts:"Контакти",
-      cta:"Створити заявку",
-      ratePrefix:"Курс:"
-    },
-    EN: {
-      menu: { swap:"Swap", rules:"Rules", account:"Account", more:"More" },
-      give:"You send",
-      get:"You get",
-      rulesTitle:"Rules",
-      rulesText:"Exchange rules will be here. (Placeholder)",
-      accTitle:"Account",
-      accText:"Login/registration and KYC will be here (not connected yet).",
-      login:"Log in",
-      reg:"Sign up",
-      moreTitle:"More",
-      reviews:"Reviews",
-      faq:"FAQ",
-      contacts:"Contacts",
-      cta:"Create request",
-      ratePrefix:"Rate:"
-    },
-    PL: {
-      menu: { swap:"Wymiana", rules:"Zasady", account:"Konto", more:"Więcej" },
-      give:"Oddajesz",
-      get:"Otrzymujesz",
-      rulesTitle:"Zasady",
-      rulesText:"Tutaj będą zasady wymiany. (Wersja testowa)",
-      accTitle:"Konto",
-      accText:"Logowanie/rejestracja i KYC (jeszcze nie podłączone).",
-      login:"Zaloguj",
-      reg:"Rejestracja",
-      moreTitle:"Więcej",
-      reviews:"Opinie",
-      faq:"FAQ",
-      contacts:"Kontakt",
-      cta:"Utwórz zlecenie",
-      ratePrefix:"Kurs:"
-    },
+// === ДАННЫЕ ===
+// Добавил сразу “полный норм список” под твои файлы, которые видно на скринах.
+// Если у тебя есть ещё — просто допиши объект.
+const BANKS = {
+  privat:   { name:{UA:"ПриватБанк", EN:"PrivatBank", PL:"PrivatBank"}, code:"UAH", logo:"privat.png" },
+  mono:     { name:{UA:"Monobank", EN:"Monobank", PL:"Monobank"}, code:"UAH", logo:"mono.png" },
+  oschad:   { name:{UA:"Ощадбанк", EN:"Oschadbank", PL:"Oschadbank"}, code:"UAH", logo:"oschad.png" },
+  pumb:     { name:{UA:"ПУМБ", EN:"PUMB", PL:"PUMB"}, code:"UAH", logo:"pumb.png" },
+  abank:    { name:{UA:"A-Bank", EN:"A-Bank", PL:"A-Bank"}, code:"UAH", logo:"a-bank.png" },
+  sense:    { name:{UA:"Sense Bank", EN:"Sense Bank", PL:"Sense Bank"}, code:"UAH", logo:"sense.png" },
+  otp:      { name:{UA:"OTP Bank", EN:"OTP Bank", PL:"OTP Bank"}, code:"UAH", logo:"otp.png" },
+  ukrsib:   { name:{UA:"Укрсиббанк", EN:"UkrSibbank", PL:"UkrSibbank"}, code:"UAH", logo:"ukr-sib.png" },
+  ukrbanki: { name:{UA:"Укрбанкi", EN:"UkrBanki", PL:"UkrBanki"}, code:"UAH", logo:"ukr-banki.png" },
+  izi:      { name:{UA:"izibank", EN:"izibank", PL:"izibank"}, code:"UAH", logo:"izi.png" },
+  reif:     { name:{UA:"Raiffeisen", EN:"Raiffeisen", PL:"Raiffeisen"}, code:"UAH", logo:"reyf.png" },
+  visam:    { name:{UA:"Visa/Mastercard", EN:"Visa/Mastercard", PL:"Visa/Mastercard"}, code:"UAH", logo:"visa-master.png" },
+};
+
+const CRYPTO = {
+  btc:   { name:{UA:"Bitcoin", EN:"Bitcoin", PL:"Bitcoin"}, code:"BTC", logo:"btc.png" },
+  eth:   { name:{UA:"Ethereum", EN:"Ethereum", PL:"Ethereum"}, code:"ETH", logo:"eth.png" },
+  ltc:   { name:{UA:"Litecoin", EN:"Litecoin", PL:"Litecoin"}, code:"LTC", logo:"ltc.png" },
+  sol:   { name:{UA:"Solana", EN:"Solana", PL:"Solana"}, code:"SOL", logo:"sol.png" },
+  ton:   { name:{UA:"TON", EN:"TON", PL:"TON"}, code:"TON", logo:"ton.png" },
+  trx:   { name:{UA:"TRON", EN:"TRON", PL:"TRON"}, code:"TRX", logo:"trx.png" },
+
+  usdt:  { name:{UA:"Tether", EN:"Tether", PL:"Tether"}, code:"USDT", logo:"tether-usdt.png" },
+  usdt_trc:{ name:{UA:"Tether (TRC20)", EN:"Tether (TRC20)", PL:"Tether (TRC20)"}, code:"USDT", logo:"usdt-trc.png" },
+  usdt_eth:{ name:{UA:"Tether (ERC20)", EN:"Tether (ERC20)", PL:"Tether (ERC20)"}, code:"USDT", logo:"usdt-eth.png" },
+  usdt_bep:{ name:{UA:"Tether (BEP20)", EN:"Tether (BEP20)", PL:"Tether (BEP20)"}, code:"USDT", logo:"usdt-bep.png" },
+  usdt_pol:{ name:{UA:"Tether (Polygon)", EN:"Tether (Polygon)", PL:"Tether (Polygon)"}, code:"USDT", logo:"usdt-pol.png" },
+  usdt_sol:{ name:{UA:"Tether (Solana)", EN:"Tether (Solana)", PL:"Tether (Solana)"}, code:"USDT", logo:"usdt-sol.png" },
+  usdt_arb:{ name:{UA:"Tether (Arbitrum)", EN:"Tether (Arbitrum)", PL:"Tether (Arbitrum)"}, code:"USDT", logo:"usdt-arb.png" },
+
+  usdc_eth:{ name:{UA:"USD Coin (ETH)", EN:"USD Coin (ETH)", PL:"USD Coin (ETH)"}, code:"USDC", logo:"usdc-eth.png" },
+  usdc_pol:{ name:{UA:"USD Coin (Polygon)", EN:"USD Coin (Polygon)", PL:"USD Coin (Polygon)"}, code:"USDC", logo:"usdc-pol.png" },
+  usdc_sol:{ name:{UA:"USD Coin (Solana)", EN:"USD Coin (Solana)", PL:"USD Coin (Solana)"}, code:"USDC", logo:"usdc-sol.png" },
+};
+
+const WALLET = {
+  paypal:   { name:{UA:"PayPal", EN:"PayPal", PL:"PayPal"}, code:"USD", logo:"paypal.png" },
+  payoneer: { name:{UA:"Payoneer", EN:"Payoneer", PL:"Payoneer"}, code:"USD", logo:"payoneer.png" },
+  revolut:  { name:{UA:"Revolut", EN:"Revolut", PL:"Revolut"}, code:"EUR", logo:"revolut.png" },
+  vise:     { name:{UA:"Vise", EN:"Vise", PL:"Vise"}, code:"USD", logo:"vise.png" },
+  valet:    { name:{UA:"Valet", EN:"Valet", PL:"Valet"}, code:"USD", logo:"valet.png" },
+};
+
+const I18N = {
+  UA: { tab_exchange:"Обмін", tab_rules:"Правила", tab_account:"Акаунт", tab_more:"Ще",
+        give:"Віддаєте", get:"Отримуєте", rate:"Курс", create:"Створити заявку",
+        account_title:"Акаунт", login:"Увійти", register:"Реєстрація", placeholder:"0",
+        choose_give:"Вибір (віддаєте)", choose_get:"Вибір (отримуєте)", search:"Пошук..." },
+  EN: { tab_exchange:"Exchange", tab_rules:"Rules", tab_account:"Account", tab_more:"More",
+        give:"You give", get:"You get", rate:"Rate", create:"Create request",
+        account_title:"Account", login:"Login", register:"Register", placeholder:"0",
+        choose_give:"Choose (give)", choose_get:"Choose (get)", search:"Search..." },
+  PL: { tab_exchange:"Wymiana", tab_rules:"Zasady", tab_account:"Konto", tab_more:"Więcej",
+        give:"Oddajesz", get:"Otrzymujesz", rate:"Kurs", create:"Utwórz zgłoszenie",
+        account_title:"Konto", login:"Zaloguj", register:"Rejestracja", placeholder:"0",
+        choose_give:"Wybór (oddajesz)", choose_get:"Wybór (otrzymujesz)", search:"Szukaj..." },
+};
+
+function t(key){ return I18N[state.lang][key] || key; }
+function byLang(obj){ return obj?.[state.lang] || obj?.UA || ""; }
+
+function el(id){ return document.getElementById(id); }
+
+function getCatalog(type){
+  if(type==="bank") return BANKS;
+  if(type==="crypto") return CRYPTO;
+  return WALLET;
+}
+function getPath(type){
+  if(type==="bank") return PATHS.banks;
+  if(type==="crypto") return PATHS.crypto;
+  return PATHS.wallets;
+}
+function getItem(type, key){
+  const cat = getCatalog(type);
+  return cat[key];
+}
+
+function setSafeText(node, text){ node.textContent = text; }
+
+function render(){
+  // header logo
+  const brandLogo = document.querySelector(".brand-logo");
+  if(brandLogo) brandLogo.src = PATHS.brandLogo;
+
+  // tabs
+  setSafeText(el("tabExchange"), t("tab_exchange"));
+  setSafeText(el("tabRules"), t("tab_rules"));
+  setSafeText(el("tabAccount"), t("tab_account"));
+  setSafeText(el("tabMore"), t("tab_more"));
+
+  document.querySelectorAll(".tab").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.tab === state.tab);
+  });
+
+  // lang button text
+  setSafeText(el("langBtnText"), state.lang);
+
+  // exchange labels
+  setSafeText(el("lblGive"), t("give"));
+  setSafeText(el("lblGet"), t("get"));
+  setSafeText(el("lblRate"), t("rate"));
+  setSafeText(el("btnCreate"), t("create"));
+
+  // account page
+  setSafeText(el("accountTitle"), t("account_title"));
+  setSafeText(el("btnLogin"), t("login"));
+  setSafeText(el("btnRegister"), t("register"));
+
+  // exchange selected
+  const giveItem = getItem(state.give.type, state.give.key);
+  const getItemObj = getItem(state.get.type, state.get.key);
+
+  // names
+  setSafeText(el("giveName"), byLang(giveItem.name));
+  setSafeText(el("giveSub"), giveItem.code);
+
+  setSafeText(el("getName"), byLang(getItemObj.name));
+  setSafeText(el("getSub"), getItemObj.code);
+
+  // logos
+  el("giveLogo").src = getPath(state.give.type) + giveItem.logo;
+  el("getLogo").src  = getPath(state.get.type) + getItemObj.logo;
+
+  // amount inputs
+  el("giveAmount").value = state.give.amount ?? "";
+  el("giveAmount").placeholder = t("placeholder");
+
+  // demo rate (потом подключим API)
+  const rate = calcFakeRate(state.give.key, state.get.key);
+  const getAmount = (Number(state.give.amount||0) * rate);
+  state.get.amount = isFinite(getAmount) ? getAmount : 0;
+
+  el("getAmount").value = formatAmount(state.get.amount, state.get.key);
+  el("getAmount").placeholder = t("placeholder");
+
+  // rate string
+  el("rateText").textContent = `1 UAH ≈ ${formatAmount(rate, state.get.key)} ${getItemObj.code}`;
+
+  // pages
+  document.querySelectorAll("[data-page]").forEach(p=>{
+    p.style.display = (p.dataset.page === state.tab) ? "block" : "none";
+  });
+
+  // modal
+  renderModal();
+}
+
+function formatAmount(val, key){
+  const n = Number(val||0);
+  if(!isFinite(n)) return "0";
+  // крипта — больше знаков, фиат — меньше
+  if(key.includes("usdt") || key.includes("usdc")) return n.toFixed(2);
+  if(key==="btc" || key==="eth" || key==="ltc" || key==="sol" || key==="ton" || key==="trx") return n.toFixed(8);
+  return n.toFixed(2);
+}
+
+// простой демо-курс (потом поменяем на настоящий)
+function calcFakeRate(giveKey, getKey){
+  // give всегда UAH в демо
+  const base = {
+    btc: 0.00000000625,
+    eth: 0.00000010,
+    ltc: 0.0000030,
+    sol: 0.000035,
+    ton: 0.00028,
+    trx: 0.016,
+    usdt: 0.025,
+    usdt_trc:0.025,
+    usdt_eth:0.025,
+    usdt_bep:0.025,
+    usdt_pol:0.025,
+    usdt_sol:0.025,
+    usdt_arb:0.025,
+    usdc_eth:0.025,
+    usdc_pol:0.025,
+    usdc_sol:0.025
   };
+  return base[getKey] ?? 0.01;
+}
 
-  let lang = "UA";
+/* =========================
+   EVENTS
+========================= */
 
-  // --- Helpers ---
-  const normPath = (p) => {
-    if (!p) return "";
-    // поддержка "logos/..", "/logos/.."
-    return p.startsWith("/") ? p.slice(1) : p;
-  };
-
-  function fillSelect(selectEl, items) {
-    selectEl.innerHTML = "";
-    items.forEach((it) => {
-      const opt = document.createElement("option");
-      opt.value = it.id;
-      opt.textContent = `${it.name[lang]} (${it.code})`;
-      selectEl.appendChild(opt);
+function bind(){
+  // tabs
+  document.querySelectorAll(".tab").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      state.tab = btn.dataset.tab;
+      render();
     });
-  }
+  });
 
-  function getById(list, id) {
-    return list.find(x => x.id === id) || list[0];
-  }
+  // language dropdown
+  el("langBtn").addEventListener("click", ()=>{
+    el("langMenu").classList.toggle("open");
+  });
+  document.addEventListener("click", (e)=>{
+    const box = document.querySelector(".lang");
+    if(!box) return;
+    if(!box.contains(e.target)) el("langMenu").classList.remove("open");
+  });
+  document.querySelectorAll(".lang-item").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      state.lang = b.dataset.lang;
+      el("langMenu").classList.remove("open");
+      render();
+    });
+  });
 
-  function setIcon(imgEl, path) {
-    imgEl.src = normPath(path);
-    imgEl.onerror = () => { imgEl.src = "logo.png"; };
-  }
+  // open modal (give/get)
+  el("giveSelect").addEventListener("click", ()=>{
+    openModal("give");
+  });
+  el("getSelect").addEventListener("click", ()=>{
+    openModal("get");
+  });
 
-  function updateRateLine() {
-    const give = getById(banks, $("giveSelect").value);
-    const get = getById(crypto, $("getSelect").value);
-    // заглушка курса (можно подключить реальный позже)
-    const rate = "1 " + give.code + " ≈ 0.00000000625 " + get.code;
-    $("rateLine").textContent = `${i18n[lang].ratePrefix} ${rate}`;
-  }
+  // swap
+  el("swapBtn").addEventListener("click", ()=>{
+    const tmp = { ...state.give };
+    state.give = { type: state.get.type, key: state.get.key, amount: state.give.amount };
+    state.get  = { type: tmp.type, key: tmp.key, amount: state.get.amount };
+    render();
+  });
 
-  function applyLang() {
-    // lang buttons
-    document.querySelectorAll(".lang-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.lang === lang);
+  // input
+  el("giveAmount").addEventListener("input", ()=>{
+    const v = String(el("giveAmount").value).replace(/[^\d.,]/g,"").replace(",",".");
+    state.give.amount = v === "" ? "" : Number(v);
+    render();
+  });
+
+  // modal
+  el("modalClose").addEventListener("click", closeModal);
+  el("modalSearch").addEventListener("input", ()=>{
+    state.modal.query = el("modalSearch").value.trim().toLowerCase();
+    renderModal();
+  });
+
+  // create request (demo)
+  el("btnCreate").addEventListener("click", ()=>{
+    alert("Заявка створена (демо). Далі додамо реквізити/чат/статуси.");
+  });
+
+  // account buttons demo
+  el("btnLogin").addEventListener("click", ()=> alert("Login (demo)"));
+  el("btnRegister").addEventListener("click", ()=> alert("Register (demo)"));
+}
+
+function openModal(mode){
+  state.modal.open = true;
+  state.modal.mode = mode;
+  state.modal.query = "";
+  el("modalSearch").value = "";
+  renderModal();
+}
+
+function closeModal(){
+  state.modal.open = false;
+  renderModal();
+}
+
+function renderModal(){
+  const modal = el("modal");
+  if(!modal) return;
+
+  modal.classList.toggle("open", state.modal.open);
+
+  if(!state.modal.open) return;
+
+  const isGive = state.modal.mode === "give";
+  const currentType = isGive ? state.give.type : state.get.type;
+
+  // В ЭТОЙ ВЕРСИИ:
+  // give = только банки (пока)
+  // get  = только крипта (пока)
+  const type = isGive ? "bank" : "crypto";
+  const cat = getCatalog(type);
+
+  el("modalTitle").textContent = isGive ? t("choose_give") : t("choose_get");
+  el("modalSearch").placeholder = t("search");
+
+  const q = state.modal.query;
+  const list = el("modalList");
+  list.innerHTML = "";
+
+  Object.entries(cat).forEach(([key, item])=>{
+    const title = byLang(item.name);
+    const sub = item.code;
+
+    if(q){
+      const hay = (title + " " + sub + " " + key).toLowerCase();
+      if(!hay.includes(q)) return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "item";
+
+    const left = document.createElement("div");
+    left.className = "item-left";
+
+    const ic = document.createElement("div");
+    ic.className = "icon";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = getPath(type) + item.logo;
+    img.onerror = ()=>{ img.remove(); ic.textContent = "•"; };
+    ic.appendChild(img);
+
+    const txt = document.createElement("div");
+    txt.style.minWidth = "0";
+
+    const t1 = document.createElement("div");
+    t1.className = "item-title";
+    t1.textContent = title;
+
+    const t2 = document.createElement("div");
+    t2.className = "item-sub";
+    t2.textContent = sub;
+
+    txt.appendChild(t1);
+    txt.appendChild(t2);
+
+    left.appendChild(ic);
+    left.appendChild(txt);
+
+    row.appendChild(left);
+
+    row.addEventListener("click", ()=>{
+      if(isGive){
+        state.give.type = "bank";
+        state.give.key = key;
+      } else {
+        state.get.type = "crypto";
+        state.get.key = key;
+      }
+      closeModal();
+      render();
     });
 
-    // menu
-    document.querySelector('[data-tab="swap"]').textContent = i18n[lang].menu.swap;
-    document.querySelector('[data-tab="rules"]').textContent = i18n[lang].menu.rules;
-    document.querySelector('[data-tab="account"]').textContent = i18n[lang].menu.account;
-    document.querySelector('[data-tab="more"]').textContent = i18n[lang].menu.more;
+    list.appendChild(row);
+  });
+}
 
-    // labels/buttons/text
-    $("lblGive").textContent = i18n[lang].give;
-    $("lblGet").textContent  = i18n[lang].get;
-    $("ctaBtn").textContent  = i18n[lang].cta;
-
-    $("rulesTitle").textContent = i18n[lang].rulesTitle;
-    $("rulesText").textContent  = i18n[lang].rulesText;
-
-    $("accTitle").textContent = i18n[lang].accTitle;
-    $("accText").textContent  = i18n[lang].accText;
-    $("loginBtn").textContent = i18n[lang].login;
-    $("regBtn").textContent   = i18n[lang].reg;
-
-    $("moreTitle").textContent = i18n[lang].moreTitle;
-    $("reviewsBtn").textContent = i18n[lang].reviews;
-    $("faqBtn").textContent = i18n[lang].faq;
-    $("contactsBtn").textContent = i18n[lang].contacts;
-
-    // refill selects with translated labels
-    const giveId = $("giveSelect").value || banks[0].id;
-    const getId  = $("getSelect").value || crypto[0].id;
-    fillSelect($("giveSelect"), banks);
-    fillSelect($("getSelect"), crypto);
-    $("giveSelect").value = giveId;
-    $("getSelect").value  = getId;
-
-    // icons + rate
-    const give = getById(banks, $("giveSelect").value);
-    const get  = getById(crypto, $("getSelect").value);
-    setIcon($("giveIcon"), give.icon);
-    setIcon($("getIcon"), get.icon);
-    updateRateLine();
-  }
-
-  function initTabs() {
-    const tabs = document.querySelectorAll(".tab");
-    const pages = {
-      swap: $("tab-swap"),
-      rules: $("tab-rules"),
-      account: $("tab-account"),
-      more: $("tab-more"),
-    };
-
-    tabs.forEach(t => {
-      t.addEventListener("click", () => {
-        tabs.forEach(x => x.classList.remove("active"));
-        Object.values(pages).forEach(p => p.classList.remove("active"));
-        t.classList.add("active");
-        pages[t.dataset.tab].classList.add("active");
-      });
-    });
-  }
-
-  function init() {
-    // fill selects
-    fillSelect($("giveSelect"), banks);
-    fillSelect($("getSelect"), crypto);
-
-    // defaults
-    $("giveSelect").value = "mono";
-    $("getSelect").value = "btc";
-
-    // icons
-    setIcon($("giveIcon"), getById(banks, "mono").icon);
-    setIcon($("getIcon"), getById(crypto, "btc").icon);
-
-    // listeners
-    $("giveSelect").addEventListener("change", () => {
-      const give = getById(banks, $("giveSelect").value);
-      setIcon($("giveIcon"), give.icon);
-      updateRateLine();
-    });
-
-    $("getSelect").addEventListener("change", () => {
-      const get = getById(crypto, $("getSelect").value);
-      setIcon($("getIcon"), get.icon);
-      updateRateLine();
-    });
-
-    $("swapBtn").addEventListener("click", () => {
-      const g = $("giveSelect").value;
-      const k = $("getSelect").value;
-      $("giveSelect").value = g; // оставляем банки сверху, крипту снизу (по твоему дизайну)
-      $("getSelect").value = k;
-      // просто микро-анимация клика
-      $("swapBtn").animate([{transform:"scale(1)"},{transform:"scale(0.92)"},{transform:"scale(1)"}], {duration:220});
-    });
-
-    document.querySelectorAll(".lang-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        lang = btn.dataset.lang;
-        applyLang();
-      });
-    });
-
-    initTabs();
-    applyLang();
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-})();
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", ()=>{
+  // НУЖНЫЕ ЭЛЕМЕНТЫ должны быть в index.html:
+  // ids:
+  // tabExchange tabRules tabAccount tabMore
+  // langBtn langBtnText langMenu (items with class=lang-item data-lang)
+  // lblGive lblGet lblRate rateText
+  // giveSelect giveLogo giveName giveSub giveAmount
+  // getSelect getLogo getName getSub getAmount
+  // swapBtn btnCreate
+  // modal modalTitle modalClose modalSearch modalList
+  // accountTitle btnLogin btnRegister
+  bind();
+  render();
+});
