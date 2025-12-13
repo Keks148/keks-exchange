@@ -1,118 +1,233 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>KeksSwap</title>
-  <link rel="stylesheet" href="./style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>KeksSwap</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg1:#EEE9FF;
+  --bg2:#DCD3FF;
+  --card:#ffffffee;
+  --p1:#6D28D9;
+  --p2:#8B5CF6;
+  --p3:#A78BFA;
+  --ink:#111827;
+  --muted:#6B7280;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:radial-gradient(1000px 600px at top,var(--bg2),var(--bg1));
+  padding:16px;
+}
+
+.app{max-width:480px;margin:auto}
+
+/* ===== HEADER ===== */
+.header{
+  background:linear-gradient(135deg,#c7b8ff,#e7e1ff);
+  border-radius:26px;
+  padding:14px;
+  box-shadow:0 15px 40px rgba(0,0,0,.1);
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+}
+
+.brand span{
+  font-family:'Rubik Spray Paint';
+  font-size:36px;
+  background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.lang{
+  background:#ffffffcc;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:12px;
+}
+
+/* ===== MENU ===== */
+.menu{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.menu button{
+  flex:1;
+  height:36px;
+  border-radius:999px;
+  border:none;
+  background:#ffffffcc;
+  font-weight:800;
+}
+
+.menu .active{
+  background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));
+  color:#fff;
+}
+
+/* ===== CARD ===== */
+.card{
+  margin-top:16px;
+  background:var(--card);
+  border-radius:26px;
+  padding:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.1);
+}
+
+h1{
+  margin:0 0 12px;
+  font-size:48px;
+}
+
+.label{
+  font-weight:800;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+/* ===== SELECT ===== */
+.select{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:18px;
+  background:#fff;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.select img{
+  width:32px;
+  height:32px;
+}
+
+.select .name{
+  font-weight:800;
+}
+
+.amount{
+  width:100%;
+  border:none;
+  font-size:42px;
+  font-weight:900;
+  outline:none;
+}
+
+/* ===== SWAP ===== */
+.swap{
+  width:80px;
+  height:80px;
+  margin:12px auto;
+  border-radius:26px;
+  border:none;
+  background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3));
+  color:#fff;
+  font-size:32px;
+}
+
+/* ===== LIST ===== */
+.list{
+  max-height:55vh;
+  overflow:auto;
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:16px;
+  background:#fff;
+  margin-bottom:8px;
+  cursor:pointer;
+}
+
+.item img{
+  width:32px;
+  height:32px;
+}
+
+.small{font-size:12px;color:var(--muted)}
+</style>
 </head>
 
 <body>
-  <header class="header">
-    <div class="headerInner">
-      <div class="brand">
-        <img class="brandLogo" src="./logo.png" alt="KeksSwap" />
-        <div class="brandTitle" aria-label="KeksSwap">KeksSwap</div>
-      </div>
+<div class="app">
 
-      <!-- язык: один компактный селект (без модалок) -->
-      <div class="langWrap">
-        <select id="langSelect" class="langSelect" aria-label="Language">
-          <option value="UA" selected>UA</option>
-          <option value="EN">EN</option>
-          <option value="PL">PL</option>
-        </select>
-      </div>
+<div class="header">
+  <div class="top">
+    <div class="brand">
+      <img src="logo.png">
+      <span>KeksSwap</span>
     </div>
+    <div class="lang">UA ▾</div>
+  </div>
 
-    <!-- меню (компактнее, без скрола) -->
-    <nav class="topNav" aria-label="Menu">
-      <button class="pill pillActive" data-tab="exchange" type="button">Обмін</button>
-      <button class="pill" data-tab="rules" type="button">Правила</button>
-      <button class="pill" data-tab="account" type="button">Аккаунт</button>
-      <button class="pill" data-tab="more" type="button">Ще</button>
-    </nav>
-  </header>
+  <div class="menu">
+    <button class="active">Обмін</button>
+    <button>Правила</button>
+    <button>Аккаунт</button>
+    <button>Ще</button>
+  </div>
+</div>
 
-  <main class="page">
-    <!-- EXCHANGE -->
-    <section class="card" id="tab-exchange">
-      <h1 class="h1">Обмін</h1>
+<div class="card">
+  <h1>Обмін</h1>
 
-      <div class="blockTitle">Віддаєте</div>
+  <div class="label">Віддаєте</div>
+  <div class="select">
+    <img src="logos/banks/mono.png">
+    <div>
+      <div class="name">Monobank</div>
+      <div class="small">UAH</div>
+    </div>
+  </div>
 
-      <!-- СНАЧАЛА валюта, потом сумма (как ты хотел ранее) -->
-      <div class="row rowCompact">
-        <img id="giveIcon" class="assetIcon" src="./logos/banks/mono.png" alt="" />
-        <div class="rowText">
-          <div class="rowMain" id="giveName">Monobank</div>
-          <div class="rowSub" id="giveCode">UAH</div>
-        </div>
-        <select id="giveSelect" class="miniSelect" aria-label="Give asset"></select>
-      </div>
+  <input class="amount" value="0">
 
-      <div class="row rowInputCompact">
-        <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" />
-      </div>
+  <button class="swap">⇄</button>
 
-      <div class="swapWrap">
-        <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
-          <span class="swapIcon" aria-hidden="true">⇄</span>
-        </button>
-      </div>
+  <div class="label">Отримуєте</div>
+  <div class="select">
+    <img src="logos/crypto/btc.png">
+    <div>
+      <div class="name">Bitcoin</div>
+      <div class="small">BTC</div>
+    </div>
+  </div>
 
-      <div class="blockTitle">Отримуєте</div>
+  <input class="amount" value="0.0000">
+</div>
 
-      <div class="row rowCompact">
-        <img id="getIcon" class="assetIcon" src="./logos/crypto/btc.png" alt="" />
-        <div class="rowText">
-          <div class="rowMain" id="getName">Bitcoin</div>
-          <div class="rowSub" id="getCode">BTC</div>
-        </div>
-        <select id="getSelect" class="miniSelect" aria-label="Get asset"></select>
-      </div>
-
-      <div class="row rowInputCompact">
-        <input id="getAmount" class="amountInput" inputmode="decimal" placeholder="0" />
-      </div>
-
-      <div class="actions">
-        <button class="primaryBtn" type="button">Продовжити</button>
-      </div>
-    </section>
-
-    <!-- RULES -->
-    <section class="card hidden" id="tab-rules">
-      <h1 class="h1">Rules</h1>
-      <p class="muted">
-        Тут будуть правила обміну. (Поки заглушка)
-      </p>
-    </section>
-
-    <!-- ACCOUNT -->
-    <section class="card hidden" id="tab-account">
-      <h1 class="h1">Account</h1>
-      <p class="muted">
-        Тут буде вхід/реєстрація і далі KYC (поки без підключення).
-      </p>
-
-      <div class="actionsCol">
-        <button class="primaryBtn" type="button">Войти</button>
-        <button class="ghostBtn" type="button">Регистрация</button>
-      </div>
-    </section>
-
-    <!-- MORE -->
-    <section class="card hidden" id="tab-more">
-      <h1 class="h1">More</h1>
-      <div class="moreList">
-        <button class="moreItem" type="button">Відгуки</button>
-        <button class="moreItem" type="button">FAQ</button>
-        <button class="moreItem" type="button">Контакти</button>
-      </div>
-    </section>
-  </main>
-
-  <script src="./app.js"></script>
+</div>
 </body>
 </html>
