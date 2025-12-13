@@ -1,16 +1,16 @@
 :root{
-  --bg1:#f1e7ff;
-  --bg2:#eadcff;
-  --card:#ffffffcc;
-  --stroke:#00000014;
-  --text:#15151c;
-  --muted:#6c6c78;
+  --bg1:#f3efff;
+  --bg2:#efe6ff;
+  --card:rgba(255,255,255,.82);
+  --stroke:rgba(0,0,0,.08);
+  --text:#14141a;
+  --muted:#6b6b7a;
 
-  --grad1:#7b4dff;
-  --grad2:#ff4db8;
+  --g1:#6f4dff;
+  --g2:#ff4db8;
 
   --r:22px;
-  --shadow: 0 18px 35px rgba(40,20,70,.12);
+  --shadow: 0 14px 32px rgba(40,20,70,.12);
 }
 
 *{box-sizing:border-box}
@@ -19,21 +19,22 @@ body{
   margin:0;
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
   color:var(--text);
-  background: radial-gradient(900px 500px at 30% 0%, #e2c8ff 0%, transparent 60%),
-              linear-gradient(180deg,var(--bg1),#f7f3ff 55%, var(--bg2));
+  background:
+    radial-gradient(900px 500px at 30% 0%, #e6d5ff 0%, transparent 60%),
+    linear-gradient(180deg,var(--bg1),#fbf9ff 55%, var(--bg2));
 }
 
 #app{
   min-height:100%;
+  max-width:520px;
+  margin:0 auto;
   padding: 10px 12px 16px;
-  max-width: 520px;
-  margin: 0 auto;
 }
 
 .header{
-  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.25));
-  border: 1px solid var(--stroke);
   border-radius: var(--r);
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.18));
   box-shadow: var(--shadow);
   padding: 10px 12px 10px;
 }
@@ -49,66 +50,76 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  min-width: 0;
+  min-width:0;
 }
 
 .brandLogo{
-  width: 180px;          /* ← LOGO большой как просил */
-  max-width: 62vw;       /* чтобы не вылазило */
+  width: 220px;
+  max-width: 70vw;
   height: 56px;
   object-fit: contain;
   display:block;
-  filter: drop-shadow(0 10px 18px rgba(60,20,90,.18));
+  filter: drop-shadow(0 12px 18px rgba(60,20,90,.16));
+  animation: logoFloat 6s ease-in-out infinite;
+}
+@keyframes logoFloat{
+  0%,100%{ transform: translateY(0px) }
+  50%{ transform: translateY(2px) }
 }
 
 .langSelect{
-  height: 36px;
+  height: 34px;
   border-radius: 14px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.72);
   padding: 0 10px;
-  font-weight: 700;
+  font-weight: 900;
   color: var(--text);
 }
 
 .tabs{
   margin-top: 10px;
   display:flex;
-  gap:10px;
-  justify-content:space-between;
+  gap:8px;
 }
-
 .tab{
   flex:1;
-  height: 40px;                 /* меню меньше */
+  height: 38px;
   border-radius: 18px;
   border: 1px solid var(--stroke);
   background: rgba(255,255,255,.62);
-  font-weight: 800;
+  font-weight: 900;
   color: var(--text);
+  font-size: 13px;
 }
-
 .tab.active{
-  border: none;
+  border:none;
   color:#fff;
-  background: linear-gradient(135deg,var(--grad1),var(--grad2));
-  box-shadow: 0 14px 28px rgba(140,70,255,.25);
+  background: linear-gradient(135deg,var(--g1),var(--g2));
+  background-size: 200% 200%;
+  animation: gradSlow 10s ease-in-out infinite;
+  box-shadow: 0 12px 22px rgba(140,70,255,.20);
+}
+@keyframes gradSlow{
+  0%{background-position: 0% 50%}
+  50%{background-position: 100% 50%}
+  100%{background-position: 0% 50%}
 }
 
 .card{
   margin-top: 12px;
-  border-radius: 28px;
+  border-radius: 26px;
   border: 1px solid var(--stroke);
   background: var(--card);
   box-shadow: var(--shadow);
-  padding: 12px 12px 12px;
+  padding: 12px;
 }
 
 .sectionTitle{
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--muted);
   margin: 2px 2px 8px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--muted);
 }
 
 .row{
@@ -119,11 +130,11 @@ body{
 
 .picker{
   flex: 1;
-  height: 44px;                 /* выбор банка/крипты меньше */
+  height: 42px;
   border-radius: 18px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.85);
-  padding: 0 12px 0 10px;
+  background: rgba(255,255,255,.88);
+  padding: 0 10px 0 10px;
   display:flex;
   align-items:center;
   gap:10px;
@@ -142,19 +153,14 @@ body{
   overflow:hidden;
   flex: 0 0 auto;
 }
-
-.icon img{
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-}
+.icon img{ width:26px; height:26px; object-fit:contain; }
 
 .picker select{
-  width: 100%;
+  width:100%;
   border:none;
   outline:none;
   background: transparent;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--text);
   appearance: none;
   padding-right: 18px;
@@ -164,70 +170,104 @@ body{
 }
 
 .amount{
-  margin-top: 10px;
-  height: 46px;                 /* сумма меньше по высоте */
+  margin-top: 8px;
+  height: 42px;
   border-radius: 18px;
   border: 1px solid var(--stroke);
-  background: rgba(255,255,255,.85);
-  padding: 0 14px;
-  font-size: 22px;              /* шрифт меньше */
+  background: rgba(255,255,255,.88);
+  padding: 0 12px;
+  font-size: 18px;
   font-weight: 900;
-  outline: none;
-  width: 100%;
+  outline:none;
+  width:100%;
+}
+
+.bigResult{
+  margin-top: 10px;
+  border-radius: 22px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.75);
+  padding: 10px 12px;
+}
+.bigResult .label{
+  color: var(--muted);
+  font-weight: 900;
+  font-size: 12px;
+}
+.bigResult .value{
+  margin-top: 4px;
+  font-weight: 1000;
+  font-size: 26px;
+  letter-spacing: .2px;
 }
 
 .swapWrap{
   display:flex;
   justify-content:center;
-  margin: 8px 0 8px;            /* ближе и компактнее */
+  margin: 8px 0 6px;
 }
-
 .swapBtn{
-  width: 56px;                  /* кнопка обмена меньше */
-  height: 56px;
+  width: 50px;
+  height: 50px;
   border-radius: 18px;
   border:none;
   color:#fff;
-  font-weight:900;
-  background: linear-gradient(135deg,var(--grad1),var(--grad2));
-  box-shadow: 0 18px 30px rgba(140,70,255,.24);
+  font-weight: 1000;
+  background: linear-gradient(135deg,var(--g1),var(--g2));
+  background-size: 200% 200%;
+  animation: gradSlow 10s ease-in-out infinite;
+  box-shadow: 0 16px 26px rgba(140,70,255,.22);
   display:flex;
   align-items:center;
   justify-content:center;
 }
+.swapBtn span{ font-size: 22px; letter-spacing: 6px; }
 
-.swapBtn span{
-  font-size: 22px;
-  letter-spacing: 2px;          /* стрелки “на большем расстоянии” визуально */
-}
-
-.rate{
-  margin-top: 6px;
+.meta{
+  margin-top: 8px;
   text-align:center;
   color: var(--muted);
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .primary{
   margin-top: 10px;
-  width: 100%;
-  height: 46px;                 /* кнопка заявки меньше по высоте */
+  width:100%;
+  height: 44px;
   border:none;
   border-radius: 22px;
   color:#fff;
-  font-weight: 900;
-  font-size: 18px;
-  background: linear-gradient(135deg,var(--grad1),var(--grad2));
-  box-shadow: 0 18px 30px rgba(140,70,255,.22);
+  font-weight: 1000;
+  font-size: 17px;
+  background: linear-gradient(135deg,var(--g1),var(--g2));
+  background-size: 200% 200%;
+  animation: gradSlow 10s ease-in-out infinite;
+  box-shadow: 0 16px 26px rgba(140,70,255,.20);
 }
 
-/* чтобы всё влезало на маленьких экранах */
+.smallBtn{
+  height: 42px;
+  border-radius: 20px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.70);
+  font-weight: 900;
+  width:100%;
+}
+
+.hr{
+  height:1px;
+  background: rgba(0,0,0,.08);
+  margin: 10px 0;
+}
+
 @media (max-height: 740px){
   .brandLogo{height:52px}
-  .tab{height:38px}
-  .picker{height:42px}
-  .amount{height:44px;font-size:21px}
-  .swapBtn{width:54px;height:54px}
-  .primary{height:44px}
+  .tab{height:36px}
+  .picker{height:40px}
+  .amount{height:40px;font-size:17px}
+  .swapBtn{width:48px;height:48px}
+  .primary{height:42px}
+  .bigResult .value{font-size:24px}
 }
