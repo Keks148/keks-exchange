@@ -1,41 +1,40 @@
 :root{
-  --bg:#f5f6fb;
-  --card:#ffffff;
-  --text:#0f172a;
+  --bgA:#eef0ff;
+  --bgB:#e7eaff;
+  --ink:#0e1320;
   --muted:#6b7280;
-  --line:rgba(15,23,42,.10);
+  --card:#ffffffcc;
+  --stroke:#e6e9f2;
+  --shadow: 0 18px 40px rgba(20, 30, 70, .10);
 
-  --primary:#6b5cff;
-  --primary2:#9b8cff;
+  --primaryA:#6D56FF;
+  --primaryB:#8B5CF6;
+  --primaryC:#A855F7;
 
-  --radius:22px;
-  --shadow:0 14px 34px rgba(17,24,39,.10);
+  --radius: 22px;
+  --safeTop: 10px;
+  --safeBottom: 10px;
 
-  /* Telegram safe areas (проставляет app.js) */
-  --safeTop:18px;
-  --safeBottom:18px;
-
-  --container: 760px;
+  --container: 720px;
 }
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
-
 body{
   margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
   background:
-    radial-gradient(1200px 420px at 30% -10%, rgba(107,92,255,.22), rgba(255,255,255,0) 60%),
-    radial-gradient(900px 420px at 90% 0%, rgba(155,140,255,.18), rgba(255,255,255,0) 55%),
-    var(--bg);
-  color:var(--text);
+    radial-gradient(1200px 540px at 20% 0%, rgba(109,86,255,.20), transparent 55%),
+    radial-gradient(900px 520px at 80% 10%, rgba(168,85,247,.18), transparent 60%),
+    linear-gradient(180deg, var(--bgA), var(--bgB));
 }
 
 /* ====== Layout ====== */
 .wrap{
   max-width: var(--container);
   margin: 0 auto;
-  padding: calc(var(--safeTop) + 10px) 12px calc(var(--safeBottom) + 18px);
+  padding: calc(var(--safeTop) + 10px) 14px calc(var(--safeBottom) + 18px);
 }
 
 /* ====== Sticky Header ====== */
@@ -43,365 +42,406 @@ body{
   position: sticky;
   top: 0;
   z-index: 50;
-  padding-top: calc(var(--safeTop) + 6px);
-  padding-bottom: 10px;
+
+  padding-top: calc(var(--safeTop) + 10px);
+  padding-bottom: 12px;
+
+  background:
+    radial-gradient(900px 420px at 15% 0%, rgba(109,86,255,.22), transparent 55%),
+    radial-gradient(800px 420px at 85% 0%, rgba(168,85,247,.18), transparent 58%),
+    linear-gradient(180deg, rgba(238,240,255,.95), rgba(231,234,255,.75));
 
   backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(245,246,251,.92), rgba(245,246,251,.70));
+  -webkit-backdrop-filter: blur(10px);
+
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-shadow: 0 10px 28px rgba(20, 30, 70, .10);
 }
 
-.headerInner{
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 12px 12px 6px; /* ⬅️ лого ниже, чтобы не цепляло TG */
+/* ====== Brand row ====== */
+.brandRow{
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
   gap:10px;
+  padding: 0 10px;
 }
 
-/* ====== Brand (SVG) ====== */
-.brand{
+.brandLeft{
   display:flex;
-  align-items:flex-end;
-  gap:10px;
+  align-items:center;
+  gap:12px;
   min-width:0;
 }
 
-.brandSvg{
-  width: min(520px, 62vw); /* ⬅️ чтобы не уезжало */
-  height: auto;
-  display:block;
-  cursor:pointer;
-}
-
-/* Въезд логотипа + лёгкий scale */
-.ks-wrap{
-  transform: translateX(-80px) scale(.95);
-  opacity: 0;
-  animation: ksEnter 900ms cubic-bezier(.16,1,.3,1) forwards;
-}
-@keyframes ksEnter{
-  to{ transform: translateX(0) scale(1); opacity:1; }
-}
-
-/* tap shake */
-svg.tap .ks-wrap{
-  animation: ksEnter 900ms cubic-bezier(.16,1,.3,1) forwards, tapShake 420ms ease-in-out;
-}
-@keyframes tapShake{
-  0%{ transform: translateX(0) rotate(0deg) scale(1); }
-  20%{ transform: translateX(2px) rotate(-1deg) scale(1.01); }
-  45%{ transform: translateX(-2px) rotate(1deg) scale(1.01); }
-  70%{ transform: translateX(1px) rotate(-.5deg) scale(1.005); }
-  100%{ transform: translateX(0) rotate(0deg) scale(1); }
-}
-
-/* ====== Language ====== */
-.lang{
+/* logo.png bigger + same background as header (no white block) */
+.brandLogo{
+  width:54px;
+  height:54px;
+  border-radius: 18px;
   display:flex;
   align-items:center;
-  gap:6px;
-  margin-top: 8px; /* ⬅️ опустили, чтобы не пересекалось с TG кнопками */
+  justify-content:center;
+
+  background:
+    radial-gradient(700px 240px at 20% 0%, rgba(109,86,255,.22), transparent 55%),
+    radial-gradient(520px 220px at 80% 0%, rgba(168,85,247,.18), transparent 58%),
+    linear-gradient(180deg, rgba(238,240,255,.95), rgba(231,234,255,.75));
+
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 10px 22px rgba(20, 30, 70, .10);
+  overflow:hidden;
+}
+.brandLogo img{
+  width:40px;
+  height:40px;
+  object-fit:contain;
+  display:block;
 }
 
-.lang button{
-  border:1px solid var(--line);
-  background: rgba(255,255,255,.78);
-  padding: 6px 8px;
-  border-radius: 12px;
+/* Gradient brand text + subtle animation */
+.brandName{
   font-weight: 900;
-  font-size: 10px; /* ⬅️ меньше */
-  color:var(--text);
+  letter-spacing: .5px;
+  line-height: 1;
+  font-size: 46px;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+
+  background: linear-gradient(90deg, var(--primaryA), var(--primaryB), var(--primaryC), var(--primaryA));
+  background-size: 260% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+  animation: shimmer 4.2s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
 }
 
-.lang button.active{
-  background: linear-gradient(270deg, var(--primary), var(--primary2), var(--primary));
-  background-size: 400% 400%;
-  animation: gradientMove 4s ease infinite;
-  color:#fff;
-  border:none;
-  box-shadow: 0 10px 24px rgba(107,92,255,.35);
-}
-
-/* ====== Top menu ====== */
-.topMenu{
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 8px 12px 8px;
-
+/* ====== Language buttons (lower + smaller) ====== */
+.langRow{
   display:flex;
   gap:8px;
-  flex-wrap: nowrap;     /* ⬅️ в один ряд */
-  overflow:hidden;       /* ⬅️ без скролла, ужимаем кнопки */
+  padding-bottom: 2px;           /* keep slightly lower */
+  transform: translateY(10px);   /* drop down so it doesn't overlap brand text */
 }
-
-.topMenu .tab{
-  white-space:nowrap;
-  border:1px solid var(--line);
-  background: rgba(255,255,255,.78);
-  padding: 6px 8px;      /* ⬅️ плотнее */
-  border-radius: 14px;
-  font-weight: 900;
-  font-size: 11px;
-  color: var(--text);
-  flex: 1 1 auto;        /* ⬅️ чтобы ужималось и влезало */
-  text-align:center;
-}
-
-.topMenu .tab.active{
-  background: linear-gradient(270deg, var(--primary), var(--primary2), var(--primary));
-  background-size: 400% 400%;
-  animation: gradientMove 4s ease infinite;
-  color:#fff;
-  border:none;
-  box-shadow: 0 10px 24px rgba(107,92,255,.30);
-}
-
-/* ====== Cards ====== */
-.card{
+.langBtn{
+  border: 0;
+  cursor:pointer;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--ink);
   background: rgba(255,255,255,.70);
-  border: 1px solid rgba(15,23,42,.08);
+  border: 1px solid rgba(255,255,255,.70);
+  box-shadow: 0 10px 18px rgba(20, 30, 70, .08);
+}
+.langBtn.active{
+  color:#fff;
+  background: linear-gradient(90deg, var(--primaryA), var(--primaryB), var(--primaryC));
+  background-size: 220% 100%;
+  animation: gradMove 2.6s linear infinite;
+  border: 0;
+}
+@keyframes gradMove{
+  0%{ background-position: 0% 50%; }
+  100%{ background-position: 200% 50%; }
+}
+
+/* ====== Top nav pills ====== */
+.navRow{
+  display:flex;
+  gap:10px;
+  padding: 12px 10px 0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width:none;
+}
+.navRow::-webkit-scrollbar{ display:none; }
+
+.navPill{
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,.70);
+  background: rgba(255,255,255,.70);
+  box-shadow: 0 10px 18px rgba(20, 30, 70, .08);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor:pointer;
+  white-space:nowrap;
+  font-size: 15px;
+}
+.navPill.active{
+  color:#fff;
+  border: 0;
+  background: linear-gradient(90deg, var(--primaryA), var(--primaryB), var(--primaryC));
+  background-size: 220% 100%;
+  animation: gradMove 2.6s linear infinite;
+}
+
+/* ====== Card / Exchange (make it smaller like 2nd screenshot) ====== */
+.card{
+  margin-top: 14px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,.70);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 16px;
-}
-
-/* main spacing under sticky header */
-.main{
-  padding-top: 18px;
+  padding: 18px 16px; /* smaller */
 }
 
 .h1{
-  font-size: 44px;
+  font-size: 52px;
+  margin: 0 0 10px 0;
+  letter-spacing: -1px;
+}
+.label{
+  font-size: 34px;
+  margin: 10px 0 10px 0;
+  color: #5b6474;
   font-weight: 900;
-  margin: 0 0 8px 0;
-  letter-spacing: .2px;
 }
 
-.h2{
-  font-size: 22px;
-  font-weight: 900;
-  margin: 16px 0 10px 0;
-  color: rgba(15,23,42,.70);
-}
-
-/* ====== Inputs / selects ====== */
 .field{
+  border: 2px solid var(--stroke);
+  border-radius: 22px;
+  background: rgba(255,255,255,.85);
+  padding: 12px 14px; /* smaller */
   display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.input{
-  width:100%;
-  height:64px;
-  border-radius: 18px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(255,255,255,.92);
-  padding: 0 18px;
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--text);
-  outline: none;
+  align-items:center;
+  gap:12px;
+  box-shadow: 0 6px 16px rgba(20, 30, 70, .06) inset;
 }
 
 .selectBtn{
   width:100%;
-  height:68px;
-  border-radius: 18px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(255,255,255,.92);
-  padding: 0 14px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
+  border:0;
+  background: transparent;
+  cursor:pointer;
+  padding: 0;
 }
 
-.selLeft{
+.assetLeft{
   display:flex;
   align-items:center;
   gap:12px;
   min-width:0;
 }
 
-.selText{
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-  line-height: 1.05;
-}
-
-.selTitle{
-  font-weight: 900;
-  font-size: 22px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.selSub{
-  font-weight: 800;
-  font-size: 16px;
-  color: rgba(15,23,42,.55);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.chev{
-  font-size: 18px;
-  opacity:.8;
-}
-
-/* ====== swap button ====== */
-.swapBtn{
-  width:66px;
-  height:66px;
-  margin: 14px auto 6px;
-  border-radius: 18px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.78);
-  box-shadow: 0 14px 28px rgba(17,24,39,.12);
+/* keep logos size норм (как ты сказал) */
+.assetIcon{
+  width:44px;
+  height:44px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(0,0,0,.06);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size: 22px;
+  overflow:hidden;
+}
+.assetIcon img{
+  width:44px;
+  height:44px;
+  object-fit:cover;
+  display:block;
 }
 
-/* ====== Continue button ====== */
-.primaryBtn{
+.assetName{
+  font-weight: 950;
+  font-size: 30px;
+  line-height: 1;
+  min-width:0;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.assetSub{
+  font-weight: 800;
+  font-size: 18px;
+  color: #7a8496;
+  margin-top: 2px;
+}
+
+.chev{
+  font-size: 20px;
+  opacity:.6;
+}
+
+.amountInput{
   width:100%;
-  height:62px;
-  border:none;
+  border:0;
+  outline:none;
+  background: transparent;
+  font-size: 58px;
+  font-weight: 950;
+  color: var(--ink);
+  letter-spacing: 0.5px;
+  padding: 2px 0;
+}
+
+/* ====== Swap button (animated gradient + nicer arrows) ====== */
+.swapWrap{
+  display:flex;
+  justify-content:center;
+  margin: 10px 0; /* tighter */
+}
+.swapBtn{
+  width: 86px;
+  height: 86px;
+  border-radius: 24px;
+  border: 0;
+  cursor:pointer;
+
+  background: linear-gradient(90deg, var(--primaryA), var(--primaryB), var(--primaryC));
+  background-size: 220% 100%;
+  animation: gradMove 2.6s linear infinite;
+
+  box-shadow: 0 18px 34px rgba(109,86,255,.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.swapBtn:active{ transform: scale(.98); }
+
+.swapBtn svg{
+  width: 36px;
+  height: 36px;
+  stroke: #fff;
+  stroke-width: 2.4;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ====== CTA ====== */
+.cta{
+  margin-top: 14px;
+  width:100%;
+  border:0;
+  cursor:pointer;
+  padding: 16px 16px;
   border-radius: 18px;
+  color:#fff;
   font-weight: 950;
   font-size: 18px;
-  color:#fff;
-  margin-top: 14px;
-
-  background: linear-gradient(270deg, var(--primary), var(--primary2), var(--primary));
-  background-size: 400% 400%;
-  animation: gradientMove 4s ease infinite;
-
-  box-shadow: 0 18px 30px rgba(107,92,255,.35);
+  background: linear-gradient(90deg, var(--primaryA), var(--primaryB), var(--primaryC));
+  background-size: 220% 100%;
+  animation: gradMove 2.6s linear infinite;
+  box-shadow: 0 18px 34px rgba(109,86,255,.18);
 }
 
-/* ====== Modal ====== */
-.modalBackdrop{
+/* ====== Bottom sheet modal ====== */
+.backdrop{
   position:fixed;
   inset:0;
-  background: rgba(15,23,42,.45);
+  background: rgba(0,0,0,.35);
   display:none;
-  z-index:100;
-  padding: 14px 12px calc(var(--safeBottom) + 12px);
+  align-items:flex-end;
+  justify-content:center;
+  z-index: 100;
+  padding-bottom: calc(var(--safeBottom) + 8px);
 }
+.backdrop.show{ display:flex; }
 
-.modalBackdrop.open{ display:flex; }
-
-.modal{
-  width:100%;
-  max-width: var(--container);
-  margin: auto auto 0 auto; /* снизу */
+.sheet{
+  width: min(var(--container), 100%);
+  max-height: calc(100vh - var(--safeTop) - var(--safeBottom) - 18px);
   background: rgba(255,255,255,.92);
-  border: 1px solid rgba(15,23,42,.10);
-  border-radius: 22px;
-  box-shadow: 0 26px 60px rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -18px 50px rgba(10, 20, 50, .18);
   overflow:hidden;
 }
 
-.modalHead{
-  padding: 16px 16px 10px;
+.sheetTop{
+  padding: 14px 14px 10px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  gap:12px;
 }
-
-.modalTitle{
-  font-size: 26px;
+.sheetTitle{
   font-weight: 950;
+  font-size: 26px;
 }
-
-.modalClose{
-  width:44px;
-  height:44px;
+.sheetClose{
+  width:44px; height:44px;
   border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.75);
+  cursor:pointer;
   font-size: 22px;
 }
 
-.modalBody{
-  padding: 0 16px 16px;
+.sheetSearch{
+  padding: 0 14px 12px;
 }
-
-.search{
+.sheetSearch input{
   width:100%;
-  height:54px;
+  border: 2px solid var(--stroke);
   border-radius: 16px;
-  border: 1px solid rgba(15,23,42,.12);
-  padding: 0 14px;
-  font-size: 18px;
-  font-weight: 800;
+  padding: 12px 12px;
+  font-size: 16px;
   outline:none;
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.9);
 }
 
-.list{
-  margin-top: 12px;
-  max-height: 62vh; /* чтобы не упиралось в системные кнопки */
+.sheetList{
+  padding: 0 14px 14px;
   overflow:auto;
-  padding-bottom: 18px;
+  max-height: calc(100vh - var(--safeTop) - var(--safeBottom) - 170px);
 }
-
 .item{
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:12px;
-  padding: 12px 10px;
-  border-radius: 18px;
-  border: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.70);
+  padding: 12px 12px;
   margin-bottom: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.78);
+  cursor:pointer;
 }
+.item:active{ transform: scale(.99); }
 
-.itemText{
-  min-width:0;
-  flex:1;
-}
-
-.itemTop{
+.itemLeft{
   display:flex;
-  align-items:baseline;
-  gap:10px;
+  align-items:center;
+  gap:12px;
   min-width:0;
 }
-
 .itemName{
   font-weight: 950;
   font-size: 18px;
-  white-space:nowrap;
+  min-width:0;
   overflow:hidden;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.itemCode{
-  font-weight: 900;
-  color: rgba(15,23,42,.55);
-}
-
-.itemMeta{
-  margin-top: 2px;
-  font-size: 14px;
+.itemSub{
   font-weight: 800;
-  color: rgba(15,23,42,.55);
+  font-size: 13px;
+  color:#7b8496;
+  margin-top: 2px;
 }
 
-/* ====== Animated gradient keyframes ====== */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.badge{
+  font-weight: 950;
+  font-size: 12px;
+  color:#5b6474;
+  background: rgba(0,0,0,.05);
+  padding: 6px 10px;
+  border-radius: 999px;
 }
