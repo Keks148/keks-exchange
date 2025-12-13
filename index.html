@@ -2,14 +2,105 @@
 <html lang="uk">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
   <title>KeksSwap</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="root"></div>
+  <div id="app">
 
-  <!-- важно: defer -->
-  <script src="./app.js" defer></script>
+    <!-- HEADER (без верхней служебной полосы) -->
+    <header class="header">
+      <div class="header-row">
+        <img class="brand-logo" src="logos/keks-logo.png" alt="KeksSwap" />
+
+        <div class="header-actions">
+          <button id="langBtn" class="chip chip-lang">UA</button>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <button class="pill active" data-tab="exchange">Обмін</button>
+        <button class="pill" data-tab="rules">Правила</button>
+        <button class="pill" data-tab="faq">FAQ</button>
+        <button class="pill" data-tab="account">Акаунт</button>
+      </nav>
+    </header>
+
+    <!-- MAIN CARD -->
+    <main class="screen">
+      <section id="tab-exchange" class="card active">
+
+        <!-- Отдаёте -->
+        <h2 class="block-title">Віддаєте</h2>
+
+        <div class="select-row compact">
+          <button id="fromAsset" class="select">
+            <img class="icon" id="fromIcon" src="logos/banks/privat.png" alt="PrivatBank" />
+            <span id="fromLabel">PrivatBank (UAH)</span>
+            <span class="caret">▾</span>
+          </button>
+        </div>
+
+        <div class="input-row tight">
+          <input id="fromAmount" type="number" inputmode="decimal" placeholder="0" />
+        </div>
+
+        <!-- Swap -->
+        <button id="swapBtn" class="swap-btn" aria-label="Swap">
+          <span class="arrows">
+            <span>↕</span>
+            <span class="gap"></span>
+            <span>↕</span>
+          </span>
+        </button>
+
+        <!-- Получаете -->
+        <h2 class="block-title">Отримуєте</h2>
+
+        <div class="select-row compact">
+          <button id="toAsset" class="select">
+            <img class="icon" id="toIcon" src="logos/crypto/btc.png" alt="Bitcoin" />
+            <span id="toLabel">Bitcoin (BTC)</span>
+            <span class="caret">▾</span>
+          </button>
+        </div>
+
+        <div class="input-row tight">
+          <input id="toAmount" type="text" placeholder="0.00000000" readonly />
+        </div>
+
+        <div class="rate-row">
+          <span>Курс: <strong id="rateText">1 UAH ≈ 0.0000000625 BTC</strong></span>
+        </div>
+
+        <button id="createBtn" class="cta">Створити заявку</button>
+      </section>
+
+      <!-- Другие вкладки (плейсхолдеры) -->
+      <section id="tab-rules" class="card">Тут будуть правила обміну. (Поки заглушка)</section>
+      <section id="tab-faq" class="card">FAQ. (Поки заглушка)</section>
+      <section id="tab-account" class="card">
+        <h2>Акаунт</h2>
+        <p>Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
+        <div class="row gap">
+          <button class="cta small">Увійти</button>
+          <button class="cta small ghost">Реєстрація</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Модалки выбора активов -->
+    <dialog id="picker" class="picker">
+      <div class="picker-head">
+        <div class="picker-title" id="pickerTitle">Вибір</div>
+        <button id="pickerClose" class="x">✕</button>
+      </div>
+      <input id="pickerSearch" class="picker-search" placeholder="Пошук..." />
+      <div id="pickerList" class="picker-list"></div>
+    </dialog>
+
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
