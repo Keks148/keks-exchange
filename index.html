@@ -3,77 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Keks Swap</title>
+  <title>KeksSwap</title>
 
-  <!-- Шрифт -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <div class="app">
 
-<div class="app">
-
-  <!-- HEADER -->
-  <header class="header">
-    <div class="brand">
-      <img src="logo.png" class="logo" alt="Keks logo">
-      <div class="brand-text">
-        <span>Keks</span>
-        <span>Swap</span>
+    <!-- TOP BAR (под safe-area, стиль как 2-й скрин, без текста "KeksSwap") -->
+    <header class="topbar">
+      <div class="top-left">
+        <img class="brand-logo" src="logo.png" alt="Keks logo" />
       </div>
+
+      <div class="top-right">
+        <div class="lang-pills" role="group" aria-label="Language">
+          <button class="pill active" data-lang="UA">UA</button>
+          <button class="pill" data-lang="EN">EN</button>
+          <button class="pill" data-lang="PL">PL</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MENU -->
+    <nav class="menu">
+      <button class="menu-btn active" data-page="swap">Обмін</button>
+      <button class="menu-btn" data-page="rules">Правила</button>
+      <button class="menu-btn" data-page="faq">FAQ</button>
+      <button class="menu-btn" data-page="contacts">Контакти</button>
+      <button class="menu-btn" data-page="account">Акаунт</button>
+    </nav>
+
+    <!-- PAGE: SWAP -->
+    <main class="card" id="page-swap">
+      <h1 class="page-title">Обмін</h1>
+
+      <div class="block">
+        <div class="label">Віддаєте</div>
+
+        <button class="select" id="giveSelect">
+          <img class="asset-icon" id="giveIcon" src="logos/banks/monobank.png" alt="">
+          <div class="select-text">
+            <div class="select-title" id="giveName">Monobank</div>
+            <div class="select-sub" id="giveCode">UAH</div>
+          </div>
+          <span class="arrow">▾</span>
+        </button>
+
+        <input class="amount" id="giveAmount" inputmode="decimal" value="100" />
+      </div>
+
+      <button class="swap-btn" id="swapBtn" aria-label="Swap">⇄</button>
+
+      <div class="block">
+        <div class="label">Отримуєте</div>
+
+        <button class="select" id="getSelect">
+          <img class="asset-icon" id="getIcon" src="logos/crypto/btc.png" alt="">
+          <div class="select-text">
+            <div class="select-title" id="getName">Bitcoin</div>
+            <div class="select-sub" id="getCode">BTC</div>
+          </div>
+          <span class="arrow">▾</span>
+        </button>
+
+        <input class="amount" id="getAmount" inputmode="decimal" value="0.00000625" />
+      </div>
+
+      <div class="rate" id="rateText">Курс: 1 UAH ≈ 0.0000000625 BTC</div>
+
+      <button class="submit" id="submitBtn">Створити заявку</button>
+    </main>
+
+    <!-- PAGE: RULES -->
+    <main class="card hidden" id="page-rules">
+      <h1 class="page-title">Правила</h1>
+      <p class="muted">Тут будуть правила обміну. (Поки заглушка)</p>
+    </main>
+
+    <!-- PAGE: FAQ -->
+    <main class="card hidden" id="page-faq">
+      <h1 class="page-title">FAQ</h1>
+      <p class="muted">Найчастіші питання. (Поки заглушка)</p>
+    </main>
+
+    <!-- PAGE: CONTACTS -->
+    <main class="card hidden" id="page-contacts">
+      <h1 class="page-title">Контакти</h1>
+      <p class="muted">Тут будуть контакти. (Поки заглушка)</p>
+    </main>
+
+    <!-- PAGE: ACCOUNT -->
+    <main class="card hidden" id="page-account">
+      <h1 class="page-title">Акаунт</h1>
+      <p class="muted">Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
+      <button class="submit ghost">Увійти</button>
+      <button class="submit ghost2">Реєстрація</button>
+    </main>
+
+    <!-- MODAL: ASSET PICKER -->
+    <div class="modal hidden" id="pickerModal">
+      <div class="modal-sheet">
+        <div class="modal-head">
+          <div class="modal-title" id="pickerTitle">Вибір</div>
+          <button class="modal-close" id="pickerClose">✕</button>
+        </div>
+
+        <input class="search" id="pickerSearch" placeholder="Пошук..." />
+
+        <div class="list" id="pickerList"></div>
+      </div>
+      <div class="modal-backdrop" id="pickerBackdrop"></div>
     </div>
 
-    <button class="lang-btn">UA ▾</button>
-  </header>
+  </div>
 
-  <!-- MENU -->
-  <nav class="menu">
-    <button class="menu-btn active">Обмін</button>
-    <button class="menu-btn">Правила</button>
-    <button class="menu-btn">Акаунт</button>
-    <button class="menu-btn">Ще</button>
-  </nav>
-
-  <!-- CARD -->
-  <main class="card">
-
-    <label class="section-label">Віддаєте</label>
-
-    <button class="select">
-      <img src="logos/banks/monobank.png">
-      <div>
-        <div class="select-title">Monobank</div>
-        <div class="select-sub">UAH</div>
-      </div>
-      <span class="arrow">▾</span>
-    </button>
-
-    <input class="amount" value="100">
-
-    <button class="swap-btn">⇄</button>
-
-    <label class="section-label">Отримуєте</label>
-
-    <button class="select">
-      <img src="logos/crypto/btc.png">
-      <div>
-        <div class="select-title">Bitcoin</div>
-        <div class="select-sub">BTC</div>
-      </div>
-      <span class="arrow">▾</span>
-    </button>
-
-    <input class="amount" value="0.00000625">
-
-    <div class="rate">Курс: 1 UAH ≈ 0.0000000625 BTC</div>
-
-    <button class="submit">Створити заявку</button>
-
-  </main>
-
-</div>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
