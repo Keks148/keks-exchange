@@ -1,151 +1,97 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>KeksSwap</title>
+  <title>Keks Swap</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="app" class="app">
-    <!-- HEADER -->
-    <header class="header">
-      <div class="brand">
-        <img class="brand-logo" src="logo.png" alt="KeksSwap logo" />
-        <div class="brand-text">
-          <div class="brand-name">Keks</div>
-          <div class="brand-name brand-name2">Swap</div>
+  <div class="bg"></div>
+
+  <div class="app">
+    <header class="top">
+      <div class="top-row">
+        <img class="brand-logo" src="logo.png" alt="Keks logo" />
+        <div class="lang">
+          <button class="lang-btn" data-lang="UA">UA</button>
+          <button class="lang-btn" data-lang="EN">EN</button>
+          <button class="lang-btn" data-lang="PL">PL</button>
         </div>
       </div>
 
-      <button id="langBtn" class="lang-btn" type="button" aria-label="Language">
-        <span id="langLabel">UA</span>
-        <span class="chev">▾</span>
-      </button>
-
-      <div id="langMenu" class="lang-menu hidden" role="menu" aria-label="Language menu">
-        <button class="lang-item" data-lang="ua" type="button">UA</button>
-        <button class="lang-item" data-lang="en" type="button">EN</button>
-        <button class="lang-item" data-lang="pl" type="button">PL</button>
-      </div>
+      <nav class="menu" role="tablist">
+        <button class="tab active" data-tab="swap" role="tab">Обмін</button>
+        <button class="tab" data-tab="rules" role="tab">Правила</button>
+        <button class="tab" data-tab="account" role="tab">Акаунт</button>
+        <button class="tab" data-tab="more" role="tab">Ще</button>
+      </nav>
     </header>
 
-    <!-- TOP MENU -->
-    <nav class="top-tabs" aria-label="Main tabs">
-      <button class="tab active" data-page="exchange" type="button" id="tabExchange"></button>
-      <button class="tab" data-page="rules" type="button" id="tabRules"></button>
-      <button class="tab" data-page="account" type="button" id="tabAccount"></button>
-      <button class="tab" data-page="more" type="button" id="tabMore"></button>
-    </nav>
+    <main class="content">
+      <!-- SWAP -->
+      <section id="tab-swap" class="card tabpage active" role="tabpanel">
+        <div class="block">
+          <div class="label" id="lblGive">Віддаєте</div>
 
-    <!-- MAIN -->
-    <main class="main">
-      <!-- EXCHANGE PAGE -->
-      <section id="pageExchange" class="page page-active">
-        <div class="card">
-          <div class="block">
-            <div class="label" id="lblGive"></div>
-
-            <button id="giveSelect" class="select" type="button">
-              <span class="select-left">
-                <img id="giveIcon" class="select-icon" alt="" />
-                <span class="select-text">
-                  <span id="giveName" class="select-title"></span>
-                  <span id="giveCode" class="select-sub"></span>
-                </span>
-              </span>
-              <span class="select-right">
-                <span class="select-arrow">▾</span>
-              </span>
-            </button>
-
-            <input id="giveAmount" class="amount" inputmode="decimal" placeholder="0" />
+          <div class="select-row">
+            <img id="giveIcon" class="item-ico" src="logos/banks/mono.png" alt="">
+            <select id="giveSelect" class="select"></select>
+            <span class="chev">▾</span>
           </div>
 
-          <div class="swap-row">
-            <button id="swapBtn" class="swap-btn" type="button" aria-label="Swap">
-              <span class="swap-ic">⇄</span>
-            </button>
-          </div>
-
-          <div class="block">
-            <div class="label" id="lblGet"></div>
-
-            <button id="getSelect" class="select" type="button">
-              <span class="select-left">
-                <img id="getIcon" class="select-icon" alt="" />
-                <span class="select-text">
-                  <span id="getName" class="select-title"></span>
-                  <span id="getCode" class="select-sub"></span>
-                </span>
-              </span>
-              <span class="select-right">
-                <span class="select-arrow">▾</span>
-              </span>
-            </button>
-
-            <input id="getAmount" class="amount" inputmode="decimal" placeholder="0" readonly />
-          </div>
-
-          <div class="rate-row">
-            <div class="rate-left" id="rateLbl"></div>
-            <div class="rate-right" id="rateValue"></div>
-          </div>
+          <input id="giveAmount" class="amount" inputmode="decimal" placeholder="0" value="100" />
         </div>
+
+        <div class="swap-wrap">
+          <button id="swapBtn" class="swap-btn" aria-label="Swap">
+            <span class="swap-arrows">⇄</span>
+          </button>
+        </div>
+
+        <div class="block">
+          <div class="label" id="lblGet">Отримуєте</div>
+
+          <div class="select-row">
+            <img id="getIcon" class="item-ico" src="logos/crypto/btc.png" alt="">
+            <select id="getSelect" class="select"></select>
+            <span class="chev">▾</span>
+          </div>
+
+          <input id="getAmount" class="amount" inputmode="decimal" placeholder="0" value="0.000000625" />
+        </div>
+
+        <div class="rate" id="rateLine">Курс: 1 UAH ≈ 0.00000000625 BTC</div>
+
+        <button class="cta" id="ctaBtn">Створити заявку</button>
       </section>
 
       <!-- RULES -->
-      <section id="pageRules" class="page">
-        <div class="card card-pad">
-          <h2 class="h2" id="rulesTitle"></h2>
-          <p class="p" id="rulesText"></p>
-        </div>
+      <section id="tab-rules" class="card tabpage" role="tabpanel">
+        <h2 class="h2" id="rulesTitle">Правила</h2>
+        <p class="p" id="rulesText">Тут будуть правила обміну. (Поки заглушка)</p>
       </section>
 
       <!-- ACCOUNT -->
-      <section id="pageAccount" class="page">
-        <div class="card card-pad">
-          <h2 class="h2" id="accTitle"></h2>
-          <p class="p" id="accText"></p>
-
-          <button class="btn primary" type="button" id="btnLogin"></button>
-          <button class="btn" type="button" id="btnRegister"></button>
+      <section id="tab-account" class="card tabpage" role="tabpanel">
+        <h2 class="h2" id="accTitle">Акаунт</h2>
+        <p class="p" id="accText">Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
+        <div class="row">
+          <button class="btn" id="loginBtn">Увійти</button>
+          <button class="btn ghost" id="regBtn">Реєстрація</button>
         </div>
       </section>
 
       <!-- MORE -->
-      <section id="pageMore" class="page">
-        <div class="card card-pad">
-          <h2 class="h2" id="moreTitle"></h2>
-
-          <button class="btn" type="button" id="btnReviews"></button>
-          <button class="btn" type="button" id="btnFaq"></button>
-          <button class="btn" type="button" id="btnContacts"></button>
+      <section id="tab-more" class="card tabpage" role="tabpanel">
+        <h2 class="h2" id="moreTitle">Ще</h2>
+        <div class="stack">
+          <button class="btn ghost" id="reviewsBtn">Відгуки</button>
+          <button class="btn ghost" id="faqBtn">FAQ</button>
+          <button class="btn ghost" id="contactsBtn">Контакти</button>
         </div>
       </section>
     </main>
-
-    <!-- STICKY SUBMIT -->
-    <footer class="footer">
-      <button id="submitBtn" class="submit-btn" type="button"></button>
-    </footer>
-
-    <!-- MODAL -->
-    <div id="modal" class="modal hidden" aria-hidden="true">
-      <div class="modal-backdrop" id="modalBackdrop"></div>
-      <div class="modal-sheet" role="dialog" aria-modal="true">
-        <div class="modal-head">
-          <div class="modal-title" id="modalTitle"></div>
-          <button class="modal-close" id="modalClose" type="button">✕</button>
-        </div>
-
-        <div class="modal-search">
-          <input id="modalSearch" class="search" placeholder="Пошук..." />
-        </div>
-
-        <div class="modal-list" id="modalList"></div>
-      </div>
-    </div>
   </div>
 
   <script src="app.js"></script>
