@@ -8,9 +8,6 @@
   --ink:#0f1220;
   --muted:#7b8096;
 
-  --stroke: rgba(255,255,255,.70);
-  --stroke2: rgba(195, 191, 255, .22);
-
   --shadow: 0 18px 56px rgba(30, 26, 72, .12);
   --shadow2: 0 10px 22px rgba(30, 26, 72, .08);
 
@@ -21,179 +18,51 @@
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
 
-  /* ✅ медленнее градиенты */
-  --gradSpeed: 7.5s;
+  /* медленнее */
+  --gradSpeed: 9s;
 
-  /* ✅ опустить шапку ниже (для кнопок Telegram) */
-  --tgOffset: 22px;
+  /* отступ вниз от TG кнопок */
+  --tgOffset: 18px;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--ink);
-
-  /* ✅ легче фон: меньше слоёв/нагрузки */
   background:
-    radial-gradient(800px 520px at 18% 10%, rgba(255,107,214,.16), transparent 60%),
-    radial-gradient(760px 520px at 82% 18%, rgba(122,92,255,.16), transparent 62%),
+    radial-gradient(800px 520px at 18% 10%, rgba(255,107,214,.14), transparent 60%),
+    radial-gradient(760px 520px at 82% 18%, rgba(122,92,255,.14), transparent 62%),
     linear-gradient(180deg, var(--bg1), var(--bg2));
   overflow-x:hidden;
 }
 
-a{color:inherit}
-button, input{font-family:inherit}
-button{cursor:pointer}
-
-/* ---------- Layout ---------- */
 .app{
   min-height:100%;
   padding: calc(var(--safe-top) + var(--tgOffset) + 10px) 14px calc(var(--safe-bottom) + 18px);
 }
 
-.shell{
-  max-width: 520px;
-  margin: 0 auto;
-}
+.shell{max-width:520px;margin:0 auto}
 
-/* ---------- Topbar ---------- */
+/* topbar */
 .topbar{
   position: sticky;
   top: 0;
   z-index: 50;
-
-  /* ✅ учитываем TG кнопки */
   padding-top: calc(var(--safe-top) + var(--tgOffset) + 6px);
   margin-top: calc(-1 * (var(--safe-top) + var(--tgOffset) + 10px));
 }
-
 .topbarInner{
-  border-radius: 28px;
-
-  /* ✅ шапка почти сливается с экраном */
-  background: rgba(255,255,255,.28);
-  border: 1px solid rgba(255,255,255,.20);
+  border-radius: 26px;
+  background: rgba(255,255,255,.22);
+  border: 1px solid rgba(255,255,255,.18);
   box-shadow: 0 6px 18px rgba(30,26,72,.05);
-
-  /* ✅ backdrop-filter сильно лагает на Android — убрали */
-  /* backdrop-filter: blur(10px); */
-
-  padding: 12px 12px 14px;
-}
-
-/* brand row */
-.brandRow{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding: 6px 6px 10px;
-
-  /* ✅ опустить лого/текст/язык ниже ещё чуть-чуть */
-  margin-top: 10px;
-}
-
-.brandLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-  flex:1;
-}
-
-/* Logo */
-.brandLogoWrap{
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
-  display:grid;
-  place-items:center;
-  position:relative;
-}
-
-.brandLogo{
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 14px rgba(122,92,255,.14));
-  animation: logoFloat 5.6s ease-in-out infinite;
-  transform-origin: 50% 60%;
-  will-change: transform;
-}
-
-/* ✅ упрощённый glow (без blur) — меньше лагов */
-.brandLogoWrap::before{
-  content:"";
-  position:absolute;
-  inset:-6px;
-  border-radius: 18px;
-  background:
-    radial-gradient(40px 40px at 35% 35%, rgba(255,107,214,.22), transparent 62%),
-    radial-gradient(46px 46px at 65% 65%, rgba(122,92,255,.18), transparent 65%);
-  opacity:.9;
-  animation: glowPulse 4.6s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-
-.brandTitle{
-  min-width:0;
-  line-height: .95;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-
-  /* ✅ чуть аккуратнее чтобы не вылезало */
-  font-size: clamp(24px, 5.2vw, 38px);
-
-  background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
-  background-size: 260% 100%;
-  -webkit-background-clip:text;
-  background-clip:text;
-  color: transparent;
-
-  animation: titleShimmer var(--gradSpeed) ease-in-out infinite;
-  will-change: background-position;
-}
-
-.brandTitle .line{
-  display:block;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* language button */
-.langBtn{
-  flex:0 0 auto;
-  border: 1px solid rgba(255,255,255,.26);
-  background: rgba(255,255,255,.38);
-  box-shadow: 0 8px 16px rgba(30,26,72,.05);
-  border-radius: 14px;
-
-  padding: 6px 10px;
-  font-weight: 900;
-  font-size: 12px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.langBtn .chev{
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid rgba(20,20,30,.55);
-  border-bottom: 2px solid rgba(20,20,30,.55);
-  transform: rotate(45deg);
-  margin-top:-2px;
+  padding: 10px 10px 10px;
 }
 
 /* tabs */
-.tabs{
-  display:flex;
-  gap:10px;
-  padding: 4px;
-}
-
+.tabs{display:flex;gap:10px;padding:4px}
 .tab{
   flex:1;
   border: 1px solid rgba(255,255,255,.40);
@@ -202,15 +71,12 @@ button{cursor:pointer}
   padding: 10px 10px;
   font-weight: 900;
   color: rgba(15,18,32,.88);
-
-  /* ✅ легче */
   box-shadow: 0 8px 16px rgba(30,26,72,.05);
-
   transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
 }
 .tab:active{transform: scale(.98)}
 .tab.active{
-  color: #fff;
+  color:#fff;
   border: 1px solid rgba(255,255,255,.25);
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
   background-size: 260% 100%;
@@ -218,153 +84,173 @@ button{cursor:pointer}
   box-shadow: 0 12px 20px rgba(122,92,255,.12);
 }
 
-/* ---------- Cards ---------- */
+/* pages */
+.page{display:none}
+.page.show{display:block}
+
+/* card */
 .card{
   margin-top: 14px;
   background: linear-gradient(180deg, var(--card2), var(--card));
   border: 1px solid rgba(255,255,255,.55);
   border-radius: 30px;
   box-shadow: var(--shadow);
-  padding: 18px;
-
-  /* ✅ убрали blur — меньше лагов */
-  /* backdrop-filter: blur(10px); */
+  padding: 16px;
 }
 
-.h1{
-  font-size: 56px;
+/* ✅ бренд внутри карточки (вместо “Обмін”) */
+.brandInCard{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 6px 4px 10px;
+  margin-bottom: 6px;
+}
+
+.brandLeft{
+  display:flex;
+  align-items:flex-start;
+  gap: 6px;           /* ✅ вплотную */
+  min-width:0;
+  flex:1;
+}
+
+.brandLogoWrap--card{
+  width: 78px;
+  height: 78px;
+  flex: 0 0 78px;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+.brandLogo--card{
+  width: 78px;
+  height: 78px;
+  object-fit:contain;
+  filter: drop-shadow(0 10px 16px rgba(122,92,255,.16));
+  animation: logoFloat 6.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.brandText{
+  min-width:0;
+  padding-top: 2px;
+}
+.brandName{
   font-weight: 950;
   letter-spacing: -0.05em;
-  margin: 6px 0 8px;
+  line-height: .92;
+
+  font-size: clamp(26px, 6.2vw, 44px);
+
+  background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
+  background-size: 260% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+  animation: titleShimmer var(--gradSpeed) ease-in-out infinite;
+  will-change: background-position;
 }
-.sub{
-  color: rgba(15,18,32,.55);
+.brandName2{margin-top:2px}
+
+.brandSlogan{
+  margin-top: 6px;
   font-weight: 900;
-  font-size: 20px;
-  margin: 0 0 10px;
+  font-size: 12px;
+  color: rgba(15,18,32,.50);
 }
 
-/* ---------- Inputs / Select (✅ меньше как было) ---------- */
+/* язык (внутри карточки) */
+.langBtn{
+  border: 1px solid rgba(255,255,255,.26);
+  background: rgba(255,255,255,.38);
+  box-shadow: 0 8px 16px rgba(30,26,72,.05);
+  border-radius: 14px;
+  padding: 6px 10px;
+  font-weight: 950;
+  font-size: 12px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+}
+.langBtn--card{margin-top: 6px}
+.chev{
+  width: 8px;height: 8px;
+  border-right: 2px solid rgba(20,20,30,.55);
+  border-bottom: 2px solid rgba(20,20,30,.55);
+  transform: rotate(45deg);
+  margin-top:-2px;
+}
+
+/* labels */
 .rowLabel{
-  margin: 8px 0 10px;
-  font-size: 20px;
+  margin: 10px 0 10px;
+  font-size: 18px;
   font-weight: 900;
-  color: rgba(15,18,32,.58);
+  color: rgba(15,18,32,.55);
 }
 
+/* picker */
 .pickerBtn{
   width:100%;
   border: 1px solid rgba(210, 210, 255, .52);
   background: rgba(255,255,255,.74);
   border-radius: 22px;
-
-  /* ✅ меньше высота */
   padding: 10px 12px;
-
   box-shadow: 0 10px 18px rgba(30,26,72,.06);
   display:flex;
   align-items:center;
   gap:12px;
   text-align:left;
 }
-
 .pickerIcon{
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
+  width: 42px;height: 42px;border-radius:999px;
   background: rgba(235,236,255,.9);
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  flex: 0 0 42px;
+  display:grid;place-items:center;overflow:hidden;flex:0 0 42px;
 }
-.pickerIcon img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pickerMain{
-  flex:1;
-  min-width:0;
-}
-.pickerName{
-  font-weight: 950;
-  font-size: 21px;
-  line-height: 1.1;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.pickerCode{
-  font-weight: 900;
-  font-size: 13px;
-  color: rgba(15,18,32,.55);
-  margin-top: 2px;
-}
-
-.pickerRight{
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
+.pickerIcon img{width:100%;height:100%;object-fit:cover}
+.pickerMain{flex:1;min-width:0}
+.pickerName{font-weight:950;font-size:21px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pickerCode{font-weight:900;font-size:13px;color: rgba(15,18,32,.55);margin-top:2px}
 .drop{
-  width: 12px;
-  height: 12px;
+  width: 12px;height: 12px;
   border-right: 3px solid rgba(20,20,30,.52);
   border-bottom: 3px solid rgba(20,20,30,.52);
   transform: rotate(45deg);
 }
 
-/* ✅ сумма: меньше блок и меньше шрифт */
+/* amount — меньше шрифт */
 .amount{
   margin-top: 10px;
   width: 100%;
   border: 1px solid rgba(210, 210, 255, .52);
   background: rgba(255,255,255,.74);
   border-radius: 22px;
-
-  /* ✅ меньше высота */
   padding: 12px 14px;
-
   box-shadow: 0 10px 18px rgba(30,26,72,.06);
   outline:none;
-
   font-weight: 950;
   letter-spacing: -0.04em;
-
-  /* ✅ меньше шрифт суммы */
-  font-size: clamp(22px, 7vw, 36px);
+  font-size: clamp(20px, 6.6vw, 34px);
 }
 
-/* Swap button */
-.swapWrap{
-  display:flex;
-  justify-content:center;
-  margin: 12px 0 10px;
-}
-
+/* swap */
+.swapWrap{display:flex;justify-content:center;margin: 12px 0 10px}
 .swapBtn{
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
+  width: 52px;height:52px;border-radius: 18px;
   border: 1px solid rgba(255,255,255,.28);
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
   background-size: 260% 100%;
   animation: gradMove var(--gradSpeed) ease-in-out infinite;
   box-shadow: 0 12px 18px rgba(255,107,214,.12);
-  display:grid;
-  place-items:center;
+  display:grid;place-items:center;
   will-change: background-position;
 }
-.swapBtn svg{
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.10));
-}
+.swapBtn svg{width:22px;height:22px;filter: drop-shadow(0 4px 8px rgba(0,0,0,.10))}
 
-/* Rate compact */
+/* rate */
 .rateRow{
   display:flex;
   justify-content:space-between;
@@ -374,11 +260,9 @@ button{cursor:pointer}
   font-weight: 900;
   font-size: 14px;
 }
-.rateRow .val{
-  color: rgba(15,18,32,.60);
-}
+.rateRow .val{color: rgba(15,18,32,.60)}
 
-/* CTA */
+/* cta */
 .cta{
   margin-top: 10px;
   width:100%;
@@ -388,7 +272,6 @@ button{cursor:pointer}
   font-size: 18px;
   font-weight: 950;
   color:#fff;
-
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
   background-size: 260% 100%;
   animation: gradMove var(--gradSpeed) ease-in-out infinite;
@@ -396,145 +279,50 @@ button{cursor:pointer}
   will-change: background-position;
 }
 
-/* ---------- Other pages ---------- */
-.pageTitle{
-  font-size: 56px;
-  font-weight: 950;
-  letter-spacing: -0.05em;
-  margin: 6px 0 8px;
-}
-.pageText{
-  font-size: 18px;
-  font-weight: 800;
-  color: rgba(15,18,32,.55);
-  line-height: 1.35;
-}
+/* other pages */
+.pageTitle{font-size:56px;font-weight:950;letter-spacing:-0.05em;margin:6px 0 8px}
+.pageText{font-size:18px;font-weight:800;color: rgba(15,18,32,.55);line-height:1.35}
 
-/* ---------- Modal picker ---------- */
-.modalBack{
-  position:fixed;
-  inset:0;
-  background: rgba(12, 10, 30, .26);
-  /* ✅ blur убрали */
-  /* backdrop-filter: blur(8px); */
-  display:none;
-  z-index: 200;
-}
+/* modal */
+.modalBack{position:fixed;inset:0;background: rgba(12, 10, 30, .26);display:none;z-index:200}
 .modalBack.show{display:block}
-
-.modal{
-  position:fixed;
-  left:0; right:0;
-  bottom:0;
-  z-index: 210;
-  display:none;
-}
+.modal{position:fixed;left:0;right:0;bottom:0;z-index:210;display:none}
 .modal.show{display:block}
-
 .modalSheet{
-  max-width: 520px;
-  margin: 0 auto;
+  max-width: 520px;margin:0 auto;
   border-radius: 28px 28px 0 0;
-
   background: rgba(255,255,255,.92);
   border: 1px solid rgba(255,255,255,.70);
-
   box-shadow: 0 -16px 44px rgba(30,26,72,.14);
   padding: 14px 14px calc(var(--safe-bottom) + 14px);
 }
-
-.modalTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-}
-.modalTitle{
-  font-weight: 950;
-  font-size: 24px;
-  letter-spacing: -0.04em;
-}
-.modalClose{
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  border: 1px solid rgba(15,18,32,.12);
-  background: rgba(255,255,255,.92);
-  font-weight: 900;
-}
-
-.search{
-  margin-top: 12px;
-  width:100%;
-  border-radius: 18px;
-  border: 1px solid rgba(15,18,32,.10);
-  padding: 12px 14px;
-  font-weight: 900;
-  outline:none;
-  background: rgba(245,246,255,.92);
-}
-
-.filterTabs{
-  margin-top: 10px;
-  display:flex;
-  gap:10px;
-}
+.modalTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.modalTitle{font-weight:950;font-size:24px;letter-spacing:-0.04em}
+.modalClose{width:40px;height:40px;border-radius:14px;border:1px solid rgba(15,18,32,.12);background: rgba(255,255,255,.92);font-weight:900}
+.search{margin-top:12px;width:100%;border-radius:18px;border:1px solid rgba(15,18,32,.10);padding:12px 14px;font-weight:900;outline:none;background: rgba(245,246,255,.92)}
+.filterTabs{margin-top:10px;display:flex;gap:10px}
 .filterTabs button{
-  flex:1;
-  border-radius: 16px;
-  padding: 10px 10px;
+  flex:1;border-radius:16px;padding:10px 10px;
   border: 1px solid rgba(15,18,32,.10);
   background: rgba(255,255,255,.92);
-  font-weight: 950;
+  font-weight:950;
 }
 .filterTabs button.active{
-  color:#fff;
-  border: 1px solid rgba(255,255,255,.25);
+  color:#fff;border:1px solid rgba(255,255,255,.25);
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3), var(--g1));
   background-size: 260% 100%;
   animation: gradMove var(--gradSpeed) ease-in-out infinite;
 }
-
-.list{
-  margin-top: 12px;
-  max-height: 56vh;
-  overflow:auto;
-  padding-right: 2px;
-}
-.item{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding: 12px 10px;
-  border-radius: 18px;
-  transition: background .15s ease;
-}
+.list{margin-top:12px;max-height:56vh;overflow:auto;padding-right:2px}
+.item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:18px;transition: background .15s ease}
 .item:active{background: rgba(122,92,255,.08)}
-.item .icon{
-  width: 48px;
-  height: 48px;
-  border-radius: 999px;
-  overflow:hidden;
-  flex: 0 0 48px;
-  background: rgba(235,236,255,.9);
-}
+.item .icon{width:48px;height:48px;border-radius:999px;overflow:hidden;flex:0 0 48px;background: rgba(235,236,255,.9)}
 .item .icon img{width:100%;height:100%;object-fit:cover}
-.item .t{
-  flex:1; min-width:0;
-}
-.item .name{
-  font-weight: 950;
-  font-size: 20px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.item .code{
-  font-weight: 900;
-  font-size: 13px;
-  color: rgba(15,18,32,.55);
-  margin-top: 2px;
-}
+.item .t{flex:1;min-width:0}
+.item .name{font-weight:950;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .code{font-weight:900;font-size:13px;color: rgba(15,18,32,.55);margin-top:2px}
 
-/* ---------- Animations ---------- */
+/* animations */
 @keyframes gradMove{
   0%{background-position: 0% 50%}
   50%{background-position: 100% 50%}
@@ -544,17 +332,8 @@ button{cursor:pointer}
   0%,100%{transform: translateY(0) rotate(-1deg)}
   50%{transform: translateY(-5px) rotate(1deg)}
 }
-@keyframes glowPulse{
-  0%,100%{opacity:.7; transform: scale(1)}
-  50%{opacity:.95; transform: scale(1.02)}
-}
 @keyframes titleShimmer{
   0%{background-position: 0% 50%}
   50%{background-position: 100% 50%}
   100%{background-position: 0% 50%}
-}
-
-/* ✅ если всё равно будет лагать — можно отключить анимации автоматически */
-@media (prefers-reduced-motion: reduce){
-  *{animation:none !important; transition:none !important;}
 }
