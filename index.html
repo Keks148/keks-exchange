@@ -1,142 +1,106 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Keks Swap</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>KeksSwap</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="bg"></div>
 
-  <div class="app">
-    <!-- HEADER (только лого + язык, без текста KeksSwap) -->
-    <header class="header">
-      <div class="header-inner">
-        <div class="brand">
-          <img id="brandLogo" class="brand-logo" src="logo.png" alt="Keks Swap" />
-        </div>
+  <div class="wrap">
+    <header class="top">
+      <div class="topbar">
+        <img class="brand" src="logo.png" alt="KeksSwap" />
 
-        <div class="lang">
-          <button id="langBtn" class="lang-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
-            <span id="langCode">UA</span>
-            <span class="chev">▾</span>
-          </button>
-
-          <div id="langMenu" class="lang-menu" role="listbox" aria-label="Language">
-            <button class="lang-item" data-lang="ua" type="button">UA</button>
-            <button class="lang-item" data-lang="en" type="button">EN</button>
-            <button class="lang-item" data-lang="pl" type="button">PL</button>
-          </div>
-        </div>
+        <button id="langBtn" class="lang" type="button" aria-label="Language">
+          <span id="langText">UA</span> <span class="chev">▾</span>
+        </button>
       </div>
 
-      <!-- 4 кнопки меню -->
-      <nav class="tabs" role="tablist">
-        <button class="tab is-active gradient-anim" data-tab="swap" type="button"></button>
-        <button class="tab" data-tab="rules" type="button"></button>
-        <button class="tab" data-tab="account" type="button"></button>
-        <button class="tab" data-tab="more" type="button"></button>
+      <nav class="tabs">
+        <button class="tab active" data-tab="swap" type="button" id="tabSwap"></button>
+        <button class="tab" data-tab="rules" type="button" id="tabRules"></button>
+        <button class="tab" data-tab="account" type="button" id="tabAccount"></button>
+        <button class="tab" data-tab="more" type="button" id="tabMore"></button>
       </nav>
     </header>
 
-    <!-- CONTENT -->
-    <main class="content">
+    <main class="main">
       <!-- SWAP -->
-      <section class="panel is-active" data-panel="swap">
+      <section class="page active" data-page="swap">
         <div class="card">
-          <div class="field">
-            <div class="label" id="lblGive"></div>
+          <div class="row">
+            <div class="lbl" id="lblGive"></div>
 
-            <button class="select-row" id="giveSelectBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="left">
-                <span class="icon-wrap"><img id="giveIcon" class="icon" alt="" /></span>
-                <span class="txt">
-                  <span id="giveName" class="name"></span>
-                  <span id="giveCode" class="sub"></span>
-                </span>
-              </span>
-              <span class="arrow">▾</span>
-            </button>
+            <div class="picker">
+              <div class="ico"><img id="giveIcon" alt=""></div>
+              <select id="giveSelect" class="sel"></select>
+              <span class="down">▾</span>
+            </div>
 
-            <div class="dropdown" id="giveDropdown" role="listbox" aria-label="Give">
-              <div class="search">
-                <input id="giveSearch" type="text" inputmode="search" autocomplete="off" />
-              </div>
-              <div class="list" id="giveList"></div>
+            <div class="amt">
+              <input id="giveAmount" inputmode="decimal" placeholder="0" />
             </div>
           </div>
 
-          <div class="field">
-            <input id="giveAmount" class="amount" type="number" inputmode="decimal" placeholder="0" />
-          </div>
-
-          <div class="swap-row">
-            <button id="swapBtn" class="swap-btn gradient-anim" type="button" aria-label="Swap">
-              <span class="swap-ico">⇄</span>
+          <div class="swapline">
+            <button id="swapBtn" class="swapbtn" type="button" aria-label="Swap">
+              ⇄
             </button>
           </div>
 
-          <div class="field">
-            <div class="label" id="lblGet"></div>
+          <div class="row">
+            <div class="lbl" id="lblGet"></div>
 
-            <button class="select-row" id="getSelectBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="left">
-                <span class="icon-wrap"><img id="getIcon" class="icon" alt="" /></span>
-                <span class="txt">
-                  <span id="getName" class="name"></span>
-                  <span id="getCode" class="sub"></span>
-                </span>
-              </span>
-              <span class="arrow">▾</span>
-            </button>
+            <div class="picker">
+              <div class="ico"><img id="getIcon" alt=""></div>
+              <select id="getSelect" class="sel"></select>
+              <span class="down">▾</span>
+            </div>
 
-            <div class="dropdown" id="getDropdown" role="listbox" aria-label="Get">
-              <div class="search">
-                <input id="getSearch" type="text" inputmode="search" autocomplete="off" />
-              </div>
-              <div class="list" id="getList"></div>
+            <div class="amt">
+              <input id="getAmount" inputmode="decimal" placeholder="0" readonly />
             </div>
           </div>
 
-          <div class="field">
-            <input id="getAmount" class="amount" type="text" readonly value="0" />
-          </div>
+          <div class="rate" id="rateLine"></div>
 
-          <div class="rate-line" id="rateLine"></div>
-
-          <button id="applyBtn" class="cta gradient-anim" type="button"></button>
+          <button id="applyBtn" class="cta" type="button"></button>
+          <div class="space"></div>
         </div>
       </section>
 
       <!-- RULES -->
-      <section class="panel" data-panel="rules">
+      <section class="page" data-page="rules">
         <div class="card simple">
-          <h2 id="rulesTitle"></h2>
-          <p id="rulesText"></p>
+          <div class="h" id="rulesTitle"></div>
+          <div class="p" id="rulesText"></div>
         </div>
       </section>
 
       <!-- ACCOUNT -->
-      <section class="panel" data-panel="account">
+      <section class="page" data-page="account">
         <div class="card simple">
-          <h2 id="accTitle"></h2>
-          <p id="accText"></p>
-          <div class="row2">
-            <button class="cta small gradient-anim" type="button" id="loginBtn"></button>
-            <button class="btn ghost" type="button" id="regBtn"></button>
+          <div class="h" id="accTitle"></div>
+          <div class="p" id="accText"></div>
+          <div class="grid2">
+            <button class="cta small" id="loginBtn" type="button"></button>
+            <button class="btn" id="regBtn" type="button"></button>
           </div>
         </div>
       </section>
 
       <!-- MORE -->
-      <section class="panel" data-panel="more">
+      <section class="page" data-page="more">
         <div class="card simple">
-          <h2 id="moreTitle"></h2>
-          <div class="list-buttons">
-            <button class="btn" type="button" id="reviewsBtn"></button>
-            <button class="btn" type="button" id="faqBtn"></button>
-            <button class="btn" type="button" id="contactsBtn"></button>
+          <div class="h" id="moreTitle"></div>
+          <div class="stack">
+            <button class="btn" id="reviewsBtn" type="button"></button>
+            <button class="btn" id="faqBtn" type="button"></button>
+            <button class="btn" id="contactsBtn" type="button"></button>
           </div>
         </div>
       </section>
