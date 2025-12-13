@@ -28,7 +28,6 @@
 
   const I18N = {
     uk: {
-      close: "Закрити",
       exchange: "Обмін",
       rules: "Правила",
       account: "Акаунт",
@@ -52,10 +51,9 @@
       pickSection: "Вибери розділ.",
       type_bank: "Банк",
       type_crypto: "Крипто",
-      type_tether: "Крипто", // Тезер тоже показываем как “Крипто” (без “Кошелек”)
+      type_tether: "Крипто",
     },
     en: {
-      close: "Close",
       exchange: "Swap",
       rules: "Rules",
       account: "Account",
@@ -82,7 +80,6 @@
       type_tether: "Crypto",
     },
     pl: {
-      close: "Zamknij",
       exchange: "Wymiana",
       rules: "Zasady",
       account: "Konto",
@@ -176,18 +173,21 @@
     app.innerHTML = `
       <div class="container">
 
-        <div class="headerBlock glass">
+        <div class="headerBlock">
           <div class="topRow">
-            <button class="closeBtn" id="closeBtn" aria-label="${t.close}">✕</button>
+            <!-- ИКС УБРАН -->
 
             <div class="brand">
               <div class="brandLogo">
                 <img src="logo.png" alt="Keks" onerror="this.style.display='none'">
               </div>
-              <div class="brandTitle" title="KeksSwap">KeksSwap</div>
+              <div class="brandTitle" aria-label="KeksSwap">
+                <span>Keks</span>
+                <span>Swap</span>
+              </div>
             </div>
 
-            <div style="position:relative;">
+            <div class="langWrap">
               <button class="langBtn" id="langBtn" aria-label="Language">
                 <span class="code">${state.lang.toUpperCase()}</span>
                 <span class="chev"></span>
@@ -291,7 +291,7 @@
 
         <div class="swapRow">
           <button class="swapBtn" id="swapBtn" aria-label="swap">
-            <span class="swapArrow">↔</span>
+            <span class="swapArrow">⇄</span>
           </button>
         </div>
 
@@ -361,8 +361,7 @@
   }
 
   function renderItem(it){
-    // В списке справа pill оставим, но без “wallet” вообще (у нас таких типов нет)
-    const pill = (it.type === "bank") ? "bank" : "crypto";
+    // ПРАВАЯ ПЛАШКА В МОДАЛКЕ УБРАНА (CSS тоже скрывает .pill)
     return `
       <div class="item" data-pick="${it.id}">
         <div class="iconCircle">
@@ -372,14 +371,12 @@
           <div class="n">${escapeHtml(it.name)}</div>
           <div class="c">${escapeHtml(it.code)}</div>
         </div>
-        <div class="pill">${pill}</div>
+        <div class="pill"></div>
       </div>
     `;
   }
 
   function wire(){
-    $("#closeBtn")?.addEventListener("click", () => {});
-
     document.querySelectorAll("[data-page]").forEach(btn => {
       btn.addEventListener("click", () => {
         state.page = btn.getAttribute("data-page");
