@@ -2,154 +2,162 @@
 <html lang="uk">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>KeksSwap</title>
 
-  <!-- Space Grotesk (простая и жирная, но без “кривых” эффектов) -->
+  <!-- Шрифт: простой, жирный, но оригинальный -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&family=Montserrat+Alternates:wght@700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
+  <div class="bg" aria-hidden="true"></div>
 
-    <!-- HEADER -->
+  <main class="app" id="app">
+    <!-- Header -->
     <header class="topbar">
-      <div class="brand">
-        <img class="brand__logo" src="logo.png" alt="KeksSwap logo">
-        <div class="brand__name" id="brandName">KeksSwap</div>
+      <div class="brand-left">
+        <img src="logo.png" class="brand-logo" alt="Keks logo" />
       </div>
 
-      <div class="topbar__right">
-        <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
-          <span id="langBtnLabel">UA</span>
+      <div class="brand-title" aria-label="KeksSwap">
+        <span class="brand-title__text">KeksSwap</span>
+      </div>
+
+      <div class="brand-right">
+        <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span id="langLabel">UA</span>
           <span class="chev">▾</span>
         </button>
 
         <div class="lang-menu" id="langMenu" role="menu" aria-hidden="true">
-          <button class="lang-item" data-lang="uk" role="menuitem">UA</button>
-          <button class="lang-item" data-lang="en" role="menuitem">EN</button>
-          <button class="lang-item" data-lang="pl" role="menuitem">PL</button>
+          <button class="lang-item" type="button" data-lang="uk">UA</button>
+          <button class="lang-item" type="button" data-lang="en">EN</button>
+          <button class="lang-item" type="button" data-lang="pl">PL</button>
         </div>
       </div>
     </header>
 
-    <!-- NAV -->
-    <nav class="tabs" aria-label="Main navigation">
-      <button class="tab is-active" data-view="exchange" type="button" id="tabExchange">Обмін</button>
-      <button class="tab" data-view="rules" type="button" id="tabRules">Правила</button>
-      <button class="tab" data-view="account" type="button" id="tabAccount">Аккаунт</button>
-      <button class="tab" data-view="more" type="button" id="tabMore">Ще</button>
+    <!-- Top menu -->
+    <nav class="tabs" aria-label="Навігація">
+      <button class="tab active" data-tab="exchange" type="button" id="tab-exchange">Обмін</button>
+      <button class="tab" data-tab="rules" type="button" id="tab-rules">Правила</button>
+      <button class="tab" data-tab="account" type="button" id="tab-account">Акаунт</button>
+      <button class="tab" data-tab="more" type="button" id="tab-more">Ще</button>
     </nav>
 
-    <!-- CONTENT -->
-    <main class="content">
-
+    <!-- Content -->
+    <section class="content">
       <!-- EXCHANGE -->
-      <section class="card view" id="viewExchange">
-        <h1 class="title" id="exchangeTitle">Обмін</h1>
+      <section class="card view active" id="view-exchange">
+        <h1 class="h1" id="h-exchange">Обмін</h1>
 
         <div class="field">
-          <div class="label" id="giveLabel">Віддаєте</div>
-
-          <button class="select" id="giveSelectBtn" type="button">
-            <div class="select__left">
-              <img class="select__icon" id="giveIcon" alt="" />
-              <div class="select__text">
-                <div class="select__name" id="giveName">Monobank</div>
-                <div class="select__sub" id="giveSub">UAH</div>
-              </div>
-            </div>
-            <div class="select__right">▾</div>
+          <div class="label" id="lbl-give">Віддаєте</div>
+          <button class="picker" type="button" id="givePicker">
+            <span class="picker-left">
+              <img class="picker-ico" id="giveIco" alt="" />
+              <span class="picker-main">
+                <span class="picker-name" id="giveName">Monobank</span>
+                <span class="picker-sub" id="giveSub">UAH</span>
+              </span>
+            </span>
+            <span class="picker-right">
+              <span class="picker-meta" id="giveMeta">Bank</span>
+              <span class="picker-caret">▾</span>
+            </span>
           </button>
 
-          <input class="input" id="giveAmount" inputmode="decimal" placeholder="0" />
+          <input class="amount" id="giveAmount" inputmode="decimal" placeholder="0" />
         </div>
 
         <div class="swap-row">
           <button class="swap-btn" id="swapBtn" type="button" aria-label="Swap">
-            ⇄
+            <!-- полукруглые стрелки -->
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 7h11l-2-2" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17 17H6l2 2" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 7c-2 1.2-3 3-3 5s1 3.8 3 5" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M17 17c2-1.2 3-3 3-5s-1-3.8-3-5" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+            </svg>
           </button>
         </div>
 
         <div class="field">
-          <div class="label" id="getLabel">Отримуєте</div>
-
-          <button class="select" id="getSelectBtn" type="button">
-            <div class="select__left">
-              <img class="select__icon" id="getIcon" alt="" />
-              <div class="select__text">
-                <div class="select__name" id="getName">Bitcoin</div>
-                <div class="select__sub" id="getSub">BTC</div>
-              </div>
-            </div>
-            <div class="select__right">▾</div>
+          <div class="label" id="lbl-get">Отримуєте</div>
+          <button class="picker" type="button" id="getPicker">
+            <span class="picker-left">
+              <img class="picker-ico" id="getIco" alt="" />
+              <span class="picker-main">
+                <span class="picker-name" id="getName">Bitcoin</span>
+                <span class="picker-sub" id="getSub">BTC</span>
+              </span>
+            </span>
+            <span class="picker-right">
+              <span class="picker-meta" id="getMeta">Crypto</span>
+              <span class="picker-caret">▾</span>
+            </span>
           </button>
 
-          <input class="input input--readonly" id="getAmount" placeholder="0" readonly />
+          <input class="amount" id="getAmount" inputmode="decimal" placeholder="0" readonly />
         </div>
 
         <div class="rate" id="rateLine">Курс: —</div>
 
-        <button class="primary" id="submitBtn" type="button">Створити заявку</button>
-
-        <div class="status" id="statusBox" hidden></div>
+        <button class="primary" id="createOrder" type="button">Створити заявку</button>
+        <div class="hint" id="hintStatus">Статус заявки буде після її подачі.</div>
       </section>
 
       <!-- RULES -->
-      <section class="card view is-hidden" id="viewRules">
-        <h1 class="title" id="rulesTitle">Rules</h1>
+      <section class="card view" id="view-rules">
+        <h1 class="h1">Rules</h1>
         <p class="muted" id="rulesText">Тут будуть правила обміну. (Поки заглушка)</p>
       </section>
 
       <!-- ACCOUNT -->
-      <section class="card view is-hidden" id="viewAccount">
-        <h1 class="title" id="accountTitle">Account</h1>
+      <section class="card view" id="view-account">
+        <h1 class="h1">Account</h1>
         <p class="muted" id="accountText">Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
-        <button class="primary" type="button" id="loginBtn">Войти</button>
-        <button class="secondary" type="button" id="registerBtn">Регистрация</button>
+        <button class="primary" type="button" id="loginBtn">Увійти</button>
+        <button class="secondary" type="button" id="registerBtn">Реєстрація</button>
       </section>
 
       <!-- MORE -->
-      <section class="card view is-hidden" id="viewMore">
-        <h1 class="title" id="moreTitle">More</h1>
-
-        <button class="list-btn" type="button" id="moreReviews">Відгуки</button>
-        <button class="list-btn" type="button" id="moreFaq">FAQ</button>
-        <button class="list-btn" type="button" id="moreContacts">Контакти</button>
-
-        <div class="hint" id="moreHint">Вибери розділ.</div>
+      <section class="card view" id="view-more">
+        <h1 class="h1">More</h1>
+        <button class="secondary block" type="button" id="reviewsBtn">Відгуки</button>
+        <button class="secondary block" type="button" id="faqBtn">FAQ</button>
+        <button class="secondary block" type="button" id="contactsBtn">Контакти</button>
       </section>
+    </section>
 
-    </main>
+    <!-- Picker Modal (единственный, и он точно закрывается) -->
+    <div class="modal" id="modal" aria-hidden="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
 
-    <!-- MODAL (BOTTOM SHEET) -->
-    <div class="modal is-hidden" id="pickerModal" aria-hidden="true">
-      <div class="modal__backdrop" id="modalBackdrop"></div>
-      <div class="modal__sheet" role="dialog" aria-modal="true" aria-label="Picker">
-        <div class="modal__top">
-          <div class="modal__title" id="pickerTitle">Вибір</div>
-          <button class="icon-btn" id="modalCloseBtn" type="button" aria-label="Close">✕</button>
+      <div class="modal-sheet" role="dialog" aria-modal="true" aria-label="Вибір">
+        <div class="modal-head">
+          <div class="modal-title" id="modalTitle">Вибір</div>
+          <button class="icon-btn" id="modalClose" type="button" aria-label="Close">✕</button>
         </div>
 
-        <div class="modal__search">
-          <input class="search" id="searchInput" placeholder="Search..." />
+        <div class="modal-search">
+          <input id="modalSearch" placeholder="Search..." />
         </div>
 
-        <div class="chips" id="chipsRow">
-          <button class="chip is-active" data-filter="all" type="button">All</button>
-          <button class="chip" data-filter="crypto" type="button">Crypto</button>
-          <button class="chip" data-filter="banks" type="button">Banks</button>
-          <button class="chip" data-filter="wallets" type="button">Wallets</button>
+        <div class="chips" id="chips">
+          <button class="chip active" type="button" data-filter="all">All</button>
+          <button class="chip" type="button" data-filter="crypto">Crypto</button>
+          <button class="chip" type="button" data-filter="banks">Banks</button>
+          <button class="chip" type="button" data-filter="wallets">Wallets</button>
         </div>
 
-        <div class="list" id="optionsList"></div>
+        <div class="list" id="modalList" role="listbox"></div>
       </div>
     </div>
-
-  </div>
+  </main>
 
   <script src="app.js"></script>
 </body>
