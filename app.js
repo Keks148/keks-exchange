@@ -249,10 +249,51 @@
     <div class="wrap">
       <div class="header">
         <div class="topbar">
-          <div class="brand">
-            <img id="brandLogo" alt="KeksSwap"/>
-            <div class="title">KeksSwap</div>
-          </div>
+          <div class="brandWide" id="brandWide" title="KeksSwap">
+  <svg id="brandSvg"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1200 240"
+    preserveAspectRatio="xMidYMid meet"
+    style="display:block; width:100%; height:64px; background:transparent; cursor:pointer;"
+  >
+    <g class="ks-wrap">
+      <text x="40" y="165"
+            font-size="160"
+            font-weight="700"
+            fill="#0B0B0B"
+            font-family="Georgia, serif"
+            letter-spacing="2">KeksSwap</text>
+
+      <g class="ks-cupcake">
+        <g transform="translate(880,20) scale(1.1)">
+          <path d="M100 40 C130 10, 200 10, 220 40 C260 45, 270 90, 240 110
+                   C230 130, 200 140, 170 135 C140 145, 100 140, 80 120
+                   C40 110, 40 70, 70 50 Z"
+                fill="none" stroke="#0B0B0B" stroke-width="10" stroke-linejoin="round"/>
+
+          <circle cx="120" cy="70" r="6" fill="#0B0B0B"/>
+          <circle cx="160" cy="60" r="6" fill="#0B0B0B"/>
+          <circle cx="200" cy="80" r="6" fill="#0B0B0B"/>
+
+          <text class="ks-tetherT"
+                x="155" y="105"
+                font-size="48"
+                font-weight="800"
+                fill="#26A17B"
+                text-anchor="middle"
+                font-family="Arial, sans-serif">T</text>
+
+          <path d="M90 120 L230 120 L200 210 L120 210 Z"
+                fill="none" stroke="#0B0B0B" stroke-width="10" stroke-linejoin="round"/>
+
+          <line x1="120" y1="120" x2="140" y2="210" stroke="#0B0B0B" stroke-width="6"/>
+          <line x1="160" y1="120" x2="160" y2="210" stroke="#0B0B0B" stroke-width="6"/>
+          <line x1="200" y1="120" x2="180" y2="210" stroke="#0B0B0B" stroke-width="6"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
 
           <div class="langs">
             <button class="pill" data-lang="ua">UA</button>
