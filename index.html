@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Keks Swap</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -10,85 +10,134 @@
   <div class="bg"></div>
 
   <div class="app">
-    <header class="top">
-      <div class="top-row">
-        <img class="brand-logo" src="logo.png" alt="Keks logo" />
+    <!-- HEADER (только лого + язык, без текста KeksSwap) -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="brand">
+          <img id="brandLogo" class="brand-logo" src="logo.png" alt="Keks Swap" />
+        </div>
+
         <div class="lang">
-          <button class="lang-btn" data-lang="UA">UA</button>
-          <button class="lang-btn" data-lang="EN">EN</button>
-          <button class="lang-btn" data-lang="PL">PL</button>
+          <button id="langBtn" class="lang-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span id="langCode">UA</span>
+            <span class="chev">▾</span>
+          </button>
+
+          <div id="langMenu" class="lang-menu" role="listbox" aria-label="Language">
+            <button class="lang-item" data-lang="ua" type="button">UA</button>
+            <button class="lang-item" data-lang="en" type="button">EN</button>
+            <button class="lang-item" data-lang="pl" type="button">PL</button>
+          </div>
         </div>
       </div>
 
-      <nav class="menu" role="tablist">
-        <button class="tab active" data-tab="swap" role="tab">Обмін</button>
-        <button class="tab" data-tab="rules" role="tab">Правила</button>
-        <button class="tab" data-tab="account" role="tab">Акаунт</button>
-        <button class="tab" data-tab="more" role="tab">Ще</button>
+      <!-- 4 кнопки меню -->
+      <nav class="tabs" role="tablist">
+        <button class="tab is-active gradient-anim" data-tab="swap" type="button"></button>
+        <button class="tab" data-tab="rules" type="button"></button>
+        <button class="tab" data-tab="account" type="button"></button>
+        <button class="tab" data-tab="more" type="button"></button>
       </nav>
     </header>
 
+    <!-- CONTENT -->
     <main class="content">
       <!-- SWAP -->
-      <section id="tab-swap" class="card tabpage active" role="tabpanel">
-        <div class="block">
-          <div class="label" id="lblGive">Віддаєте</div>
+      <section class="panel is-active" data-panel="swap">
+        <div class="card">
+          <div class="field">
+            <div class="label" id="lblGive"></div>
 
-          <div class="select-row">
-            <img id="giveIcon" class="item-ico" src="logos/banks/mono.png" alt="">
-            <select id="giveSelect" class="select"></select>
-            <span class="chev">▾</span>
+            <button class="select-row" id="giveSelectBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="left">
+                <span class="icon-wrap"><img id="giveIcon" class="icon" alt="" /></span>
+                <span class="txt">
+                  <span id="giveName" class="name"></span>
+                  <span id="giveCode" class="sub"></span>
+                </span>
+              </span>
+              <span class="arrow">▾</span>
+            </button>
+
+            <div class="dropdown" id="giveDropdown" role="listbox" aria-label="Give">
+              <div class="search">
+                <input id="giveSearch" type="text" inputmode="search" autocomplete="off" />
+              </div>
+              <div class="list" id="giveList"></div>
+            </div>
           </div>
 
-          <input id="giveAmount" class="amount" inputmode="decimal" placeholder="0" value="100" />
-        </div>
-
-        <div class="swap-wrap">
-          <button id="swapBtn" class="swap-btn" aria-label="Swap">
-            <span class="swap-arrows">⇄</span>
-          </button>
-        </div>
-
-        <div class="block">
-          <div class="label" id="lblGet">Отримуєте</div>
-
-          <div class="select-row">
-            <img id="getIcon" class="item-ico" src="logos/crypto/btc.png" alt="">
-            <select id="getSelect" class="select"></select>
-            <span class="chev">▾</span>
+          <div class="field">
+            <input id="giveAmount" class="amount" type="number" inputmode="decimal" placeholder="0" />
           </div>
 
-          <input id="getAmount" class="amount" inputmode="decimal" placeholder="0" value="0.000000625" />
+          <div class="swap-row">
+            <button id="swapBtn" class="swap-btn gradient-anim" type="button" aria-label="Swap">
+              <span class="swap-ico">⇄</span>
+            </button>
+          </div>
+
+          <div class="field">
+            <div class="label" id="lblGet"></div>
+
+            <button class="select-row" id="getSelectBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="left">
+                <span class="icon-wrap"><img id="getIcon" class="icon" alt="" /></span>
+                <span class="txt">
+                  <span id="getName" class="name"></span>
+                  <span id="getCode" class="sub"></span>
+                </span>
+              </span>
+              <span class="arrow">▾</span>
+            </button>
+
+            <div class="dropdown" id="getDropdown" role="listbox" aria-label="Get">
+              <div class="search">
+                <input id="getSearch" type="text" inputmode="search" autocomplete="off" />
+              </div>
+              <div class="list" id="getList"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <input id="getAmount" class="amount" type="text" readonly value="0" />
+          </div>
+
+          <div class="rate-line" id="rateLine"></div>
+
+          <button id="applyBtn" class="cta gradient-anim" type="button"></button>
         </div>
-
-        <div class="rate" id="rateLine">Курс: 1 UAH ≈ 0.00000000625 BTC</div>
-
-        <button class="cta" id="ctaBtn">Створити заявку</button>
       </section>
 
       <!-- RULES -->
-      <section id="tab-rules" class="card tabpage" role="tabpanel">
-        <h2 class="h2" id="rulesTitle">Правила</h2>
-        <p class="p" id="rulesText">Тут будуть правила обміну. (Поки заглушка)</p>
+      <section class="panel" data-panel="rules">
+        <div class="card simple">
+          <h2 id="rulesTitle"></h2>
+          <p id="rulesText"></p>
+        </div>
       </section>
 
       <!-- ACCOUNT -->
-      <section id="tab-account" class="card tabpage" role="tabpanel">
-        <h2 class="h2" id="accTitle">Акаунт</h2>
-        <p class="p" id="accText">Тут буде вхід/реєстрація і далі KYC (поки без підключення).</p>
-        <div class="row">
-          <button class="btn" id="loginBtn">Увійти</button>
-          <button class="btn ghost" id="regBtn">Реєстрація</button>
+      <section class="panel" data-panel="account">
+        <div class="card simple">
+          <h2 id="accTitle"></h2>
+          <p id="accText"></p>
+          <div class="row2">
+            <button class="cta small gradient-anim" type="button" id="loginBtn"></button>
+            <button class="btn ghost" type="button" id="regBtn"></button>
+          </div>
         </div>
       </section>
 
       <!-- MORE -->
-      <section id="tab-more" class="card tabpage" role="tabpanel">
-        <h2 class="h2" id="moreTitle">Ще</h2>
-        <div class="stack">
-          <button class="btn ghost" id="reviewsBtn">Відгуки</button>
-          <button class="btn ghost" id="faqBtn">FAQ</button>
-          <button class="btn ghost" id="contactsBtn">Контакти</button>
+      <section class="panel" data-panel="more">
+        <div class="card simple">
+          <h2 id="moreTitle"></h2>
+          <div class="list-buttons">
+            <button class="btn" type="button" id="reviewsBtn"></button>
+            <button class="btn" type="button" id="faqBtn"></button>
+            <button class="btn" type="button" id="contactsBtn"></button>
+          </div>
         </div>
       </section>
     </main>
