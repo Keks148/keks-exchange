@@ -2,7 +2,6 @@
   --bg1:#f2e7ff;
   --bg2:#f7f2ff;
   --card:#ffffffcc;
-  --card2:#ffffffc7;
   --stroke: rgba(32,26,52,.10);
   --text:#1b1530;
   --muted: rgba(27,21,48,.55);
@@ -35,42 +34,6 @@ body{
   padding: 10px 12px 14px;
 }
 
-/* top “native” telegram-ish header line */
-.nativeBar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding: 2px 2px 8px;
-  opacity:.85;
-}
-.nativeLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.nativeClose{
-  height:34px;
-  padding:0 14px;
-  border-radius:999px;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(255,255,255,.60);
-  cursor:pointer;
-  font-weight:800;
-}
-.nativeRight{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.nativeIconBtn{
-  width:38px;height:38px;
-  border-radius:999px;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(255,255,255,.60);
-  cursor:pointer;
-}
-
-/* “soft” topbar card */
 .topbar{
   background: rgba(255,255,255,.30);
   border: 1px solid rgba(255,255,255,.30);
@@ -78,7 +41,7 @@ body{
   box-shadow: var(--shadow2);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 10px 10px;
+  padding: 10px;
 }
 
 .brandRow{
@@ -89,15 +52,14 @@ body{
 }
 
 .brandLogo{
-  width: clamp(190px, 58vw, 310px);
-  height: clamp(78px, 13vw, 120px);
+  width: clamp(210px, 62vw, 340px);
+  height: clamp(86px, 14vw, 130px);
   object-fit: contain;
   object-position: left center;
   display:block;
   filter: drop-shadow(0 10px 22px rgba(124,58,237,.18));
 }
 
-/* one language button */
 .langSelect{
   height: 40px;
   border-radius: 999px;
@@ -109,12 +71,10 @@ body{
   outline:none;
 }
 
-/* tabs */
 .tabs{
   margin-top: 8px;
   display:flex;
   gap:8px;
-  overflow:hidden;
 }
 .tab{
   flex:1;
@@ -124,10 +84,9 @@ body{
   padding: 10px 8px;
   font-weight: 950;
   cursor:pointer;
-  white-space: nowrap;
-  box-shadow: 0 10px 24px rgba(59,31,120,.06);
   text-align:center;
   font-size: 14px;
+  white-space: nowrap;
 }
 .tab.active{
   border: 0;
@@ -136,26 +95,13 @@ body{
   box-shadow: 0 18px 44px rgba(236,72,153,.14);
 }
 
-/* card */
 .card{
   margin-top: 10px;
-  background: var(--card2);
+  background: var(--card);
   border: 1px solid rgba(255,255,255,.55);
   border-radius: 32px;
   box-shadow: var(--shadow);
   padding: 12px;
-}
-
-.h2{
-  margin: 0 0 6px;
-  font-size: 24px;
-  font-weight: 1000;
-  letter-spacing: -.4px;
-}
-.p{
-  margin: 0 0 10px;
-  color: var(--muted);
-  font-weight: 700;
 }
 
 .sectionTitle{
@@ -163,19 +109,14 @@ body{
   margin: 6px 4px 6px;
   color: var(--muted);
   font-weight: 900;
-  letter-spacing: .2px;
 }
 
-/* fields */
 .field{
-  background: rgba(255,255,255,.80);
+  background: rgba(255,255,255,.82);
   border: 1px solid var(--stroke);
   border-radius: 20px;
-  padding: 9px 10px;
+  padding: 8px 10px;
   box-shadow: 0 10px 24px rgba(59,31,120,.05);
-}
-.field.compact{
-  padding: 7px 9px;
 }
 
 .row{
@@ -183,16 +124,10 @@ body{
   align-items:center;
   gap:10px;
 }
-.rowBetween{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
 
 .icon{
-  width:34px;
-  height:34px;
+  width:32px;
+  height:32px;
   border-radius: 12px;
   background: rgba(0,0,0,.04);
   display:flex;
@@ -202,9 +137,9 @@ body{
   flex: 0 0 auto;
 }
 .icon img{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
 
 .select{
@@ -213,16 +148,8 @@ body{
   outline:0;
   background: transparent;
   font-weight: 950;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text);
-  appearance:auto;
-}
-
-.sub{
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 800;
-  margin-top: 2px;
 }
 
 .amount{
@@ -230,47 +157,28 @@ body{
   border:0;
   outline:0;
   background:transparent;
-  font-size: 22px;
+  font-size: 18px;           /* меньше */
   font-weight: 1000;
   letter-spacing: .2px;
+  padding: 6px 2px;          /* ниже высота */
 }
 .amount::placeholder{ color: rgba(27,21,48,.25); }
 
-.stackGap{ height: 6px; }
-
-/* swap button */
 .swapBtn{
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 20px;
   border: 0;
   cursor:pointer;
   box-shadow: 0 18px 40px rgba(236,72,153,.16);
   background: linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
-  background-size: 220% 220%;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin: 8px auto;
-  user-select:none;
-  transition: transform .12s ease;
-  animation: gradMove 6.5s ease-in-out infinite;
+  margin: 8px auto 6px;
 }
-.swapBtn:active{ transform: scale(.98); }
-.swapBtn svg{
-  width: 30px;
-  height: 30px;
-  fill: #fff;
-  opacity: .95;
-}
+.swapBtn svg{ width:30px; height:30px; fill:#fff; }
 
-@keyframes gradMove{
-  0%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
-  100%{ background-position: 0% 50%; }
-}
-
-/* rate + CTA */
 .rate{
   margin: 6px 6px 0;
   font-size: 12px;
@@ -280,9 +188,9 @@ body{
 }
 
 .cta{
-  margin-top: 10px;
+  margin-top: 8px;
   width: 100%;
-  height: 44px;
+  height: 42px;             /* меньше */
   border-radius: 20px;
   border: 0;
   cursor:pointer;
@@ -292,7 +200,6 @@ body{
   box-shadow: 0 18px 42px rgba(124,58,237,.18);
   background: linear-gradient(90deg, var(--grad1), var(--grad2));
 }
-.cta:active{ transform: scale(.995); }
 
 .smallCard{
   background: rgba(255,255,255,.70);
@@ -302,13 +209,13 @@ body{
   box-shadow: 0 14px 34px rgba(35,15,75,.08);
 }
 
-.btnRow{
-  display:flex;
-  gap:10px;
-}
+.h2{ margin:0 0 6px; font-size:24px; font-weight:1000; }
+.p{ margin:0; color:var(--muted); font-weight:800; line-height:1.35; }
+
+.btnRow{ display:flex; gap:10px; margin-top:10px; }
 .btn{
   flex:1;
-  height: 44px;
+  height: 42px;
   border-radius: 18px;
   border: 1px solid rgba(0,0,0,.08);
   background: rgba(255,255,255,.78);
@@ -321,13 +228,14 @@ body{
   background: linear-gradient(90deg, var(--grad1), var(--grad2));
 }
 
-.notice{
-  font-size: 13px;
-  color: rgba(27,21,48,.65);
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.footerSpace{
-  height: 8px;
+/* Аварийный блок ошибок */
+.fatal{
+  margin-top: 10px;
+  background: rgba(255, 0, 0, .08);
+  border: 1px solid rgba(255, 0, 0, .18);
+  border-radius: 18px;
+  padding: 12px;
+  font-weight: 900;
+  color: rgba(120, 0, 0, .95);
+  white-space: pre-wrap;
 }
