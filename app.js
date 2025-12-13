@@ -1,418 +1,325 @@
-// =====================
-// KeksSwap (Vanilla JS)
-// =====================
+(() => {
+  // ====== DATA (под твои папки logos/...) ======
+  // важно: имена файлов должны совпадать 1в1 с GitHub
+  const ITEMS = [
+    // BANKS
+    { id:"mono",      type:"banks",  name:{uk:"Monobank", en:"Monobank", pl:"Monobank"},  code:"UAH", logo:"logos/banks/mono.png" },
+    { id:"privat",    type:"banks",  name:{uk:"PrivatBank", en:"PrivatBank", pl:"PrivatBank"},  code:"UAH", logo:"logos/banks/privat.png" },
+    { id:"otp",       type:"banks",  name:{uk:"OTP Bank", en:"OTP Bank", pl:"OTP Bank"},  code:"UAH", logo:"logos/banks/otp.png" },
+    { id:"pumb",      type:"banks",  name:{uk:"PUMB", en:"PUMB", pl:"PUMB"},  code:"UAH", logo:"logos/banks/pumb.png" },
+    { id:"oschad",    type:"banks",  name:{uk:"Oschadbank", en:"Oschadbank", pl:"Oschadbank"},  code:"UAH", logo:"logos/banks/oschad.png" },
+    { id:"a-bank",    type:"banks",  name:{uk:"A-Bank", en:"A-Bank", pl:"A-Bank"},  code:"UAH", logo:"logos/banks/a-bank.png" },
+    { id:"izi",       type:"banks",  name:{uk:"IZI Bank", en:"IZI Bank", pl:"IZI Bank"},  code:"UAH", logo:"logos/banks/izi.png" },
+    { id:"sense",     type:"banks",  name:{uk:"Sense Bank", en:"Sense Bank", pl:"Sense Bank"},  code:"UAH", logo:"logos/banks/sense.png" },
+    { id:"reyf",      type:"banks",  name:{uk:"Raiffeisen", en:"Raiffeisen", pl:"Raiffeisen"},  code:"UAH", logo:"logos/banks/reyf.png" },
+    { id:"ukr-sib",   type:"banks",  name:{uk:"UkrSibbank", en:"UkrSibbank", pl:"UkrSibbank"},  code:"UAH", logo:"logos/banks/ukr-sib.png" },
+    { id:"ukr-banki", type:"banks",  name:{uk:"UkrBanki", en:"UkrBanki", pl:"UkrBanki"},  code:"UAH", logo:"logos/banks/ukr-banki.png" },
+    { id:"visa-master",type:"banks", name:{uk:"Visa/Mastercard", en:"Visa/Mastercard", pl:"Visa/Mastercard"}, code:"UAH", logo:"logos/banks/visa-master.png" },
 
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    // WALLETS
+    { id:"paypal",   type:"wallets", name:{uk:"PayPal", en:"PayPal", pl:"PayPal"},   code:"USD", logo:"logos/wallets/paypal.png" },
+    { id:"payoneer", type:"wallets", name:{uk:"Payoneer", en:"Payoneer", pl:"Payoneer"}, code:"USD", logo:"logos/wallets/payoneer.png" }, // важно: payoneer
+    { id:"revolut",  type:"wallets", name:{uk:"Revolut", en:"Revolut", pl:"Revolut"}, code:"EUR", logo:"logos/wallets/revolut.png" },
+    { id:"valet",    type:"wallets", name:{uk:"Valet", en:"Valet", pl:"Valet"},     code:"USD", logo:"logos/wallets/valet.png" },
+    { id:"vise",     type:"wallets", name:{uk:"Vise", en:"Vise", pl:"Vise"},        code:"USD", logo:"logos/wallets/vise.png" },
 
-/** Полные переводы (без “частично”) */
-const I18N = {
-  uk: {
-    tabs: { exchange: "Обмін", rules: "Правила", account: "Аккаунт", more: "Ще" },
-    exchange: {
-      title: "Обмін",
-      give: "Віддаєте",
-      get: "Отримуєте",
-      create: "Створити заявку",
-      rate: "Курс",
-      statusCreated: "Заявка створена. Статус: очікує підтвердження."
-    },
-    rules: { title: "Правила", text: "Тут будуть правила обміну. (Поки заглушка)" },
-    account: {
-      title: "Аккаунт",
-      text: "Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
-      login: "Войти",
-      register: "Регистрация"
-    },
-    more: { title: "Ще", reviews: "Відгуки", faq: "FAQ", contacts: "Контакти", hint: "Вибери розділ." },
-    picker: { title: "Вибір", search: "Search..." },
-    tags: { crypto:"Crypto", banks:"Banks", wallets:"Wallets", all:"All" }
-  },
-  en: {
-    tabs: { exchange: "Exchange", rules: "Rules", account: "Account", more: "More" },
-    exchange: {
-      title: "Exchange",
-      give: "You give",
-      get: "You get",
-      create: "Create request",
-      rate: "Rate",
-      statusCreated: "Request created. Status: pending confirmation."
-    },
-    rules: { title: "Rules", text: "Exchange rules will be here. (Placeholder)" },
-    account: {
-      title: "Account",
-      text: "Login/registration and KYC will be here (not connected yet).",
-      login: "Login",
-      register: "Sign up"
-    },
-    more: { title: "More", reviews: "Reviews", faq: "FAQ", contacts: "Contacts", hint: "Choose a section." },
-    picker: { title: "Select", search: "Search..." },
-    tags: { crypto:"Crypto", banks:"Banks", wallets:"Wallets", all:"All" }
-  },
-  pl: {
-    tabs: { exchange: "Wymiana", rules: "Zasady", account: "Konto", more: "Więcej" },
-    exchange: {
-      title: "Wymiana",
-      give: "Dajesz",
-      get: "Otrzymujesz",
-      create: "Utwórz zlecenie",
-      rate: "Kurs",
-      statusCreated: "Zlecenie utworzone. Status: oczekuje potwierdzenia."
-    },
-    rules: { title: "Zasady", text: "Zasady wymiany będą tutaj. (Wersja robocza)" },
-    account: {
-      title: "Konto",
-      text: "Logowanie/rejestracja i KYC będą tutaj (jeszcze nie podłączone).",
-      login: "Zaloguj",
-      register: "Rejestracja"
-    },
-    more: { title: "Więcej", reviews: "Opinie", faq: "FAQ", contacts: "Kontakt", hint: "Wybierz sekcję." },
-    picker: { title: "Wybór", search: "Search..." },
-    tags: { crypto:"Crypto", banks:"Banks", wallets:"Wallets", all:"All" }
+    // CRYPTO
+    { id:"btc", type:"crypto", name:{uk:"Bitcoin", en:"Bitcoin", pl:"Bitcoin"}, code:"BTC", logo:"logos/crypto/btc.png" },
+    { id:"eth", type:"crypto", name:{uk:"Ethereum", en:"Ethereum", pl:"Ethereum"}, code:"ETH", logo:"logos/crypto/eth.png" },
+    { id:"ltc", type:"crypto", name:{uk:"Litecoin", en:"Litecoin", pl:"Litecoin"}, code:"LTC", logo:"logos/crypto/ltc.png" },
+    { id:"sol", type:"crypto", name:{uk:"Solana", en:"Solana", pl:"Solana"}, code:"SOL", logo:"logos/crypto/sol.png" },
+    { id:"ton", type:"crypto", name:{uk:"TON", en:"TON", pl:"TON"}, code:"TON", logo:"logos/crypto/ton.png" },
+    { id:"trx", type:"crypto", name:{uk:"TRON", en:"TRON", pl:"TRON"}, code:"TRX", logo:"logos/crypto/trx.png" },
+
+    // USDT / USDC сети (как у тебя)
+    { id:"usdt-trc", type:"crypto", name:{uk:"USDT (TRC20)", en:"USDT (TRC20)", pl:"USDT (TRC20)"}, code:"USDT", logo:"logos/crypto/usdt-trc.png" },
+    { id:"usdt-eth", type:"crypto", name:{uk:"USDT (ERC20)", en:"USDT (ERC20)", pl:"USDT (ERC20)"}, code:"USDT", logo:"logos/crypto/usdt-eth.png" },
+    { id:"usdt-bep", type:"crypto", name:{uk:"USDT (BEP20)", en:"USDT (BEP20)", pl:"USDT (BEP20)"}, code:"USDT", logo:"logos/crypto/usdt-bep.png" },
+    { id:"usdt-sol", type:"crypto", name:{uk:"USDT (SOL)", en:"USDT (SOL)", pl:"USDT (SOL)"}, code:"USDT", logo:"logos/crypto/usdt-sol.png" },
+    { id:"usdt-pol", type:"crypto", name:{uk:"USDT (POL)", en:"USDT (POL)", pl:"USDT (POL)"}, code:"USDT", logo:"logos/crypto/usdt-pol.png" },
+    { id:"usdt-arb", type:"crypto", name:{uk:"USDT (ARB)", en:"USDT (ARB)", pl:"USDT (ARB)"}, code:"USDT", logo:"logos/crypto/usdt-arb.png" },
+
+    { id:"usdc-eth", type:"crypto", name:{uk:"USDC (ERC20)", en:"USDC (ERC20)", pl:"USDC (ERC20)"}, code:"USDC", logo:"logos/crypto/usdc-eth.png" },
+    { id:"usdc-sol", type:"crypto", name:{uk:"USDC (SOL)", en:"USDC (SOL)", pl:"USDC (SOL)"}, code:"USDC", logo:"logos/crypto/usdc-sol.png" },
+    { id:"usdc-pol", type:"crypto", name:{uk:"USDC (POL)", en:"USDC (POL)", pl:"USDC (POL)"}, code:"USDC", logo:"logos/crypto/usdc-pol.png" },
+
+    // общий логотип (если есть)
+    { id:"tether-usdt", type:"crypto", name:{uk:"Tether", en:"Tether", pl:"Tether"}, code:"USDT", logo:"logos/crypto/tether-usdt.png" },
+    { id:"crypto", type:"crypto", name:{uk:"Crypto", en:"Crypto", pl:"Crypto"}, code:"", logo:"logos/crypto/crypto.png" },
+  ];
+
+  // ====== STATE ======
+  let lang = "uk";
+  let give = ITEMS.find(x => x.id === "mono") || ITEMS[0];
+  let get  = ITEMS.find(x => x.id === "btc")  || ITEMS[0];
+  let activeTab = "exchange";
+  let pickingSide = "give"; // 'give' | 'get'
+  let modalFilter = "all";
+  let modalQuery = "";
+
+  // ====== DOM ======
+  const $ = (id) => document.getElementById(id);
+
+  const langBtn = $("langBtn");
+  const langLabel = $("langLabel");
+  const langMenu = $("langMenu");
+
+  const modal = $("modal");
+  const modalBackdrop = $("modalBackdrop");
+  const modalClose = $("modalClose");
+  const modalList = $("modalList");
+  const modalSearch = $("modalSearch");
+
+  const givePicker = $("givePicker");
+  const getPicker = $("getPicker");
+  const giveIco = $("giveIco");
+  const getIco = $("getIco");
+  const giveName = $("giveName");
+  const getName = $("getName");
+  const giveSub = $("giveSub");
+  const getSub = $("getSub");
+  const giveMeta = $("giveMeta");
+  const getMeta = $("getMeta");
+
+  const giveAmount = $("giveAmount");
+  const getAmount = $("getAmount");
+  const rateLine = $("rateLine");
+
+  const swapBtn = $("swapBtn");
+  const createOrder = $("createOrder");
+
+  // ====== SAFETY: КЛИКИ ======
+  // если модалка закрыта — она не существует для кликов
+  function openModal() {
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    modalSearch.value = "";
+    modalQuery = "";
+    renderList();
+    setTimeout(()=> modalSearch.focus(), 50);
   }
-};
+  function closeModal() {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
 
-// --- Данные (под твои папки logos/...) ---
-// ВАЖНО: пути соответствуют твоей структуре:
-// logos/crypto/*.png, logos/banks/*.png, logos/wallets/*.png
-const OPTIONS = [
-  // BANKS (UAH)
-  { id:"mono_uah",    cat:"banks",  name:"Monobank",  code:"UAH", label:"Monobank (UAH)",  logo:"logos/banks/mono.png",   rateUSD: 1/41 },
-  { id:"privat_uah",  cat:"banks",  name:"PrivatBank",code:"UAH", label:"PrivatBank (UAH)",logo:"logos/banks/privat.png", rateUSD: 1/41 },
-  { id:"abank_uah",   cat:"banks",  name:"A-Bank",    code:"UAH", label:"A-Bank (UAH)",    logo:"logos/banks/a-bank.png", rateUSD: 1/41 },
-  { id:"oschad_uah",  cat:"banks",  name:"Oschadbank",code:"UAH", label:"Oschadbank (UAH)",logo:"logos/banks/oschad.png", rateUSD: 1/41 },
-  { id:"pumb_uah",    cat:"banks",  name:"PUMB",      code:"UAH", label:"PUMB (UAH)",      logo:"logos/banks/pumb.png",   rateUSD: 1/41 },
-  { id:"otp_uah",     cat:"banks",  name:"OTP Bank",  code:"UAH", label:"OTP Bank (UAH)",  logo:"logos/banks/otp.png",    rateUSD: 1/41 },
-  { id:"sense_uah",   cat:"banks",  name:"Sense",     code:"UAH", label:"Sense (UAH)",     logo:"logos/banks/sense.png",  rateUSD: 1/41 },
-  { id:"izi_uah",     cat:"banks",  name:"izibank",   code:"UAH", label:"izibank (UAH)",   logo:"logos/banks/izi.png",    rateUSD: 1/41 },
+  // ====== UI UPDATE ======
+  function t(obj) { return (obj && obj[lang]) ? obj[lang] : (obj?.uk || ""); }
 
-  // CRYPTO
-  { id:"btc",  cat:"crypto", name:"Bitcoin",  code:"BTC", label:"Bitcoin (BTC)",  logo:"logos/crypto/btc.png",  rateUSD: 95000 },
-  { id:"eth",  cat:"crypto", name:"Ethereum", code:"ETH", label:"Ethereum (ETH)", logo:"logos/crypto/eth.png",  rateUSD: 3500  },
-  { id:"ltc",  cat:"crypto", name:"Litecoin", code:"LTC", label:"Litecoin (LTC)", logo:"logos/crypto/ltc.png",  rateUSD: 120   },
-  { id:"sol",  cat:"crypto", name:"Solana",   code:"SOL", label:"Solana (SOL)",   logo:"logos/crypto/sol.png",  rateUSD: 180   },
-  { id:"ton",  cat:"crypto", name:"Toncoin",  code:"TON", label:"Toncoin (TON)",  logo:"logos/crypto/ton.png",  rateUSD: 6     },
-  { id:"trx",  cat:"crypto", name:"TRON",     code:"TRX", label:"TRON (TRX)",     logo:"logos/crypto/trx.png",  rateUSD: 0.25  },
+  function setPickerUI() {
+    giveIco.src = give.logo;
+    giveIco.onerror = () => { giveIco.src = "logos/crypto/crypto.png"; };
 
-  // USDT сети (как у тебя)
-  { id:"usdt_trc", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (TRC20)", logo:"logos/crypto/usdt-trc.png", rateUSD: 1 },
-  { id:"usdt_eth", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (ERC20)", logo:"logos/crypto/usdt-eth.png", rateUSD: 1 },
-  { id:"usdt_bep", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (BEP20)", logo:"logos/crypto/usdt-bep.png", rateUSD: 1 },
-  { id:"usdt_sol", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (SOL)",   logo:"logos/crypto/usdt-sol.png", rateUSD: 1 },
-  { id:"usdt_pol", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (POL)",   logo:"logos/crypto/usdt-pol.png", rateUSD: 1 },
-  { id:"usdt_arb", cat:"crypto", name:"Tether", code:"USDT", label:"USDT (ARB)",   logo:"logos/crypto/usdt-arb.png", rateUSD: 1 },
+    getIco.src = get.logo;
+    getIco.onerror = () => { getIco.src = "logos/crypto/crypto.png"; };
 
-  // USDC сети (как у тебя)
-  { id:"usdc_eth", cat:"crypto", name:"USD Coin", code:"USDC", label:"USDC (ERC20)", logo:"logos/crypto/usdc-eth.png", rateUSD: 1 },
-  { id:"usdc_sol", cat:"crypto", name:"USD Coin", code:"USDC", label:"USDC (SOL)",   logo:"logos/crypto/usdc-sol.png", rateUSD: 1 },
-  { id:"usdc_pol", cat:"crypto", name:"USD Coin", code:"USDC", label:"USDC (POL)",   logo:"logos/crypto/usdc-pol.png", rateUSD: 1 },
+    giveName.textContent = t(give.name);
+    getName.textContent = t(get.name);
 
-  // WALLETS
-  { id:"paypal_usd",   cat:"wallets", name:"PayPal",   code:"USD", label:"PayPal (USD)",   logo:"logos/wallets/paypal.png",  rateUSD: 1 },
-  { id:"payoneer_usd", cat:"wallets", name:"Payoneer", code:"USD", label:"Payoneer (USD)", logo:"logos/wallets/payooneer.png", rateUSD: 1 },
-  { id:"revolut_usd",  cat:"wallets", name:"Revolut",  code:"USD", label:"Revolut (USD)",  logo:"logos/wallets/revolut.png", rateUSD: 1 },
-  { id:"wise_usd",     cat:"wallets", name:"Wise",     code:"USD", label:"Wise (USD)",     logo:"logos/wallets/vise.png",    rateUSD: 1 },
-  { id:"valet_usd",    cat:"wallets", name:"Valet",    code:"USD", label:"Valet (USD)",    logo:"logos/wallets/valet.png",   rateUSD: 1 }
-];
+    giveSub.textContent = give.code || "";
+    getSub.textContent = get.code || "";
 
-// Fallback если картинка не найдена
-function setImgSafe(imgEl, src){
-  imgEl.src = src;
-  imgEl.onerror = () => {
-    imgEl.onerror = null;
-    imgEl.src = "logos/crypto/crypto.png"; // если есть, иначе просто оставит пусто
-  };
-}
+    giveMeta.textContent = give.type === "banks" ? (lang==="uk"?"Bank":"Bank") : (give.type==="wallets" ? (lang==="uk"?"Wallet":"Wallet") : "Crypto");
+    getMeta.textContent  = get.type === "banks" ? (lang==="uk"?"Bank":"Bank") : (get.type==="wallets" ? (lang==="uk"?"Wallet":"Wallet") : "Crypto");
+  }
 
-// --- STATE ---
-let lang = "uk";
-let currentView = "exchange";
-let pickerTarget = "give"; // 'give' | 'get'
-let filter = "all";
-let give = OPTIONS.find(x => x.id === "mono_uah") || OPTIONS[0];
-let get  = OPTIONS.find(x => x.id === "btc") || OPTIONS[0];
+  function calcRate() {
+    // заглушка: просто “примерный” курс, чтобы было красиво
+    // позже подключишь реальные курсы.
+    const base = 0.0000123;
+    const amt = parseFloat((giveAmount.value || "0").replace(",", ".")) || 0;
+    const out = amt * base;
 
-// --- DOM ---
-const views = {
-  exchange: $("#viewExchange"),
-  rules: $("#viewRules"),
-  account: $("#viewAccount"),
-  more: $("#viewMore")
-};
+    // курс показываем мягко
+    const rateText =
+      lang === "uk" ? `Курс: 1 ${give.code || "UAH"} ≈ ${base.toFixed(8)} ${get.code || ""}` :
+      lang === "en" ? `Rate: 1 ${give.code || "UAH"} ≈ ${base.toFixed(8)} ${get.code || ""}` :
+                      `Kurs: 1 ${give.code || "UAH"} ≈ ${base.toFixed(8)} ${get.code || ""}`;
 
-const tabBtns = {
-  exchange: $("#tabExchange"),
-  rules: $("#tabRules"),
-  account: $("#tabAccount"),
-  more: $("#tabMore")
-};
+    rateLine.textContent = rateText;
 
-const giveSelectBtn = $("#giveSelectBtn");
-const getSelectBtn  = $("#getSelectBtn");
-const giveAmountEl  = $("#giveAmount");
-const getAmountEl   = $("#getAmount");
-const swapBtn       = $("#swapBtn");
-const rateLine      = $("#rateLine");
-const statusBox     = $("#statusBox");
-const submitBtn     = $("#submitBtn");
+    // вывод
+    getAmount.value = out ? out.toFixed(8) : "0";
+  }
 
-// header / lang
-const langBtn     = $("#langBtn");
-const langBtnLabel= $("#langBtnLabel");
-const langMenu    = $("#langMenu");
+  function setLang(newLang) {
+    lang = newLang;
+    langLabel.textContent = newLang === "uk" ? "UA" : (newLang === "en" ? "EN" : "PL");
 
-// modal
-const pickerModal  = $("#pickerModal");
-const modalBackdrop= $("#modalBackdrop");
-const modalCloseBtn= $("#modalCloseBtn");
-const searchInput  = $("#searchInput");
-const optionsList  = $("#optionsList");
-const pickerTitle  = $("#pickerTitle");
+    // частичный перевод убираем: всё переводим тут
+    $("tab-exchange").textContent = newLang==="uk" ? "Обмін" : (newLang==="en" ? "Exchange" : "Wymiana");
+    $("tab-rules").textContent    = newLang==="uk" ? "Правила" : (newLang==="en" ? "Rules" : "Zasady");
+    $("tab-account").textContent  = newLang==="uk" ? "Акаунт" : (newLang==="en" ? "Account" : "Konto");
+    $("tab-more").textContent     = newLang==="uk" ? "Ще" : (newLang==="en" ? "More" : "Więcej");
 
-// chips
-const chipButtons = $$("#chipsRow .chip");
+    $("h-exchange").textContent   = newLang==="uk" ? "Обмін" : (newLang==="en" ? "Exchange" : "Wymiana");
+    $("lbl-give").textContent     = newLang==="uk" ? "Віддаєте" : (newLang==="en" ? "You send" : "Wysyłasz");
+    $("lbl-get").textContent      = newLang==="uk" ? "Отримуєте" : (newLang==="en" ? "You get" : "Otrzymujesz");
+    $("createOrder").textContent  = newLang==="uk" ? "Створити заявку" : (newLang==="en" ? "Create order" : "Utwórz zlecenie");
+    $("hintStatus").textContent   = newLang==="uk" ? "Статус заявки буде після її подачі." :
+                                   (newLang==="en" ? "Order status will appear after submission." :
+                                                     "Status zlecenia pojawi się po wysłaniu.");
 
-// --- UI Helpers ---
-function setActiveView(view){
-  currentView = view;
-  Object.keys(views).forEach(k => views[k].classList.toggle("is-hidden", k !== view));
-  Object.keys(tabBtns).forEach(k => tabBtns[k].classList.toggle("is-active", k === view));
-}
+    $("rulesText").textContent    = newLang==="uk" ? "Тут будуть правила обміну. (Поки заглушка)" :
+                                   (newLang==="en" ? "Exchange rules will be here. (Placeholder)" :
+                                                     "Zasady wymiany będą tutaj. (Placeholder)");
 
-function formatNumber(n){
-  if (!isFinite(n)) return "0";
-  // убираем “бесконечные” хвосты
-  const s = n.toFixed(8);
-  return s.replace(/\.?0+$/,"");
-}
+    $("accountText").textContent  = newLang==="uk" ? "Тут буде вхід/реєстрація і далі KYC (поки без підключення)." :
+                                   (newLang==="en" ? "Login/registration and then KYC (not connected yet)." :
+                                                     "Logowanie/rejestracja i dalej KYC (jeszcze niepodłączone).");
 
-function calcRate(giveOpt, getOpt){
-  // rate = (give in USD) -> (get in USD)
-  // amount_get = amount_give * giveUSD / getUSD
-  return (giveOpt.rateUSD || 0) / (getOpt.rateUSD || 1);
-}
+    $("loginBtn").textContent     = newLang==="uk" ? "Увійти" : (newLang==="en" ? "Login" : "Zaloguj");
+    $("registerBtn").textContent  = newLang==="uk" ? "Реєстрація" : (newLang==="en" ? "Register" : "Rejestracja");
 
-function updateRateAndAmounts(){
-  const amount = parseFloat(String(giveAmountEl.value).replace(",", "."));
-  const validAmount = isFinite(amount) ? amount : 0;
+    $("reviewsBtn").textContent   = newLang==="uk" ? "Відгуки" : (newLang==="en" ? "Reviews" : "Opinie");
+    $("faqBtn").textContent       = "FAQ";
+    $("contactsBtn").textContent  = newLang==="uk" ? "Контакти" : (newLang==="en" ? "Contacts" : "Kontakt");
 
-  const rate = calcRate(give, get);
-  const out = validAmount * rate;
-  getAmountEl.value = formatNumber(out);
+    setPickerUI();
+    calcRate();
+  }
 
-  const t = I18N[lang].exchange;
-  rateLine.textContent = `${t.rate}: 1 ${give.code} → ${formatNumber(rate)} ${get.code}`;
-}
+  // ====== TABS ======
+  function setTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === `view-${tab}`));
+    // при смене вкладки — на всякий случай закрыть модалку
+    closeModal();
+  }
 
-function renderSelects(){
-  // GIVE
-  setImgSafe($("#giveIcon"), give.logo);
-  $("#giveName").textContent = give.name;
-  $("#giveSub").textContent  = give.code;
+  // ====== LIST (modal) ======
+  function renderList() {
+    // фильтры
+    let arr = ITEMS.slice();
+    if (modalFilter !== "all") arr = arr.filter(x => x.type === modalFilter);
+    if (modalQuery.trim()) {
+      const q = modalQuery.trim().toLowerCase();
+      arr = arr.filter(x => t(x.name).toLowerCase().includes(q) || (x.code||"").toLowerCase().includes(q) || x.id.includes(q));
+    }
 
-  // GET
-  setImgSafe($("#getIcon"), get.logo);
-  $("#getName").textContent = get.name;
-  $("#getSub").textContent  = get.code;
+    modalList.innerHTML = "";
+    arr.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.setAttribute("role","option");
 
-  updateRateAndAmounts();
-}
+      const left = document.createElement("div");
+      left.className = "row-left";
 
-function openPicker(target){
-  pickerTarget = target;
-  searchInput.value = "";
-  filter = "all";
-  chipButtons.forEach(b => b.classList.toggle("is-active", b.dataset.filter === "all"));
+      const img = document.createElement("img");
+      img.className = "row-ico";
+      img.src = item.logo;
+      img.alt = "";
+      img.onerror = () => { img.src = "logos/crypto/crypto.png"; };
 
-  pickerModal.classList.remove("is-hidden");
-  pickerModal.setAttribute("aria-hidden", "false");
-  document.body.classList.add("modal-open");
+      const name = document.createElement("div");
+      name.className = "row-name";
+      name.textContent = t(item.name);
 
-  // title translated
-  pickerTitle.textContent = I18N[lang].picker.title;
-  searchInput.placeholder = I18N[lang].picker.search;
+      const sub = document.createElement("div");
+      sub.className = "row-sub";
+      sub.textContent = item.code ? item.code : (item.type === "banks" ? "UAH" : "");
 
-  renderOptions();
-  setTimeout(() => searchInput.focus(), 60);
-}
+      left.appendChild(img);
+      left.appendChild(name);
+      left.appendChild(sub);
 
-function closePicker(){
-  pickerModal.classList.add("is-hidden");
-  pickerModal.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("modal-open");
-}
+      const right = document.createElement("div");
+      right.style.fontWeight = "900";
+      right.style.opacity = "0.55";
+      right.textContent = item.type === "banks" ? (lang==="uk"?"Bank":"Bank") : (item.type==="wallets" ? (lang==="uk"?"Wallet":"Wallet") : "Crypto");
 
-function matches(opt, q){
-  if (!q) return true;
-  const s = q.toLowerCase();
-  return (opt.name + " " + opt.label + " " + opt.code).toLowerCase().includes(s);
-}
+      row.appendChild(left);
+      row.appendChild(right);
 
-function renderOptions(){
-  const q = searchInput.value.trim();
-  const filtered = OPTIONS.filter(o => (filter === "all" ? true : o.cat === filter))
-    .filter(o => matches(o, q));
+      row.addEventListener("click", () => {
+        if (pickingSide === "give") give = item;
+        else get = item;
 
-  optionsList.innerHTML = "";
-  filtered.forEach(o => {
-    const row = document.createElement("div");
-    row.className = "opt";
-    row.innerHTML = `
-      <div class="opt__left">
-        <img class="opt__icon" alt="">
-        <div class="opt__meta">
-          <div class="opt__name"></div>
-          <div class="opt__sub"></div>
-        </div>
-      </div>
-      <div class="opt__tag">${o.cat}</div>
-    `;
-    const img = row.querySelector(".opt__icon");
-    setImgSafe(img, o.logo);
-    row.querySelector(".opt__name").textContent = o.label;
-    row.querySelector(".opt__sub").textContent  = o.code;
+        setPickerUI();
+        calcRate();
+        closeModal();
+      });
 
-    row.addEventListener("click", () => {
-      if (pickerTarget === "give") give = o;
-      else get = o;
-
-      renderSelects();
-      closePicker();
+      modalList.appendChild(row);
     });
-
-    optionsList.appendChild(row);
-  });
-
-  if (filtered.length === 0){
-    const empty = document.createElement("div");
-    empty.className = "muted";
-    empty.style.padding = "10px 6px";
-    empty.textContent = "—";
-    optionsList.appendChild(empty);
   }
-}
 
-function applyLang(newLang){
-  lang = newLang;
-  const t = I18N[lang];
-
-  // Tabs
-  tabBtns.exchange.textContent = t.tabs.exchange;
-  tabBtns.rules.textContent    = t.tabs.rules;
-  tabBtns.account.textContent  = t.tabs.account;
-  tabBtns.more.textContent     = t.tabs.more;
-
-  // Exchange
-  $("#exchangeTitle").textContent = t.exchange.title;
-  $("#giveLabel").textContent     = t.exchange.give;
-  $("#getLabel").textContent      = t.exchange.get;
-  submitBtn.textContent           = t.exchange.create;
-
-  // Rules
-  $("#rulesTitle").textContent = t.rules.title;
-  $("#rulesText").textContent  = t.rules.text;
-
-  // Account
-  $("#accountTitle").textContent = t.account.title;
-  $("#accountText").textContent  = t.account.text;
-  $("#loginBtn").textContent     = t.account.login;
-  $("#registerBtn").textContent  = t.account.register;
-
-  // More
-  $("#moreTitle").textContent    = t.more.title;
-  $("#moreReviews").textContent  = t.more.reviews;
-  $("#moreFaq").textContent      = t.more.faq;
-  $("#moreContacts").textContent = t.more.contacts;
-  $("#moreHint").textContent     = t.more.hint;
-
-  // Rate
-  updateRateAndAmounts();
-}
-
-// --- Events ---
-
-// Tabs
-Object.keys(tabBtns).forEach(k => {
-  tabBtns[k].addEventListener("click", () => setActiveView(k));
-});
-
-// Open pickers
-giveSelectBtn.addEventListener("click", () => openPicker("give"));
-getSelectBtn.addEventListener("click",  () => openPicker("get"));
-
-// Close modal
-modalBackdrop.addEventListener("click", closePicker);
-modalCloseBtn.addEventListener("click", closePicker);
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !pickerModal.classList.contains("is-hidden")) closePicker();
-});
-
-// Chips
-chipButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    filter = btn.dataset.filter;
-    chipButtons.forEach(b => b.classList.toggle("is-active", b === btn));
-    renderOptions();
+  // ====== EVENTS ======
+  // tabs
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => setTab(btn.dataset.tab));
   });
-});
 
-// Search
-searchInput.addEventListener("input", renderOptions);
-
-// Amount input
-giveAmountEl.addEventListener("input", updateRateAndAmounts);
-
-// Swap
-swapBtn.addEventListener("click", () => {
-  const tmp = give;
-  give = get;
-  get = tmp;
-  renderSelects();
-});
-
-// Submit -> status появляется после
-submitBtn.addEventListener("click", () => {
-  statusBox.hidden = false;
-  statusBox.textContent = I18N[lang].exchange.statusCreated;
-});
-
-// Language menu
-function toggleLangMenu(force){
-  const isOpen = langMenu.classList.contains("is-open");
-  const next = (typeof force === "boolean") ? force : !isOpen;
-  langMenu.classList.toggle("is-open", next);
-  langBtn.setAttribute("aria-expanded", String(next));
-  langMenu.setAttribute("aria-hidden", String(!next));
-}
-langBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  toggleLangMenu();
-});
-document.addEventListener("click", () => toggleLangMenu(false));
-langMenu.addEventListener("click", (e) => e.stopPropagation());
-
-$$(".lang-item").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const newLang = btn.dataset.lang;
-    langBtnLabel.textContent = btn.textContent;
-    applyLang(newLang);
-    toggleLangMenu(false);
+  // lang
+  langBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = langMenu.classList.contains("show");
+    langMenu.classList.toggle("show", !isOpen);
+    langBtn.setAttribute("aria-expanded", String(!isOpen));
   });
-});
+  document.addEventListener("click", () => {
+    langMenu.classList.remove("show");
+    langBtn.setAttribute("aria-expanded", "false");
+  });
+  langMenu.querySelectorAll(".lang-item").forEach(b => {
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setLang(b.dataset.lang);
+      langMenu.classList.remove("show");
+      langBtn.setAttribute("aria-expanded", "false");
+    });
+  });
 
-// --- INIT ---
-(function init(){
-  // default lang button
-  langBtnLabel.textContent = "UA";
-  applyLang("uk");
+  // pickers
+  givePicker.addEventListener("click", () => { pickingSide = "give"; openModal(); });
+  getPicker.addEventListener("click",  () => { pickingSide = "get";  openModal(); });
 
-  // set initial view
-  setActiveView("exchange");
+  // modal close
+  modalClose.addEventListener("click", closeModal);
+  modalBackdrop.addEventListener("click", closeModal);
 
-  // set initial icons/text + compute
-  renderSelects();
+  // chips
+  $("chips").querySelectorAll(".chip").forEach(ch => {
+    ch.addEventListener("click", () => {
+      $("chips").querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+      ch.classList.add("active");
+      modalFilter = ch.dataset.filter;
+      renderList();
+    });
+  });
 
-  // safe icon fallback for brand if needed:
-  const brandLogo = document.querySelector(".brand__logo");
-  brandLogo.onerror = () => { brandLogo.style.display = "none"; };
+  // search
+  modalSearch.addEventListener("input", () => {
+    modalQuery = modalSearch.value;
+    renderList();
+  });
+
+  // swap
+  swapBtn.addEventListener("click", () => {
+    const tmp = give;
+    give = get;
+    get = tmp;
+    setPickerUI();
+    calcRate();
+  });
+
+  // calc
+  giveAmount.addEventListener("input", calcRate);
+
+  // order
+  createOrder.addEventListener("click", () => {
+    alert(lang==="uk" ? "Заявка створена (демо)." : (lang==="en" ? "Order created (demo)." : "Zlecenie utworzone (demo)."));
+  });
+
+  // ====== INIT ======
+  // важное: закрыть модалку при загрузке чтобы не было «невидимой стеклянной пленки»
+  closeModal();
+  setLang("uk");
+  setTab("exchange");
+  setPickerUI();
+  calcRate();
 })();
