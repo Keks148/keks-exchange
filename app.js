@@ -1,10 +1,4 @@
 (() => {
-  // ====== DATA ======
-  // paths should match your repo:
-  // /logo.png
-  // /logos/banks/*.png
-  // /logos/crypto/*.png
-
   const DATA = {
     banks: [
       { id: "mono", name: "Monobank", code: "UAH", type: "bank", logo: "logos/banks/mono.png" },
@@ -23,11 +17,6 @@
       { id: "ton", name: "Toncoin", code: "TON", type: "crypto", logo: "logos/crypto/ton.png" },
       { id: "trx", name: "TRON", code: "TRX", type: "crypto", logo: "logos/crypto/trx.png" },
 
-      // If you have these icons, leave. If not, delete these lines.
-      { id: "usdc-eth", name: "USDC (ETH)", code: "USDC", type: "crypto", logo: "logos/crypto/usdc-eth.png" },
-      { id: "usdc-pol", name: "USDC (POL)", code: "USDC", type: "crypto", logo: "logos/crypto/usdc-pol.png" },
-      { id: "usdc-sol", name: "USDC (SOL)", code: "USDC", type: "crypto", logo: "logos/crypto/usdc-sol.png" },
-
       { id: "usdt-trc", name: "USDT (TRC20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-trc.png" },
       { id: "usdt-eth", name: "USDT (ERC20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-eth.png" },
       { id: "usdt-bep", name: "USDT (BEP20)", code: "USDT", type: "tether", logo: "logos/crypto/usdt-bep.png" },
@@ -37,7 +26,6 @@
     ],
   };
 
-  // ====== I18N ======
   const I18N = {
     uk: {
       close: "Закрити",
@@ -45,31 +33,26 @@
       rules: "Правила",
       account: "Акаунт",
       more: "Ще",
-
       give: "Віддаєте",
       get: "Отримуєте",
-
       amount: "Сума",
       rate: "Курс",
       create: "Створити заявку",
-
       choose: "Виберіть",
       search: "Пошук...",
       selectGive: "Вибір (віддаєте)",
       selectGet: "Вибір (отримуєте)",
-
       rulesText: "Тут будуть правила обміну. (Поки заглушка)",
       accText: "Тут буде вхід/реєстрація і далі KYC (поки без підключення).",
       login: "Увійти",
       signup: "Реєстрація",
-
       reviews: "Відгуки",
       faq: "FAQ",
       contacts: "Контакти",
       pickSection: "Вибери розділ.",
       type_bank: "Банк",
       type_crypto: "Крипто",
-      type_tether: "Тезер",
+      type_tether: "Крипто", // Тезер тоже показываем как “Крипто” (без “Кошелек”)
     },
     en: {
       close: "Close",
@@ -77,31 +60,26 @@
       rules: "Rules",
       account: "Account",
       more: "More",
-
       give: "You give",
       get: "You get",
-
       amount: "Amount",
       rate: "Rate",
       create: "Create order",
-
       choose: "Choose",
       search: "Search...",
       selectGive: "Select (give)",
       selectGet: "Select (get)",
-
       rulesText: "Exchange rules will be here. (Stub for now)",
       accText: "Login/registration and then KYC (not connected yet).",
       login: "Log in",
       signup: "Sign up",
-
       reviews: "Reviews",
       faq: "FAQ",
       contacts: "Contacts",
       pickSection: "Pick a section.",
       type_bank: "Bank",
       type_crypto: "Crypto",
-      type_tether: "Tether",
+      type_tether: "Crypto",
     },
     pl: {
       close: "Zamknij",
@@ -109,35 +87,29 @@
       rules: "Zasady",
       account: "Konto",
       more: "Więcej",
-
       give: "Oddajesz",
       get: "Otrzymujesz",
-
       amount: "Kwota",
       rate: "Kurs",
       create: "Utwórz zlecenie",
-
       choose: "Wybierz",
       search: "Szukaj...",
       selectGive: "Wybór (oddajesz)",
       selectGet: "Wybór (otrzymujesz)",
-
       rulesText: "Tutaj będą zasady wymiany. (Tymczasowo)",
       accText: "Logowanie/rejestracja i KYC (na razie bez podłączenia).",
       login: "Zaloguj",
       signup: "Rejestracja",
-
       reviews: "Opinie",
       faq: "FAQ",
       contacts: "Kontakty",
       pickSection: "Wybierz sekcję.",
       type_bank: "Bank",
       type_crypto: "Krypto",
-      type_tether: "Tether",
+      type_tether: "Krypto",
     }
   };
 
-  // ====== HELPERS ======
   const $ = (sel, root = document) => root.querySelector(sel);
 
   function clampNum(val) {
@@ -147,9 +119,8 @@
     return n;
   }
 
-  function fmt(n, digits = 6) {
+  function fmt(n, digits = 8) {
     if (!isFinite(n)) return "0";
-    // compact for UI
     if (n === 0) return "0";
     const abs = Math.abs(n);
     if (abs >= 1000) return n.toFixed(2);
@@ -157,13 +128,8 @@
     return n.toFixed(digits).replace(/0+$/,"").replace(/\.$/,"");
   }
 
-  // very simple stub rate (you told: only rate; status after order)
-  // later you can replace with real pricing.
   function calcRate(give, get) {
-    // UAH -> BTC etc just placeholder
     if (!give || !get) return 0;
-
-    // Rough fake mapping
     const priceUAH = {
       BTC: 1600000,
       ETH: 90000,
@@ -171,16 +137,11 @@
       SOL: 9000,
       TON: 260,
       TRX: 6,
-      USDC: 41,
       USDT: 41,
       UAH: 1
     };
-
     const giveP = priceUAH[give.code] ?? 1;
     const getP  = priceUAH[get.code] ?? 1;
-
-    // rate = how many get for 1 give unit
-    // if giving UAH and getting BTC => 1 UAH => 1/priceUAH[BTC] BTC
     return (giveP / getP);
   }
 
@@ -192,27 +153,21 @@
   }
 
   function allItems(){
-    // show banks + crypto (includes tether items)
     return [...DATA.banks, ...DATA.crypto];
   }
 
-  // ====== STATE ======
   const state = {
     lang: "uk",
-    page: "exchange", // exchange | rules | account | more
-
+    page: "exchange",
     give: DATA.banks[0],
     get: DATA.crypto.find(x => x.id === "btc") || DATA.crypto[0],
-
     giveAmount: "100",
     getAmount: "0",
-
     modalOpen: false,
-    modalTarget: "give", // give|get
+    modalTarget: "give",
     modalSearch: "",
   };
 
-  // ====== RENDER ======
   function render() {
     const t = I18N[state.lang];
     document.documentElement.lang = state.lang;
@@ -281,40 +236,30 @@
 
   function renderPage(){
     const t = I18N[state.lang];
+
     if (state.page === "rules"){
-      return `
-        <div class="card">
-          <div class="h1">${t.rules}</div>
-          <div class="sub">${t.rulesText}</div>
-        </div>
-      `;
+      return `<div class="card"><div class="h1">${t.rules}</div><div class="sub">${t.rulesText}</div></div>`;
     }
     if (state.page === "account"){
       return `
         <div class="card">
           <div class="h1">${t.account}</div>
           <div class="sub">${t.accText}</div>
-
           <button class="primaryBtn" id="loginBtn">${t.login}</button>
           <button class="secondaryBtn" id="signupBtn">${t.signup}</button>
-        </div>
-      `;
+        </div>`;
     }
     if (state.page === "more"){
       return `
         <div class="card">
           <div class="h1">${t.more}</div>
-
           <button class="secondaryBtn" id="reviewsBtn">${t.reviews}</button>
           <button class="secondaryBtn" id="faqBtn">${t.faq}</button>
           <button class="secondaryBtn" id="contactsBtn">${t.contacts}</button>
-
           <div class="smallHint">${t.pickSection}</div>
-        </div>
-      `;
+        </div>`;
     }
 
-    // exchange
     return `
       <div class="card">
         <div class="h1">${t.exchange}</div>
@@ -340,15 +285,13 @@
 
         <div class="hrSpace"></div>
 
-        <div class="field">
+        <div class="field amountField">
           <input class="input" id="giveAmount" inputmode="decimal" value="${escapeAttr(state.giveAmount)}" aria-label="${t.amount}">
         </div>
 
         <div class="swapRow">
           <button class="swapBtn" id="swapBtn" aria-label="swap">
-            <span class="swapIcon">
-              <i class="a"></i><i class="b"></i>
-            </span>
+            <span class="swapArrow">↔</span>
           </button>
         </div>
 
@@ -373,7 +316,7 @@
 
         <div class="hrSpace"></div>
 
-        <div class="field">
+        <div class="field amountField">
           <input class="input" id="getAmount" inputmode="decimal" value="${escapeAttr(state.getAmount)}" aria-label="${t.amount}">
         </div>
 
@@ -418,6 +361,8 @@
   }
 
   function renderItem(it){
+    // В списке справа pill оставим, но без “wallet” вообще (у нас таких типов нет)
+    const pill = (it.type === "bank") ? "bank" : "crypto";
     return `
       <div class="item" data-pick="${it.id}">
         <div class="iconCircle">
@@ -427,20 +372,14 @@
           <div class="n">${escapeHtml(it.name)}</div>
           <div class="c">${escapeHtml(it.code)}</div>
         </div>
-        <div class="pill">${escapeHtml(it.type)}</div>
+        <div class="pill">${pill}</div>
       </div>
     `;
   }
 
-  // ====== EVENTS ======
   function wire(){
-    // Close button (Telegram miniapp can be integrated later; for now just no-op)
-    $("#closeBtn")?.addEventListener("click", () => {
-      // If you later add Telegram.WebApp.close() - put here.
-      // console.log("close");
-    });
+    $("#closeBtn")?.addEventListener("click", () => {});
 
-    // Nav
     document.querySelectorAll("[data-page]").forEach(btn => {
       btn.addEventListener("click", () => {
         state.page = btn.getAttribute("data-page");
@@ -448,7 +387,6 @@
       });
     });
 
-    // Lang
     const langBtn = $("#langBtn");
     const langMenu = $("#langMenu");
     langBtn?.addEventListener("click", (e) => {
@@ -468,9 +406,9 @@
       });
     });
 
-    // Exchange interactions
     $("#pickGive")?.addEventListener("click", () => openModal("give"));
     $("#pickGet")?.addEventListener("click", () => openModal("get"));
+
     $("#swapBtn")?.addEventListener("click", () => {
       const g = state.give;
       state.give = state.get;
@@ -485,35 +423,27 @@
       state.giveAmount = e.target.value;
       recalc();
     });
+
     $("#getAmount")?.addEventListener("input", (e) => {
-      // allow manual override:
       state.getAmount = e.target.value;
-      // and back-calc give if needed:
       const rate = calcRate(state.give, state.get);
       if (rate > 0) {
         const g = clampNum(state.getAmount) / rate;
-        state.giveAmount = fmt(g, 6);
+        state.giveAmount = fmt(g, 8);
         $("#giveAmount").value = state.giveAmount;
       }
       recalc();
     });
 
-    $("#createBtn")?.addEventListener("click", () => {
-      // placeholder
-      alert("OK ✅");
-    });
+    $("#createBtn")?.addEventListener("click", () => alert("OK ✅"));
 
-    // Modal
     const overlay = $("#modalOverlay");
     overlay?.addEventListener("click", closeModal);
-
     $("#modalClose")?.addEventListener("click", closeModal);
 
     $("#modalSearch")?.addEventListener("input", (e) => {
       state.modalSearch = e.target.value;
-      // rerender only modal
       $("#modalSheet").innerHTML = renderModal();
-      // re-wire modal inside
       wireModalOnly();
     });
 
@@ -542,7 +472,6 @@
     state.modalSearch = "";
     state.modalOpen = true;
     render();
-    // prevent background scroll while open
     document.body.style.overflow = "hidden";
   }
 
@@ -552,23 +481,21 @@
     render();
   }
 
-  // ====== CALC ======
   function recalc(){
     if (state.page !== "exchange") return;
+
     const rate = calcRate(state.give, state.get);
     const g = clampNum(state.giveAmount);
     const getVal = g * rate;
 
-    // update get if user typed give
-    state.getAmount = fmt(getVal, 6);
+    state.getAmount = fmt(getVal, 8);
     const getInput = $("#getAmount");
     if (getInput) getInput.value = state.getAmount;
 
     const rateEl = $("#rateValue");
-    if (rateEl) rateEl.textContent = rate > 0 ? `1 ${state.give.code} ≈ ${fmt(rate, 8)} ${state.get.code}` : "—";
+    if (rateEl) rateEl.textContent = rate > 0 ? `1 ${state.give.code} ≈ ${fmt(rate, 10)} ${state.get.code}` : "—";
   }
 
-  // ====== UTIL ======
   function escapeHtml(str){
     return String(str ?? "")
       .replaceAll("&","&amp;")
@@ -579,6 +506,5 @@
   }
   function escapeAttr(str){ return escapeHtml(str).replaceAll("\n"," "); }
 
-  // ====== START ======
   render();
 })();
