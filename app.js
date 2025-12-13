@@ -1,191 +1,250 @@
-// ====== DATA (пути как у тебя в репо) ======
-const BANKS = [
-  { id:"privat",  name:"PrivatBank (UAH)",  icon:"logos/banks/privat.png", currency:"UAH" },
-  { id:"mono",    name:"Monobank (UAH)",    icon:"logos/banks/mono.png",   currency:"UAH" },
-  { id:"oschad",  name:"Oschadbank (UAH)",  icon:"logos/banks/oschad.png", currency:"UAH" },
-  { id:"pumb",    name:"PUMB (UAH)",        icon:"logos/banks/pumb.png",   currency:"UAH" },
-  { id:"a-bank",  name:"A-Bank (UAH)",      icon:"logos/banks/a-bank.png", currency:"UAH" },
-  { id:"otp",     name:"OTP (UAH)",         icon:"logos/banks/otp.png",    currency:"UAH" },
-  { id:"izi",     name:"IziBank (UAH)",     icon:"logos/banks/izi.png",    currency:"UAH" },
-  { id:"sense",   name:"Sense (UAH)",       icon:"logos/banks/sense.png",  currency:"UAH" },
-  { id:"ukrsib",  name:"UkrSib (UAH)",      icon:"logos/banks/ukr-sib.png",currency:"UAH" },
-  { id:"ukrbanki",name:"UkrBanki (UAH)",    icon:"logos/banks/ukr-banki.png",currency:"UAH" },
-  { id:"visa-master",name:"Visa/Master (UAH)", icon:"logos/banks/visa-master.png",currency:"UAH" },
-  { id:"reyf",    name:"Raiffeisen (UAH)",  icon:"logos/banks/reyf.png",   currency:"UAH" },
-];
+(function () {
+  const $ = (s, el = document) => el.querySelector(s);
 
-const CRYPTO = [
-  { id:"btc",  name:"Bitcoin (BTC)", icon:"logos/crypto/btc.png",  symbol:"BTC", ratePerUAH: 0.0000000625 },
-  { id:"eth",  name:"Ethereum (ETH)",icon:"logos/crypto/eth.png",  symbol:"ETH", ratePerUAH: 0.0000000012 },
-  { id:"ton",  name:"TON (TON)",     icon:"logos/crypto/ton.png",  symbol:"TON", ratePerUAH: 0.0032 },
-  { id:"trx",  name:"TRON (TRX)",    icon:"logos/crypto/trx.png",  symbol:"TRX", ratePerUAH: 0.12 },
-  { id:"sol",  name:"Solana (SOL)",  icon:"logos/crypto/sol.png",  symbol:"SOL", ratePerUAH: 0.00003 },
-  { id:"ltc",  name:"Litecoin (LTC)",icon:"logos/crypto/ltc.png",  symbol:"LTC", ratePerUAH: 0.00007 },
-  { id:"usdt-trc", name:"Tether USDT (TRC20)", icon:"logos/crypto/usdt-trc.png", symbol:"USDT", ratePerUAH: 0.025 },
-  { id:"usdt-eth", name:"Tether USDT (ERC20)", icon:"logos/crypto/usdt-eth.png", symbol:"USDT", ratePerUAH: 0.025 },
-  { id:"usdt-pol", name:"Tether USDT (POL)",   icon:"logos/crypto/usdt-pol.png", symbol:"USDT", ratePerUAH: 0.025 },
-  { id:"usdt-sol", name:"Tether USDT (SOL)",   icon:"logos/crypto/usdt-sol.png", symbol:"USDT", ratePerUAH: 0.025 },
-  { id:"usdt-arb", name:"Tether USDT (ARB)",   icon:"logos/crypto/usdt-arb.png", symbol:"USDT", ratePerUAH: 0.025 },
-
-  { id:"usdc-eth", name:"USDC (ERC20)", icon:"logos/crypto/usdc-eth.png", symbol:"USDC", ratePerUAH: 0.025 },
-  { id:"usdc-pol", name:"USDC (POL)",   icon:"logos/crypto/usdc-pol.png", symbol:"USDC", ratePerUAH: 0.025 },
-  { id:"usdc-sol", name:"USDC (SOL)",   icon:"logos/crypto/usdc-sol.png", symbol:"USDC", ratePerUAH: 0.025 },
-
-  { id:"tether", name:"Tether (USDT)", icon:"logos/crypto/tether-usdt.png", symbol:"USDT", ratePerUAH: 0.025 },
-];
-
-function $(id){ return document.getElementById(id); }
-
-const giveSelect = $("giveSelect");
-const getSelect  = $("getSelect");
-const giveIcon   = $("giveIcon");
-const getIcon    = $("getIcon");
-const giveAmount = $("giveAmount");
-const getAmount  = $("getAmount");
-const rateLine   = $("rateLine");
-const swapBtn    = $("swapBtn");
-const submitBtn  = $("submitBtn");
-
-const tabs = Array.from(document.querySelectorAll(".tab"));
-const screens = {
-  exchange: $("screen-exchange"),
-  rules: $("screen-rules"),
-  faq: $("screen-faq"),
-  account: $("screen-account"),
-};
-
-// ====== LANG dropdown (одна кнопка) ======
-const langBtn = $("langBtn");
-const langMenu = $("langMenu");
-const langLabel = $("langLabel");
-
-langBtn.addEventListener("click", () => {
-  langMenu.classList.toggle("open");
-  langMenu.setAttribute("aria-hidden", langMenu.classList.contains("open") ? "false" : "true");
-});
-
-document.addEventListener("click", (e) => {
-  if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
-    langMenu.classList.remove("open");
-    langMenu.setAttribute("aria-hidden", "true");
-  }
-});
-
-Array.from(document.querySelectorAll(".lang-item")).forEach(btn => {
-  btn.addEventListener("click", () => {
-    langLabel.textContent = btn.dataset.lang;
-    langMenu.classList.remove("open");
-    langMenu.setAttribute("aria-hidden", "true");
-  });
-});
-
-// ====== Tabs navigation ======
-tabs.forEach(t => {
-  t.addEventListener("click", () => {
-    tabs.forEach(x => x.classList.remove("active"));
-    t.classList.add("active");
-    const key = t.dataset.screen;
-    Object.values(screens).forEach(s => s.classList.remove("active"));
-    screens[key].classList.add("active");
-  });
-});
-
-// ====== Fill selects ======
-function fillSelect(selectEl, items){
-  selectEl.innerHTML = "";
-  items.forEach(it => {
-    const opt = document.createElement("option");
-    opt.value = it.id;
-    opt.textContent = it.name;
-    selectEl.appendChild(opt);
-  });
-}
-
-fillSelect(giveSelect, BANKS);
-fillSelect(getSelect, CRYPTO);
-
-// default
-giveSelect.value = "privat";
-getSelect.value = "btc";
-
-function findBank(id){ return BANKS.find(x=>x.id===id) || BANKS[0]; }
-function findCrypto(id){ return CRYPTO.find(x=>x.id===id) || CRYPTO[0]; }
-
-function setIcons(){
-  const b = findBank(giveSelect.value);
-  const c = findCrypto(getSelect.value);
-  giveIcon.src = b.icon;
-  getIcon.src  = c.icon;
-}
-
-function safeNumber(v){
-  const s = String(v).replace(",", ".").replace(/[^\d.]/g,"");
-  const n = Number(s);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function formatOut(n){
-  if (!Number.isFinite(n)) return "0";
-  // для крипты — до 10 знаков, без лишних нулей
-  return n.toFixed(10).replace(/0+$/,"").replace(/\.$/,"");
-}
-
-function recalc(){
-  const amountUAH = safeNumber(giveAmount.value);
-  const c = findCrypto(getSelect.value);
-  const out = amountUAH * (c.ratePerUAH ?? 0);
-  getAmount.value = formatOut(out);
-
-  const sym = c.symbol || "CRYPTO";
-  rateLine.textContent = `Курс: 1 UAH ≈ ${formatOut(c.ratePerUAH ?? 0)} ${sym}`;
-}
-
-giveSelect.addEventListener("change", () => { setIcons(); });
-getSelect.addEventListener("change", () => { setIcons(); recalc(); });
-giveAmount.addEventListener("input", () => { recalc(); });
-
-// ====== Swap ======
-swapBtn.addEventListener("click", () => {
-  // В этой версии swap меняет местами только значения (визуально),
-  // но оставляет "UAH -> Crypto" логику.
-  // Если хочешь реальный swap (crypto->uah), скажешь — добавлю.
-  const oldBank = giveSelect.value;
-  const oldCrypto = getSelect.value;
-
-  // мини-эффект без лагов
-  swapBtn.style.transform = "scale(0.98)";
-  setTimeout(()=> swapBtn.style.transform = "", 120);
-
-  // просто поменяем выборы местами логически нельзя, поэтому делаем: сброс к дефолту
-  giveSelect.value = oldBank;
-  getSelect.value = oldCrypto;
-  setIcons();
-  recalc();
-});
-
-// ====== Submit ======
-submitBtn.addEventListener("click", () => {
-  const b = findBank(giveSelect.value);
-  const c = findCrypto(getSelect.value);
-  const amountUAH = safeNumber(giveAmount.value);
-
-  if (amountUAH <= 0) {
-    alert("Введіть суму більше 0");
-    return;
-  }
-
-  const order = {
-    give: { method: b.name, amount: amountUAH, currency: "UAH" },
-    get:  { asset: c.name, amount: getAmount.value, symbol: c.symbol },
-    rate: c.ratePerUAH,
-    lang: langLabel.textContent,
-    ts: Date.now()
+  // Твои пути (ВАЖНО: без ведущего / )
+  const PATHS = {
+    logo: "logos/keks-logo.png",
+    banks: "logos/banks/",
+    crypto: "logos/crypto/",
+    wallets: "logos/wallets/",
   };
 
-  console.log("ORDER:", order);
-  alert("Заявку створено (демо). Наступний крок — додамо форму реквізитів і підтвердження.");
-});
+  // Единый список (банки + крипта + кошельки)
+  // filename должен совпадать с тем, что у тебя в репе
+  const OPTIONS = [
+    { group: "Банки UAH", value: "bank:privat", label: "PrivatBank (UAH)", icon: PATHS.banks + "privat.png" },
+    { group: "Банки UAH", value: "bank:mono", label: "Monobank (UAH)", icon: PATHS.banks + "mono.png" },
+    { group: "Банки UAH", value: "bank:oschad", label: "Oschadbank (UAH)", icon: PATHS.banks + "oschad.png" },
+    { group: "Банки UAH", value: "bank:pumb", label: "PUMB (UAH)", icon: PATHS.banks + "pumb.png" },
+    { group: "Банки UAH", value: "bank:a-bank", label: "A-Bank (UAH)", icon: PATHS.banks + "a-bank.png" },
+    { group: "Банки UAH", value: "bank:otp", label: "OTP (UAH)", icon: PATHS.banks + "otp.png" },
+    { group: "Банки UAH", value: "bank:izi", label: "IziBank (UAH)", icon: PATHS.banks + "izi.png" },
+    { group: "Банки UAH", value: "bank:sense", label: "Sense (UAH)", icon: PATHS.banks + "sense.png" },
+    { group: "Банки UAH", value: "bank:ukr-sib", label: "UkrSib (UAH)", icon: PATHS.banks + "ukr-sib.png" },
+    { group: "Банки UAH", value: "bank:ukr-banki", label: "UkrBanki (UAH)", icon: PATHS.banks + "ukr-banki.png" },
+    { group: "Банки UAH", value: "bank:visa-master", label: "Visa/Master (UAH)", icon: PATHS.banks + "visa-master.png" },
+    { group: "Банки UAH", value: "bank:reyf", label: "Reyf (UAH)", icon: PATHS.banks + "reyf.png" },
 
-// init
-setIcons();
-recalc();
+    { group: "Crypto", value: "crypto:btc", label: "Bitcoin (BTC)", icon: PATHS.crypto + "btc.png" },
+    { group: "Crypto", value: "crypto:eth", label: "Ethereum (ETH)", icon: PATHS.crypto + "eth.png" },
+    { group: "Crypto", value: "crypto:ltc", label: "Litecoin (LTC)", icon: PATHS.crypto + "ltc.png" },
+    { group: "Crypto", value: "crypto:sol", label: "Solana (SOL)", icon: PATHS.crypto + "sol.png" },
+    { group: "Crypto", value: "crypto:ton", label: "TON (TON)", icon: PATHS.crypto + "ton.png" },
+    { group: "Crypto", value: "crypto:trx", label: "TRON (TRX)", icon: PATHS.crypto + "trx.png" },
+    { group: "Stable", value: "crypto:usdt", label: "Tether (USDT)", icon: PATHS.crypto + "tether-usdt.png" },
+    { group: "Stable", value: "crypto:usdc-eth", label: "USDC (ETH)", icon: PATHS.crypto + "usdc-eth.png" },
+    { group: "Stable", value: "crypto:usdc-pol", label: "USDC (POL)", icon: PATHS.crypto + "usdc-pol.png" },
+    { group: "Stable", value: "crypto:usdc-sol", label: "USDC (SOL)", icon: PATHS.crypto + "usdc-sol.png" },
+    { group: "Stable", value: "crypto:usdt-eth", label: "USDT (ETH)", icon: PATHS.crypto + "usdt-eth.png" },
+    { group: "Stable", value: "crypto:usdt-trc", label: "USDT (TRC)", icon: PATHS.crypto + "usdt-trc.png" },
+    { group: "Stable", value: "crypto:usdt-pol", label: "USDT (POL)", icon: PATHS.crypto + "usdt-pol.png" },
+    { group: "Stable", value: "crypto:usdt-sol", label: "USDT (SOL)", icon: PATHS.crypto + "usdt-sol.png" },
+    { group: "Stable", value: "crypto:usdt-arb", label: "USDT (ARB)", icon: PATHS.crypto + "usdt-arb.png" },
+    { group: "Stable", value: "crypto:usdt-bep", label: "USDT (BEP)", icon: PATHS.crypto + "usdt-bep.png" },
+
+    { group: "Wallets", value: "wallet:paypal", label: "PayPal", icon: PATHS.wallets + "paypal.png" },
+    { group: "Wallets", value: "wallet:payoneer", label: "Payoneer", icon: PATHS.wallets + "payoneer.png" },
+    { group: "Wallets", value: "wallet:revolut", label: "Revolut", icon: PATHS.wallets + "revolut.png" },
+    { group: "Wallets", value: "wallet:valet", label: "Valet", icon: PATHS.wallets + "valet.png" },
+    { group: "Wallets", value: "wallet:vise", label: "Vise", icon: PATHS.wallets + "vise.png" },
+  ];
+
+  const state = {
+    lang: "UA",
+    give: "bank:privat",
+    get: "crypto:btc",
+    giveAmount: 100,
+    rateText: "Курс: —",
+  };
+
+  function groupedOptions() {
+    const groups = {};
+    for (const o of OPTIONS) {
+      groups[o.group] = groups[o.group] || [];
+      groups[o.group].push(o);
+    }
+    return groups;
+  }
+
+  function optionByValue(v) {
+    return OPTIONS.find(x => x.value === v) || OPTIONS[0];
+  }
+
+  function render() {
+    const app = $("#app");
+    if (!app) return;
+
+    app.innerHTML = `
+      <div class="header">
+        <div class="headerTop">
+          <div class="brand">
+            <img class="brandLogo" src="./${PATHS.logo}" alt="KeksSwap" />
+          </div>
+
+          <select class="langSelect" id="lang">
+            <option value="UA">UA</option>
+            <option value="EN">EN</option>
+            <option value="PL">PL</option>
+          </select>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="swap">Обмін</button>
+          <button class="tab" data-tab="rules">Правила</button>
+          <button class="tab" data-tab="faq">FAQ</button>
+          <button class="tab" data-tab="acc">Акаунт</button>
+        </div>
+      </div>
+
+      <div class="card" id="screen"></div>
+    `;
+
+    $("#lang").value = state.lang;
+
+    // Tabs (без роутинга, чтобы не глючило)
+    app.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        app.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        showScreen(btn.dataset.tab);
+      });
+    });
+
+    $("#lang").addEventListener("change", (e) => {
+      state.lang = e.target.value;
+    });
+
+    showScreen("swap");
+
+    // Telegram WebApp (не обязательно, но полезно)
+    try {
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.expand();
+      }
+    } catch (_) {}
+  }
+
+  function buildSelectHTML(id, value) {
+    const groups = groupedOptions();
+    let html = `<select id="${id}">`;
+    for (const g of Object.keys(groups)) {
+      html += `<option disabled>— ${g} —</option>`;
+      for (const o of groups[g]) {
+        const sel = o.value === value ? "selected" : "";
+        html += `<option value="${o.value}" ${sel}>${o.label}</option>`;
+      }
+    }
+    html += `</select>`;
+    return html;
+  }
+
+  function showScreen(name) {
+    const screen = $("#screen");
+    if (!screen) return;
+
+    if (name === "swap") {
+      const giveOpt = optionByValue(state.give);
+      const getOpt  = optionByValue(state.get);
+
+      screen.innerHTML = `
+        <div class="sectionTitle">Віддаєте</div>
+        <div class="row">
+          <div class="picker">
+            <div class="icon"><img src="./${giveOpt.icon}" alt=""></div>
+            ${buildSelectHTML("giveSelect", state.give)}
+          </div>
+        </div>
+        <input class="amount" id="giveAmount" inputmode="decimal" value="${state.giveAmount}" />
+
+        <div class="swapWrap">
+          <button class="swapBtn" id="swapBtn" aria-label="swap"><span>⇄</span></button>
+        </div>
+
+        <div class="sectionTitle">Отримуєте</div>
+        <div class="row">
+          <div class="picker">
+            <div class="icon"><img src="./${getOpt.icon}" alt=""></div>
+            ${buildSelectHTML("getSelect", state.get)}
+          </div>
+        </div>
+        <input class="amount" id="getAmount" value="—" readonly />
+
+        <div class="rate" id="rateText">${state.rateText}</div>
+
+        <button class="primary" id="createBtn">Створити заявку</button>
+      `;
+
+      // Handlers
+      $("#giveSelect").addEventListener("change", (e) => {
+        state.give = e.target.value;
+        showScreen("swap"); // перерисовать (чтобы иконка обновилась)
+      });
+
+      $("#getSelect").addEventListener("change", (e) => {
+        state.get = e.target.value;
+        showScreen("swap");
+      });
+
+      $("#swapBtn").addEventListener("click", () => {
+        const tmp = state.give;
+        state.give = state.get;
+        state.get = tmp;
+        showScreen("swap");
+      });
+
+      $("#giveAmount").addEventListener("input", (e) => {
+        const v = String(e.target.value).replace(",", ".");
+        const num = Number(v);
+        state.giveAmount = Number.isFinite(num) ? num : 0;
+        // пока без авто-курса: просто зеркалим примером
+        $("#getAmount").value = "—";
+      });
+
+      $("#createBtn").addEventListener("click", () => {
+        // пока заглушка
+        alert("Заявка створена (заглушка). Далі підключимо авто-курс і реальну логіку.");
+      });
+
+      return;
+    }
+
+    if (name === "rules") {
+      screen.innerHTML = `
+        <div style="font-weight:900;font-size:28px;margin:4px 0 10px;">Правила</div>
+        <div style="color:var(--muted);font-weight:700;line-height:1.4;">
+          Тут будуть правила обміну (поки заглушка).
+        </div>
+      `;
+      return;
+    }
+
+    if (name === "faq") {
+      screen.innerHTML = `
+        <div style="font-weight:900;font-size:28px;margin:4px 0 10px;">FAQ</div>
+        <div style="color:var(--muted);font-weight:700;line-height:1.4;">
+          Тут будуть відповіді на питання (поки заглушка).
+        </div>
+      `;
+      return;
+    }
+
+    if (name === "acc") {
+      screen.innerHTML = `
+        <div style="font-weight:900;font-size:28px;margin:4px 0 10px;">Акаунт</div>
+        <div style="color:var(--muted);font-weight:700;line-height:1.4;margin-bottom:12px;">
+          Тут буде вхід/реєстрація і далі KYC (поки без підключення).
+        </div>
+        <div class="row">
+          <button class="primary" style="flex:1;height:44px;">Увійти</button>
+          <button class="tab" style="flex:1;height:44px;">Реєстрація</button>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  // Старт
+  document.addEventListener("DOMContentLoaded", render);
+
+  // Если css/js не грузится из-за кэша Telegram — меняй ?v=число в index.html
+})();
