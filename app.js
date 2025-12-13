@@ -1,7 +1,7 @@
 (() => {
   const tg = window.Telegram?.WebApp;
 
-  // ---------- Telegram safe areas ----------
+  // -------- Telegram safe areas --------
   function initTelegram() {
     if (!tg) return;
     try { tg.ready(); } catch {}
@@ -17,12 +17,12 @@
     try { tg.setBackgroundColor?.('#f5f6fb'); } catch {}
   }
 
-  // ---------- Helpers ----------
+  // -------- Helpers --------
   const $ = (sel, root = document) => root.querySelector(sel);
-  const el = (tag, cls, attrs = {}) => {
+  const el = (tag, cls, props = {}) => {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
-    for (const [k, v] of Object.entries(attrs)) {
+    for (const [k, v] of Object.entries(props)) {
       if (k === 'text') n.textContent = v;
       else if (k === 'html') n.innerHTML = v;
       else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
@@ -32,11 +32,9 @@
   };
 
   const clampNum = (x) => (Number.isFinite(x) ? x : 0);
+
   const parseAmount = (s) => {
-    if (typeof s !== 'string') s = String(s ?? '');
-    // допускаем запятую
-    s = s.replace(/\s+/g, '').replace(',', '.');
-    // оставляем только цифры и одну точку
+    s = String(s ?? '').replace(/\s+/g, '').replace(',', '.');
     s = s.replace(/[^0-9.]/g, '');
     const parts = s.split('.');
     if (parts.length > 2) s = parts[0] + '.' + parts.slice(1).join('');
@@ -46,98 +44,19 @@
 
   const fmt = (v, decimals = 8) => {
     if (!Number.isFinite(v)) return '';
-    // если большое — без лишних нулей
     if (v >= 1000) return String(Math.round(v));
-    // если UAH/fiat — 2 знака
     return v.toFixed(decimals).replace(/\.?0+$/, '');
   };
 
-  // ---------- Minimal extra CSS (logo+font) ----------
-  function injectExtraCss() {
-    const style = el('style', null, {
-      html: `
-      .brandRow{
-        display:flex; align-items:flex-end; gap:10px; min-width:0;
-      }
-      .brandImg{
-        width:46px; height:46px; border-radius:14px;
-        background: rgba(255,255,255,.8);
-        border:1px solid rgba(15,23,42,.10);
-        box-shadow: 0 12px 22px rgba(17,24,39,.10);
-        object-fit: contain;
-        padding:6px;
-        flex: 0 0 auto;
-      }
-      .brandName{
-        font-family: "Tristan", Georgia, serif;
-        font-weight: 900;
-        font-size: 44px;
-        line-height: 0.9;
-        letter-spacing: .5px;
-        white-space:nowrap;
-      }
-      .brandName .shine{
-        background: linear-gradient(90deg, rgba(15,23,42,.95), rgba(15,23,42,.95), rgba(107,92,255,.85), rgba(15,23,42,.95));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        background-size: 260% 100%;
-        animation: ksShine 3.6s ease-in-out infinite;
-      }
-      @keyframes ksShine{
-        0%{ background-position: 0% 50%; }
-        50%{ background-position: 100% 50%; }
-        100%{ background-position: 0% 50%; }
-      }
-      .brandTap{
-        cursor:pointer;
-        transform-origin:left bottom;
-      }
-      .brandTap.tap{
-        animation: ksTap 420ms ease-in-out;
-      }
-      @keyframes ksTap{
-        0%{ transform: scale(1) translateX(0); }
-        30%{ transform: scale(1.02) translateX(2px); }
-        60%{ transform: scale(1.01) translateX(-2px); }
-        100%{ transform: scale(1) translateX(0); }
-      }
-      /* чтобы логотип не залезал под кнопку "Закрити" */
-      .headerInner{ padding-top: 16px !important; }
-
-      /* иконки в селекте — чтобы не обрубались */
-      .selLeft img{
-        width:44px; height:44px; border-radius: 14px;
-        object-fit: contain;
-        background: rgba(255,255,255,.85);
-        border:1px solid rgba(15,23,42,.10);
-        padding:6px;
-        flex:0 0 auto;
-      }
-
-      /* иконки в списке модалки нормальные */
-      .item img{
-        width:44px; height:44px; border-radius: 14px;
-        object-fit: contain;
-        background: rgba(255,255,255,.85);
-        border:1px solid rgba(15,23,42,.10);
-        padding:6px;
-        flex:0 0 auto;
-      }
-      `
-    });
-    document.head.appendChild(style);
-  }
-
-  // ---------- Data ----------
+  // -------- Paths --------
   const LOGO = {
-    brand: './logo.png',
+    header: './logo.png', // ✅ твой logo.png
     banksDir: './logos/banks/',
     walletsDir: './logos/wallets/',
     cryptoDir: './logos/crypto/',
   };
 
-  // rateUAH = стоимость 1 единицы актива в UAH (для банков UAH = 1)
+  // -------- Data --------
   const GROUPS = [
     {
       id: 'banks',
@@ -208,512 +127,806 @@
     }
   ];
 
-  const ALL_ITEMS = GROUPS.flatMap(g => g.items.map(it => ({...it, groupId: g.id, groupIcon:g.icon, groupTitle:g.title})));
+  const ALL_ITEMS = GROUPS.flatMap(g => g.items.map(it => ({
+    ...it,
+    groupId: g.id,
+    groupTitle: g.title,
+    groupSubtitle: g.subtitle,
+  })));
 
-  function findItemById(id) {
-    return ALL_ITEMS.find(x => x.id === id) || ALL_ITEMS[0];
-  }
+  const findItem = (id) => ALL_ITEMS.find(x => x.id === id) || ALL_ITEMS[0];
 
-  // ---------- State ----------
+  // -------- State --------
   const state = {
     lang: 'ua',
-    tab: 'exchange', // exchange|rules|faq|contacts|account
+    tab: 'exchange',
     feePct: 2.5,
-    from: findItemById('mono'),
-    to: findItemById('btc'),
+
+    from: findItem('mono'),
+    to: findItem('btc'),
+
     fromAmount: 1000,
     toAmount: 0,
-    editing: 'from', // 'from'|'to'
+
     modalOpen: false,
-    modalFor: null, // 'from'|'to'
+    modalSide: 'from', // 'from' | 'to'
     search: '',
   };
 
-  // ---------- UI refs ----------
-  const refs = {};
+  // -------- Texts --------
+  const T = {
+    exchange: { ua:'Обмін', en:'Exchange', pl:'Wymiana' },
+    rules: { ua:'Правила', en:'Rules', pl:'Zasady' },
+    faq: { ua:'FAQ', en:'FAQ', pl:'FAQ' },
+    contacts: { ua:'Контакти', en:'Contacts', pl:'Kontakty' },
+    account: { ua:'Акаунт', en:'Account', pl:'Konto' },
 
-  // ---------- Calc ----------
-  function recalc() {
-    const fee = state.feePct / 100;
-    const fromRate = clampNum(state.from.rateUAH);
-    const toRate = clampNum(state.to.rateUAH);
+    give: { ua:'Віддаєте', en:'You send', pl:'Wysyłasz' },
+    get:  { ua:'Отримуєте', en:'You get',  pl:'Otrzymujesz' },
+    search: { ua:'Пошук...', en:'Search...', pl:'Szukaj...' },
 
-    if (fromRate <= 0 || toRate <= 0) return;
+    rate: { ua:'Курс', en:'Rate', pl:'Kurs' },
+    fee: { ua:'Комісія сервісу', en:'Service fee', pl:'Prowizja' },
 
-    // конвертируем через UAH
-    if (state.editing === 'from') {
-      const amount = clampNum(state.fromAmount);
-      const uah = amount * fromRate;
-      const uahNet = uah * (1 - fee);
-      const out = uahNet / toRate;
-      state.toAmount = out;
-    } else {
-      const amount = clampNum(state.toAmount);
-      const uah = amount * toRate;
-      const uahGross = uah / (1 - fee);
-      const out = uahGross / fromRate;
-      state.fromAmount = out;
-    }
+    continue: { ua:'Продовжити', en:'Continue', pl:'Dalej' },
+
+    login: { ua:'Увійти', en:'Sign in', pl:'Zaloguj' },
+    register: { ua:'Реєстрація', en:'Register', pl:'Rejestracja' },
+  };
+
+  const tr = (key) => (T[key]?.[state.lang] ?? T[key]?.ua ?? key);
+
+  // -------- Calculate --------
+  function calcToFromUAH(item) {
+    // item.rateUAH = сколько UAH за 1 unit
+    return clampNum(item.rateUAH || 0);
   }
 
-  // ---------- Render once (no re-render on typing) ----------
-  function buildApp() {
-    const app = $('#app');
-    app.innerHTML = '';
+  function recalcFromAmount() {
+    const a = clampNum(state.fromAmount);
+    const fromUAH = calcToFromUAH(state.from);
+    const toUAH = calcToFromUAH(state.to);
 
-    const wrap = el('div', 'wrap');
-    app.appendChild(wrap);
+    if (!fromUAH || !toUAH) {
+      state.toAmount = 0;
+      return;
+    }
 
-    // Sticky header
-    const header = el('div', 'header');
-    const headerInner = el('div', 'headerInner');
-    header.appendChild(headerInner);
-    wrap.appendChild(header);
+    // Convert: amount(from) -> UAH -> to
+    const uah = a * fromUAH;
+    const grossTo = uah / toUAH;
 
-    // Brand
-    const brandRow = el('div', 'brandRow brandTap');
-    const logoImg = el('img', 'brandImg', { src: LOGO.brand, alt: 'KeksSwap' });
-    const brandName = el('div', 'brandName', { html: `<span class="shine">KeksSwap</span>` });
-    brandRow.appendChild(logoImg);
-    brandRow.appendChild(brandName);
+    const fee = (grossTo * state.feePct) / 100;
+    state.toAmount = Math.max(0, grossTo - fee);
+  }
 
-    // tap animation
-    brandRow.addEventListener('click', () => {
-      brandRow.classList.remove('tap');
-      void brandRow.getBoundingClientRect();
-      brandRow.classList.add('tap');
-    });
+  function recalcToAmount() {
+    const b = clampNum(state.toAmount);
+    const fromUAH = calcToFromUAH(state.from);
+    const toUAH = calcToFromUAH(state.to);
 
-    headerInner.appendChild(brandRow);
+    if (!fromUAH || !toUAH) {
+      state.fromAmount = 0;
+      return;
+    }
 
-    // Lang buttons
-    const lang = el('div', 'lang');
-    const btnUA = el('button', '', { text: 'UA' });
-    const btnEN = el('button', '', { text: 'EN' });
-    const btnPL = el('button', '', { text: 'PL' });
-    lang.append(btnUA, btnEN, btnPL);
+    // reverse: to -> uah -> from, учитывая комиссию
+    // grossTo = b / (1 - feePct)
+    const k = 1 - state.feePct / 100;
+    const grossTo = k > 0 ? b / k : 0;
 
-    headerInner.appendChild(lang);
+    const uah = grossTo * toUAH;
+    state.fromAmount = uah / fromUAH;
+  }
 
-    // Menu row (1 line)
-    const menu = el('div', 'topMenu');
-    const tabs = [
-      { id:'exchange', label:{ua:'Обмін', en:'Exchange', pl:'Wymiana'} },
-      { id:'rules', label:{ua:'Правила', en:'Rules', pl:'Zasady'} },
-      { id:'faq', label:{ua:'FAQ', en:'FAQ', pl:'FAQ'} },
-      { id:'contacts', label:{ua:'Контакти', en:'Contacts', pl:'Kontakt'} },
-      { id:'account', label:{ua:'Акаунт', en:'Account', pl:'Konto'} },
-    ];
-    const tabBtns = {};
-    tabs.forEach(t => {
-      const b = el('button', 'tab', { text: t.label[state.lang] });
-      b.addEventListener('click', () => {
-        state.tab = t.id;
-        updateTabs();
-        updatePage();
-      });
-      tabBtns[t.id] = b;
-      menu.appendChild(b);
-    });
-    wrap.appendChild(menu);
+  // -------- UI / CSS --------
+  function injectCss() {
+    const css = `
+      :root{
+        --safeTop: 10px;
+        --safeBottom: 14px;
+      }
+
+      /* шапка БЕЗ отдельного фона: просто прозрачная */
+      .ks-header{
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding-top: var(--safeTop);
+        padding-bottom: 10px;
+        background: transparent;
+      }
+
+      .ks-top{
+        display:flex;
+        align-items:flex-end;
+        justify-content:space-between;
+        gap: 10px;
+        padding: 14px 14px 6px 14px;
+      }
+
+      .ks-brand{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        min-width: 0;
+        padding-top: 12px; /* ✅ логотип ниже кнопки “Закрити” */
+      }
+
+      .ks-brand img{
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        object-fit: contain;
+        background: transparent;
+      }
+
+      .ks-title{
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: 42px; /* ✅ побольше */
+        line-height: 1;
+        color: #1b1e2b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transform: translateY(2px);
+        animation: ksTitleIn 600ms cubic-bezier(.2,.9,.2,1) both;
+      }
+      @keyframes ksTitleIn {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: translateY(2px); opacity: 1; }
+      }
+
+      .ks-lang{
+        display:flex;
+        gap: 6px;
+        padding-bottom: 2px;
+        transform: translateY(10px); /* ✅ опустили ниже чтобы не залазили на текст */
+      }
+
+      .ks-lang button{
+        border: 0;
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.65);
+        color: #1b1e2b;
+        font-weight: 800;
+        font-size: 13px; /* ✅ меньше */
+        box-shadow: 0 8px 20px rgba(2,6,23,.08);
+      }
+      .ks-lang button.active{
+        color: #fff;
+        background: linear-gradient(90deg, #6d5efc, #8b5cf6, #6d5efc);
+        background-size: 220% 220%;
+        animation: ksGrad 2.8s ease-in-out infinite;
+      }
+      @keyframes ksGrad {
+        0%{ background-position: 0% 50%; }
+        50%{ background-position: 100% 50%; }
+        100%{ background-position: 0% 50%; }
+      }
+
+      /* меню в один ряд и влазит: горизонтальный скролл */
+      .ks-menu{
+        display:flex;
+        gap: 8px;
+        padding: 0 14px 8px 14px;
+        overflow-x:auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .ks-menu::-webkit-scrollbar{ display:none; }
+      .ks-menu button{
+        flex: 0 0 auto;
+        border: 0;
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-weight: 900;
+        background: rgba(255,255,255,.65);
+        box-shadow: 0 10px 25px rgba(2,6,23,.08);
+        color: #1b1e2b;
+        white-space: nowrap;
+      }
+      .ks-menu button.active{
+        color:#fff;
+        background: linear-gradient(90deg, #6d5efc, #8b5cf6, #6d5efc);
+        background-size: 220% 220%;
+        animation: ksGrad 2.8s ease-in-out infinite;
+      }
+
+      .ks-wrap{
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 10px 14px calc(var(--safeBottom) + 18px) 14px;
+      }
+
+      .ks-card{
+        background: rgba(255,255,255,.65);
+        border-radius: 28px;
+        box-shadow: 0 20px 45px rgba(2,6,23,.12);
+        padding: 18px;
+        backdrop-filter: blur(10px);
+      }
+
+      .ks-h1{
+        font-size: 52px;
+        letter-spacing: -1px;
+        margin: 0 0 10px 0;
+        color: #0f172a;
+      }
+
+      .ks-label{
+        font-size: 28px;
+        font-weight: 900;
+        color: #475569;
+        margin: 10px 0 8px 0;
+      }
+
+      .ks-field{
+        background: rgba(255,255,255,.8);
+        border: 2px solid rgba(148,163,184,.35);
+        border-radius: 22px;
+        padding: 12px 14px;
+        display:flex;
+        align-items:center;
+        gap: 12px;
+      }
+
+      .ks-pick{
+        width: 100%;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        cursor:pointer;
+      }
+
+      .ks-left{
+        display:flex; align-items:center; gap: 12px; min-width: 0;
+      }
+
+      .ks-icon{
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        object-fit: contain;
+        background: transparent;
+        flex: 0 0 auto;
+      }
+
+      .ks-name{
+        font-weight: 900;
+        font-size: 26px;
+        color: #0f172a;
+        line-height: 1.05;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ks-sub{
+        font-weight: 900;
+        font-size: 18px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+
+      .ks-chevron{
+        font-size: 18px;
+        color: #0f172a;
+        opacity: .75;
+        padding-right: 6px;
+      }
+
+      /* ✅ порядок: сначала выбор валюты, под ним сумма */
+      .ks-amount{
+        width: 100%;
+        background: rgba(255,255,255,.8);
+        border: 2px solid rgba(148,163,184,.35);
+        border-radius: 22px;
+        padding: 14px 16px;
+        font-size: 42px;
+        font-weight: 900;
+        outline: none;
+        color:#0f172a;
+      }
+
+      .ks-swapRow{
+        display:flex;
+        justify-content:center;
+        margin: 14px 0;
+      }
+
+      .ks-swapBtn{
+        width: 68px;
+        height: 68px;
+        border-radius: 22px;
+        border: 0;
+        cursor: pointer;
+        box-shadow: 0 18px 38px rgba(109,94,252,.25);
+        background: linear-gradient(90deg, #6d5efc, #8b5cf6, #6d5efc);
+        background-size: 220% 220%;
+        animation: ksGrad 2.8s ease-in-out infinite;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .ks-swapBtn svg{ width: 30px; height: 30px; }
+
+      .ks-meta{
+        margin-top: 14px;
+        color:#475569;
+        font-weight: 800;
+        font-size: 16px;
+        line-height: 1.35;
+      }
+
+      .ks-cta{
+        margin-top: 14px;
+        width: 100%;
+        border: 0;
+        border-radius: 22px;
+        padding: 16px 18px;
+        font-weight: 1000;
+        font-size: 18px;
+        color:#fff;
+        background: linear-gradient(90deg, #6d5efc, #8b5cf6, #6d5efc);
+        background-size: 220% 220%;
+        animation: ksGrad 2.8s ease-in-out infinite;
+        box-shadow: 0 18px 38px rgba(109,94,252,.25);
+      }
+
+      /* Modal bottom sheet */
+      .ks-modalBack{
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.35);
+        z-index: 80;
+        display:none;
+      }
+      .ks-modalBack.open{ display:block; }
+
+      .ks-sheet{
+        position:absolute;
+        left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,.92);
+        border-radius: 26px 26px 0 0;
+        box-shadow: 0 -22px 55px rgba(2,6,23,.25);
+        padding: 14px 14px calc(var(--safeBottom) + 12px) 14px;
+        max-height: 82vh;
+        overflow: hidden;
+      }
+
+      .ks-sheetTop{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+      }
+      .ks-sheetTop h3{
+        margin: 0;
+        font-size: 28px;
+        font-weight: 1000;
+        color:#0f172a;
+      }
+      .ks-x{
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        border: 0;
+        background: rgba(255,255,255,.9);
+        box-shadow: 0 10px 25px rgba(2,6,23,.10);
+        font-size: 22px;
+      }
+
+      .ks-search{
+        margin-top: 12px;
+        width: 100%;
+        border: 2px solid rgba(148,163,184,.35);
+        border-radius: 18px;
+        padding: 12px 14px;
+        font-size: 18px;
+        font-weight: 800;
+        outline:none;
+      }
+
+      .ks-list{
+        margin-top: 10px;
+        overflow:auto;
+        max-height: calc(82vh - 150px);
+        padding-right: 4px;
+      }
+
+      .ks-item{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        padding: 12px 12px;
+        border-radius: 18px;
+        background: rgba(255,255,255,.9);
+        box-shadow: 0 10px 24px rgba(2,6,23,.06);
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+      .ks-item .right{
+        opacity: .55;
+        font-weight: 1000;
+      }
+
+      /* не даём шапке наезжать на системные зоны */
+      body{ padding-top: 0 !important; }
+    `;
+    document.head.appendChild(el('style', null, { html: css }));
+  }
+
+  // -------- Build UI (one-time, no rerender inputs) --------
+  let ui = {};
+
+  function build() {
+    const root = $('#app');
+    root.innerHTML = '';
+
+    // Header
+    const header = el('div', 'ks-header');
+
+    const top = el('div', 'ks-top');
+
+    const brand = el('div', 'ks-brand');
+    const logo = el('img', null, { src: LOGO.header, alt: 'KeksSwap' });
+    const title = el('div', 'ks-title', { text: 'KeksSwap' });
+
+    brand.appendChild(logo);
+    brand.appendChild(title);
+
+    const lang = el('div', 'ks-lang');
+    const btnUA = el('button', null, { text: 'UA', onclick: () => setLang('ua') });
+    const btnEN = el('button', null, { text: 'EN', onclick: () => setLang('en') });
+    const btnPL = el('button', null, { text: 'PL', onclick: () => setLang('pl') });
+    lang.appendChild(btnUA); lang.appendChild(btnEN); lang.appendChild(btnPL);
+
+    top.appendChild(brand);
+    top.appendChild(lang);
+
+    // Menu row
+    const menu = el('div', 'ks-menu');
+    const mExchange = el('button', null, { onclick: () => setTab('exchange') });
+    const mRules = el('button', null, { onclick: () => setTab('rules') });
+    const mFaq = el('button', null, { onclick: () => setTab('faq') });
+    const mContacts = el('button', null, { onclick: () => setTab('contacts') });
+    const mAccount = el('button', null, { onclick: () => setTab('account') });
+
+    menu.appendChild(mExchange);
+    menu.appendChild(mRules);
+    menu.appendChild(mFaq);
+    menu.appendChild(mContacts);
+    menu.appendChild(mAccount);
+
+    header.appendChild(top);
+    header.appendChild(menu);
 
     // Main
-    const main = el('div', 'main');
-    wrap.appendChild(main);
+    const wrap = el('div', 'ks-wrap');
 
-    // Pages containers
-    const pageExchange = el('div', '');
-    const pageRules = el('div', '');
-    const pageFaq = el('div', '');
-    const pageContacts = el('div', '');
-    const pageAccount = el('div', '');
+    const card = el('div', 'ks-card');
 
-    main.append(pageExchange, pageRules, pageFaq, pageContacts, pageAccount);
+    const h1 = el('div', 'ks-h1');
+    const giveLabel = el('div', 'ks-label');
+    const getLabel = el('div', 'ks-label');
 
-    // ---------- Exchange page ----------
-    const exCard = el('div', 'card');
-    pageExchange.appendChild(exCard);
+    // --- GIVE (currency first, then input) ---
+    const givePick = el('div', 'ks-field');
+    const givePickInner = el('div', 'ks-pick', { onclick: () => openModal('from') });
+    const giveLeft = el('div', 'ks-left');
+    const giveIcon = el('img', 'ks-icon', { alt: '' });
+    const giveTexts = el('div', null);
+    const giveName = el('div', 'ks-name');
+    const giveSub = el('div', 'ks-sub');
+    giveTexts.appendChild(giveName);
+    giveTexts.appendChild(giveSub);
+    giveLeft.appendChild(giveIcon);
+    giveLeft.appendChild(giveTexts);
+    const giveChevron = el('div', 'ks-chevron', { text: '▾' });
+    givePickInner.appendChild(giveLeft);
+    givePickInner.appendChild(giveChevron);
+    givePick.appendChild(givePickInner);
 
-    const h1 = el('div', 'h1', { text: t('Обмін', 'Exchange', 'Wymiana') });
-    exCard.appendChild(h1);
-
-    // FROM
-    const hFrom = el('div', 'h2', { text: t('Віддаєте', 'You send', 'Wysyłasz') });
-    exCard.appendChild(hFrom);
-
-    const fromField = el('div', 'field');
-    exCard.appendChild(fromField);
-
-    // select first
-    const fromSelect = createSelectBtn(state.from, () => openModal('from'));
-    fromField.appendChild(fromSelect);
-
-    // then input
-    const fromInput = el('input', 'input', { inputmode:'decimal', placeholder:'0' });
-    fromInput.value = String(state.fromAmount);
-    fromField.appendChild(fromInput);
-
-    // swap button
-    const swapBtn = el('button', 'swapBtn', { text: '⇵' });
-    swapBtn.addEventListener('click', () => {
-      const tmp = state.from;
-      state.from = state.to;
-      state.to = tmp;
-
-      // keep editing side same, just recalc
-      recalc();
-      updateExchangeUI();
+    const giveInput = el('input', 'ks-amount', { inputmode: 'decimal' });
+    giveInput.addEventListener('input', () => {
+      state.fromAmount = parseAmount(giveInput.value);
+      recalcFromAmount();
+      updateAmountsOnly();
     });
-    exCard.appendChild(swapBtn);
+    giveInput.addEventListener('focus', () => { state.editing = 'from'; });
 
-    // TO
-    const hTo = el('div', 'h2', { text: t('Отримуєте', 'You get', 'Otrzymujesz') });
-    exCard.appendChild(hTo);
+    // Swap
+    const swapRow = el('div', 'ks-swapRow');
+    const swapBtn = el('button', 'ks-swapBtn', {
+      onclick: () => {
+        const tmp = state.from;
+        state.from = state.to;
+        state.to = tmp;
 
-    const toField = el('div', 'field');
-    exCard.appendChild(toField);
+        const tmpA = state.fromAmount;
+        state.fromAmount = state.toAmount;
+        state.toAmount = tmpA;
 
-    const toSelect = createSelectBtn(state.to, () => openModal('to'));
-    toField.appendChild(toSelect);
-
-    const toInput = el('input', 'input', { inputmode:'decimal', placeholder:'0' });
-    toInput.value = fmt(state.toAmount, 8);
-    toField.appendChild(toInput);
-
-    // Continue button
-    const cont = el('button', 'primaryBtn', { text: t('Продовжити', 'Continue', 'Kontynuuj') });
-    cont.addEventListener('click', () => {
-      const fromName = `${state.from.name} ${state.from.sub}`;
-      const toName = `${state.to.name} ${state.to.sub}`;
-      const msg = `${t('Заявка:', 'Request:', 'Zgłoszenie:')} ${fromName} → ${toName}\n` +
-                  `${t('Сума:', 'Amount:', 'Kwota:')} ${fmt(state.fromAmount, 8)} ${state.from.sub}\n` +
-                  `${t('Комісія сервісу:', 'Service fee:', 'Prowizja:')} ${state.feePct}%\n` +
-                  `${t('До виплати:', 'To receive:', 'Do wypłaty:')} ${fmt(state.toAmount, 8)} ${state.to.sub}`;
-      // пока просто покажем alert, позже сделаем форму заявки
-      alert(msg);
-    });
-    exCard.appendChild(cont);
-
-    // Fix focus + calc without rerender
-    let lock = false;
-
-    fromInput.addEventListener('input', () => {
-      if (lock) return;
-      state.editing = 'from';
-      state.fromAmount = parseAmount(fromInput.value);
-      recalc();
-      lock = true;
-      toInput.value = fmt(state.toAmount, 8);
-      lock = false;
+        // после swap пересчитать “получаете”
+        recalcFromAmount();
+        updateAll();
+      }
     });
 
-    toInput.addEventListener('input', () => {
-      if (lock) return;
-      state.editing = 'to';
-      state.toAmount = parseAmount(toInput.value);
-      recalc();
-      lock = true;
-      fromInput.value = fmt(state.fromAmount, 8);
-      lock = false;
+    swapBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M7 7h12" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M15 3l4 4-4 4" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 17H5" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M9 21l-4-4 4-4" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+    swapRow.appendChild(swapBtn);
+
+    // --- GET (currency first, then input) ---
+    const getPick = el('div', 'ks-field');
+    const getPickInner = el('div', 'ks-pick', { onclick: () => openModal('to') });
+    const getLeft = el('div', 'ks-left');
+    const getIcon = el('img', 'ks-icon', { alt: '' });
+    const getTexts = el('div', null);
+    const getName = el('div', 'ks-name');
+    const getSub = el('div', 'ks-sub');
+    getTexts.appendChild(getName);
+    getTexts.appendChild(getSub);
+    getLeft.appendChild(getIcon);
+    getLeft.appendChild(getTexts);
+    const getChevron = el('div', 'ks-chevron', { text: '▾' });
+    getPickInner.appendChild(getLeft);
+    getPickInner.appendChild(getChevron);
+    getPick.appendChild(getPickInner);
+
+    const getInput = el('input', 'ks-amount', { inputmode: 'decimal' });
+    getInput.addEventListener('input', () => {
+      state.toAmount = parseAmount(getInput.value);
+      recalcToAmount();
+      updateAmountsOnly();
     });
+    getInput.addEventListener('focus', () => { state.editing = 'to'; });
 
-    // ---------- Other pages ----------
-    pageRules.appendChild(simpleCard(
-      t('Правила обміну', 'Exchange rules', 'Zasady wymiany'),
-      t(
-        'Тут буде сторінка правил. Поки що — макет у вашому стилі.',
-        'Rules page placeholder (same style).',
-        'Tutaj będą zasady — na razie szablon.'
-      )
-    ));
+    // Meta
+    const meta = el('div', 'ks-meta');
+    const btnContinue = el('button', 'ks-cta', { onclick: () => alert('Далі зробимо: створення заявки ✅') });
 
-    pageFaq.appendChild(simpleCard(
-      'FAQ',
-      t(
-        'Поширені питання (пізніше додамо реальний контент).',
-        'FAQ placeholder (we will add real content later).',
-        'FAQ (później dodamy treść).'
-      )
-    ));
+    // Assemble exchange card
+    card.appendChild(h1);
 
-    pageContacts.appendChild(simpleCard(
-      t('Контакти', 'Contacts', 'Kontakt'),
-      t(
-        'Telegram: @keksswap\nEmail: support@keksswap.com\n(замінити на свої)',
-        'Telegram: @keksswap\nEmail: support@keksswap.com\n(replace with yours)',
-        'Telegram: @keksswap\nEmail: support@keksswap.com\n(zmień na swoje)'
-      )
-    ));
+    card.appendChild(giveLabel);
+    card.appendChild(givePick);
+    card.appendChild(giveInput);
 
-    // Account page with login/register placeholders
-    const accCard = el('div', 'card');
-    accCard.appendChild(el('div', 'h1', { text: t('Акаунт', 'Account', 'Konto') }));
+    card.appendChild(swapRow);
 
-    const accInfo = el('div', '', {
-      html: `<div style="font-weight:800;color:rgba(15,23,42,.65);margin-top:8px;">
-        ${t(
-          'Додамо реєстрацію та KYC пізніше. Зараз — красиві переходи та макет.',
-          'We’ll add registration and KYC later. For now: clean UI + navigation.',
-          'Rejestracja i KYC później. Teraz: UI i nawigacja.'
-        )}
-      </div>`
-    });
+    card.appendChild(getLabel);
+    card.appendChild(getPick);
+    card.appendChild(getInput);
 
-    const loginBtn = el('button', 'primaryBtn', { text: t('Увійти', 'Sign in', 'Zaloguj') });
-    loginBtn.addEventListener('click', () => alert(t('Скоро буде', 'Coming soon', 'Wkrótce')));
+    card.appendChild(meta);
+    card.appendChild(btnContinue);
 
-    const regBtn = el('button', 'primaryBtn', { text: t('Зареєструватися', 'Register', 'Zarejestruj') });
-    regBtn.style.marginTop = '10px';
-    regBtn.addEventListener('click', () => alert(t('Скоро буде', 'Coming soon', 'Wkrótce')));
+    wrap.appendChild(card);
 
-    const kycBtn = el('button', 'primaryBtn', { text: t('KYC (скоро)', 'KYC (soon)', 'KYC (wkrótce)') });
-    kycBtn.style.marginTop = '10px';
-    kycBtn.addEventListener('click', () => alert(t('Підключимо провайдера пізніше', 'We will connect a provider later', 'Podłączymy dostawcę później')));
+    // Modal
+    const modalBack = el('div', 'ks-modalBack', { onclick: (e) => { if (e.target === modalBack) closeModal(); } });
+    const sheet = el('div', 'ks-sheet');
 
-    accCard.append(accInfo, loginBtn, regBtn, kycBtn);
-    pageAccount.appendChild(accCard);
+    const sheetTop = el('div', 'ks-sheetTop');
+    const sheetTitle = el('h3');
+    const xBtn = el('button', 'ks-x', { text: '×', onclick: closeModal });
+    sheetTop.appendChild(sheetTitle);
+    sheetTop.appendChild(xBtn);
 
-    // ---------- Modal ----------
-    const backdrop = el('div', 'modalBackdrop');
-    const modal = el('div', 'modal');
-    const mHead = el('div', 'modalHead');
-    const mTitle = el('div', 'modalTitle', { text: '' });
-    const mClose = el('button', 'modalClose', { text: '×' });
-
-    mClose.addEventListener('click', closeModal);
-
-    mHead.append(mTitle, mClose);
-
-    const mBody = el('div', 'modalBody');
-    const search = el('input', 'search', { placeholder: 'Search…' });
-    const list = el('div', 'list');
-
+    const search = el('input', 'ks-search', { });
     search.addEventListener('input', () => {
-      state.search = search.value || '';
+      state.search = search.value;
       renderModalList();
     });
 
-    mBody.append(search, list);
-    modal.append(mHead, mBody);
-    backdrop.appendChild(modal);
-    document.body.appendChild(backdrop);
+    const list = el('div', 'ks-list');
 
-    backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) closeModal();
-    });
+    sheet.appendChild(sheetTop);
+    sheet.appendChild(search);
+    sheet.appendChild(list);
+    modalBack.appendChild(sheet);
 
-    // ---------- Store refs ----------
-    refs.wrap = wrap;
-    refs.tabBtns = tabBtns;
+    // Mount
+    root.appendChild(header);
+    root.appendChild(wrap);
+    document.body.appendChild(modalBack);
 
-    refs.page = { exchange: pageExchange, rules: pageRules, faq: pageFaq, contacts: pageContacts, account: pageAccount };
-    refs.exchange = { fromSelect, toSelect, fromInput, toInput, h1, hFrom, hTo, cont };
-    refs.modal = { backdrop, mTitle, search, list };
+    // store refs
+    ui = {
+      // lang buttons
+      btnUA, btnEN, btnPL,
 
-    // ---------- Language buttons ----------
-    const setLang = (lng) => {
-      state.lang = lng;
-      btnUA.classList.toggle('active', lng === 'ua');
-      btnEN.classList.toggle('active', lng === 'en');
-      btnPL.classList.toggle('active', lng === 'pl');
+      // menu
+      mExchange, mRules, mFaq, mContacts, mAccount,
 
-      // update texts
-      tabBtns.exchange.textContent = tabs[0].label[lng];
-      tabBtns.rules.textContent = tabs[1].label[lng];
-      tabBtns.faq.textContent = tabs[2].label[lng];
-      tabBtns.contacts.textContent = tabs[3].label[lng];
-      tabBtns.account.textContent = tabs[4].label[lng];
+      // texts
+      h1, giveLabel, getLabel, meta, btnContinue,
 
-      // update exchange headings
-      refs.exchange.h1.textContent = t('Обмін','Exchange','Wymiana');
-      refs.exchange.hFrom.textContent = t('Віддаєте','You send','Wysyłasz');
-      refs.exchange.hTo.textContent = t('Отримуєте','You get','Otrzymujesz');
-      refs.exchange.cont.textContent = t('Продовжити','Continue','Kontynuuj');
+      // pickers
+      giveIcon, giveName, giveSub,
+      getIcon, getName, getSub,
 
-      // pages re-render not needed; simple
-      updateTabs();
-      updatePage();
+      // inputs
+      giveInput, getInput,
+
+      // modal
+      modalBack, sheetTitle, search, list,
     };
 
-    btnUA.addEventListener('click', () => setLang('ua'));
-    btnEN.addEventListener('click', () => setLang('en'));
-    btnPL.addEventListener('click', () => setLang('pl'));
-    setLang('ua');
-
-    // Initial calc
-    recalc();
-    toInput.value = fmt(state.toAmount, 8);
-
-    // Helpers inside build
-    function t(ua, en, pl) {
-      return state.lang === 'ua' ? ua : state.lang === 'en' ? en : pl;
-    }
-
-    function updateTabs() {
-      Object.entries(refs.tabBtns).forEach(([id, b]) => {
-        b.classList.toggle('active', id === state.tab);
-      });
-    }
-
-    function updatePage() {
-      Object.entries(refs.page).forEach(([id, node]) => {
-        node.style.display = (id === state.tab) ? '' : 'none';
-      });
-    }
-
-    function createSelectBtn(item, onClick) {
-      const btn = el('button', 'selectBtn');
-      btn.type = 'button';
-      btn.addEventListener('click', onClick);
-
-      const left = el('div', 'selLeft');
-      const icon = el('img', '', { src: item.icon, alt: item.sub });
-      const text = el('div', 'selText');
-      const title = el('div', 'selTitle', { text: item.name });
-      const sub = el('div', 'selSub', { text: item.sub });
-
-      text.append(title, sub);
-      left.append(icon, text);
-
-      const chev = el('div', 'chev', { text: '▾' });
-      btn.append(left, chev);
-
-      // store for updates
-      btn._icon = icon;
-      btn._title = title;
-      btn._sub = sub;
-      return btn;
-    }
-
-    function simpleCard(title, body) {
-      const c = el('div', 'card');
-      c.appendChild(el('div', 'h1', { text: title }));
-      c.appendChild(el('div', '', { html: `<div style="white-space:pre-line;font-weight:800;color:rgba(15,23,42,.65);margin-top:8px;">${body}</div>` }));
-      return c;
-    }
-
-    function updateExchangeUI() {
-      // update select buttons data
-      refs.exchange.fromSelect._icon.src = state.from.icon;
-      refs.exchange.fromSelect._title.textContent = state.from.name;
-      refs.exchange.fromSelect._sub.textContent = state.from.sub;
-
-      refs.exchange.toSelect._icon.src = state.to.icon;
-      refs.exchange.toSelect._title.textContent = state.to.name;
-      refs.exchange.toSelect._sub.textContent = state.to.sub;
-
-      // recalc & update values without breaking focus
-      const active = document.activeElement;
-      recalc();
-
-      if (active !== refs.exchange.fromInput) {
-        refs.exchange.fromInput.value = fmt(state.fromAmount, 8);
-      }
-      if (active !== refs.exchange.toInput) {
-        refs.exchange.toInput.value = fmt(state.toAmount, 8);
-      }
-    }
-
-    function openModal(forSide) {
-      state.modalFor = forSide;
-      state.search = '';
-      refs.modal.search.value = '';
-      refs.modal.mTitle.textContent = (forSide === 'from')
-        ? t('Віддаєте', 'You send', 'Wysyłasz')
-        : t('Отримуєте', 'You get', 'Otrzymujesz');
-
-      refs.modal.backdrop.classList.add('open');
-
-      // фокус на поиск (и не ломаем клавиатуру)
-      setTimeout(() => refs.modal.search.focus(), 80);
-      renderModalList();
-    }
-
-    function closeModal() {
-      refs.modal.backdrop.classList.remove('open');
-      state.modalFor = null;
-    }
-
-    function renderModalList() {
-      const q = (state.search || '').trim().toLowerCase();
-      refs.modal.list.innerHTML = '';
-
-      const filteredGroups = GROUPS.map(g => {
-        const items = g.items.filter(it => {
-          if (!q) return true;
-          const s = `${it.name} ${it.sub} ${g.id}`.toLowerCase();
-          return s.includes(q);
-        });
-        return { ...g, items };
-      }).filter(g => g.items.length > 0);
-
-      filteredGroups.forEach(g => {
-        // group header (compact, без огромных логотипов)
-        const head = el('div', '', {
-          html: `<div style="display:flex;align-items:center;gap:10px;margin:10px 2px 8px;">
-            <img src="${g.icon}" alt="" style="width:34px;height:34px;border-radius:12px;object-fit:contain;background:rgba(255,255,255,.85);border:1px solid rgba(15,23,42,.10);padding:5px;">
-            <div style="font-weight:950">${g.title[state.lang]}</div>
-            <div style="font-weight:850;color:rgba(15,23,42,.55)">${g.subtitle[state.lang]}</div>
-          </div>`
-        });
-        refs.modal.list.appendChild(head);
-
-        g.items.forEach(it => {
-          const row = el('div', 'item');
-          const img = el('img', '', { src: it.icon, alt: it.sub });
-
-          const text = el('div', 'itemText');
-          const top = el('div', 'itemTop');
-          const name = el('div', 'itemName', { text: it.name });
-          const code = el('div', 'itemCode', { text: it.sub });
-          top.append(name, code);
-
-          const meta = el('div', 'itemMeta', {
-            text: (it.min || it.max)
-              ? `min ${it.min ?? '-'} · max ${it.max ?? '-'}`
-              : ''
-          });
-
-          text.append(top);
-          if (meta.textContent) text.append(meta);
-
-          row.append(img, text);
-
-          row.addEventListener('click', () => {
-            if (state.modalFor === 'from') {
-              state.from = it;
-              state.editing = 'from';
-            } else {
-              state.to = it;
-              state.editing = 'from'; // после выбора лучше пересчитывать от "from"
-            }
-            updateExchangeUI();
-            closeModal();
-          });
-
-          refs.modal.list.appendChild(row);
-        });
-      });
-    }
-
-    // expose for internal use
-    refs.updateExchangeUI = updateExchangeUI;
-    refs.updateTabs = updateTabs;
-    refs.updatePage = updatePage;
-
-    // first visible
-    updateTabs();
-    updatePage();
+    // initial calc
+    recalcFromAmount();
+    updateAll();
   }
 
-  // ---------- Text helper (outside render) ----------
-  function t(ua, en, pl) {
-    return state.lang === 'ua' ? ua : state.lang === 'en' ? en : pl;
+  // -------- Update UI --------
+  function updateLangButtons() {
+    ui.btnUA.classList.toggle('active', state.lang === 'ua');
+    ui.btnEN.classList.toggle('active', state.lang === 'en');
+    ui.btnPL.classList.toggle('active', state.lang === 'pl');
   }
 
-  // ---------- Start ----------
-  initTelegram();
-  injectExtraCss();
-  buildApp();
+  function updateMenu() {
+    ui.mExchange.textContent = tr('exchange');
+    ui.mRules.textContent = tr('rules');
+    ui.mFaq.textContent = tr('faq');
+    ui.mContacts.textContent = tr('contacts');
+    ui.mAccount.textContent = tr('account');
 
+    ui.mExchange.classList.toggle('active', state.tab === 'exchange');
+    ui.mRules.classList.toggle('active', state.tab === 'rules');
+    ui.mFaq.classList.toggle('active', state.tab === 'faq');
+    ui.mContacts.classList.toggle('active', state.tab === 'contacts');
+    ui.mAccount.classList.toggle('active', state.tab === 'account');
+  }
+
+  function updateExchangeTexts() {
+    ui.h1.textContent = tr('exchange');
+    ui.giveLabel.textContent = tr('give');
+    ui.getLabel.textContent = tr('get');
+    ui.btnContinue.textContent = tr('continue');
+
+    const fromUAH = calcToFromUAH(state.from);
+    const toUAH = calcToFromUAH(state.to);
+    const rate = (fromUAH && toUAH) ? (fromUAH / toUAH) : 0;
+
+    ui.meta.textContent =
+      `${tr('rate')}: 1 ${state.from.sub} ≈ ${fmt(rate, 10)} ${state.to.sub}\n` +
+      `${tr('fee')}: ${state.feePct}%`;
+  }
+
+  function updatePicks() {
+    ui.giveIcon.src = state.from.icon;
+    ui.giveName.textContent = state.from.name;
+    ui.giveSub.textContent = state.from.sub;
+
+    ui.getIcon.src = state.to.icon;
+    ui.getName.textContent = state.to.name;
+    ui.getSub.textContent = state.to.sub;
+  }
+
+  // ✅ главное: не ререндерим инпуты — только меняем value если не активен
+  function updateAmountsOnly() {
+    if (document.activeElement !== ui.giveInput) {
+      ui.giveInput.value = fmt(state.fromAmount, 8);
+    }
+    if (document.activeElement !== ui.getInput) {
+      ui.getInput.value = fmt(state.toAmount, 10);
+    }
+    updateExchangeTexts();
+  }
+
+  function updateAll() {
+    updateLangButtons();
+    updateMenu();
+    updatePicks();
+    updateAmountsOnly();
+  }
+
+  // -------- Modal --------
+  function openModal(side) {
+    state.modalOpen = true;
+    state.modalSide = side;
+    ui.modalBack.classList.add('open');
+
+    ui.sheetTitle.textContent = (side === 'from') ? tr('give') : tr('get');
+    ui.search.placeholder = tr('search');
+    ui.search.value = '';
+    state.search = '';
+    renderModalList();
+
+    // фокус
+    setTimeout(() => ui.search.focus(), 60);
+  }
+
+  function closeModal() {
+    state.modalOpen = false;
+    ui.modalBack.classList.remove('open');
+  }
+
+  function renderModalList() {
+    const q = (state.search || '').trim().toLowerCase();
+
+    const items = ALL_ITEMS.filter(it => {
+      if (!q) return true;
+      return (
+        it.name.toLowerCase().includes(q) ||
+        it.sub.toLowerCase().includes(q) ||
+        (it.groupId || '').toLowerCase().includes(q)
+      );
+    });
+
+    ui.list.innerHTML = '';
+    for (const it of items) {
+      const row = el('div', 'ks-item', {
+        onclick: () => {
+          if (state.modalSide === 'from') state.from = it;
+          else state.to = it;
+
+          // пересчет по текущему активному полю
+          if (document.activeElement === ui.getInput) {
+            recalcToAmount();
+          } else {
+            recalcFromAmount();
+          }
+
+          updateAll();
+          closeModal();
+        }
+      });
+
+      const left = el('div', 'ks-left');
+      const icon = el('img', 'ks-icon', { src: it.icon, alt: '' });
+      const texts = el('div', null);
+      const name = el('div', 'ks-name', { text: it.name });
+      const sub = el('div', 'ks-sub', { text: it.sub });
+      texts.appendChild(name);
+      texts.appendChild(sub);
+      left.appendChild(icon);
+      left.appendChild(texts);
+
+      const right = el('div', 'right', { text: '›' });
+
+      row.appendChild(left);
+      row.appendChild(right);
+      ui.list.appendChild(row);
+    }
+  }
+
+  // -------- Tabs --------
+  function setTab(tab) {
+    state.tab = tab;
+    updateMenu();
+
+    if (tab === 'account') {
+      alert(`${tr('account')}: ${tr('login')} / ${tr('register')} (добавим дальше ✅)`);
+    } else if (tab !== 'exchange') {
+      alert(`${tab.toUpperCase()} — заполним текстами в этом стиле дальше ✅`);
+    }
+  }
+
+  // -------- Lang --------
+  function setLang(lang) {
+    state.lang = lang;
+    updateAll();
+  }
+
+  // -------- Start --------
+  function main() {
+    initTelegram();
+    injectCss();
+    build();
+  }
+
+  main();
 })();
