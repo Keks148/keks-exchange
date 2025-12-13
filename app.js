@@ -245,7 +245,14 @@
 
   // ---------- RENDER (один раз каркас, дальше обновляем текст без перерисовки инпутов) ----------
   const app = document.getElementById("app");
-  app.innerHTML = `
+  app.innerHTML = `const brandSvg = document.getElementById("brandSvg");
+if (brandSvg) {
+  brandSvg.addEventListener("click", () => {
+    brandSvg.classList.remove("tap");
+    void brandSvg.getBoundingClientRect();
+    brandSvg.classList.add("tap");
+  });
+      }
     <div class="wrap">
       <div class="header">
         <div class="topbar">
