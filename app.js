@@ -4,7 +4,7 @@
 
   const top = tg?.safeAreaInset?.top ?? 10;
   const bottom = tg?.safeAreaInset?.bottom ?? 10;
-  document.documentElement.style.setProperty("--safeTop", `${Math.max(10, top)}px`);
+  document.documentElement.style.setProperty("--safeTop", `${Math.max(8, top)}px`);
   document.documentElement.style.setProperty("--safeBottom", `${Math.max(10, bottom)}px`);
 
   const LOGO = {
@@ -61,8 +61,8 @@
 
   const state = {
     lang: "UA",
-    tab: "swap", // swap | rules | faq | contacts | account
-    step: 1,      // 1 = выбор, 2 = подтверждение
+    tab: "swap",
+    step: 1,
     give: { groupId: "banks", itemId: "mono" },
     get:  { groupId: "crypto", itemId: "btc" },
     amountGive: "1000",
@@ -94,34 +94,32 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1200 240"
             preserveAspectRatio="xMidYMid meet"
-            style="display:block; width:100%; height:54px; background:transparent; cursor:pointer;">
+            style="display:block; width:100%; height:48px; background:transparent; cursor:pointer;">
             <g class="ks-wrap">
-              <!-- подняли текст выше + baseline alignment -->
-              <text x="40" y="145"
-                font-size="160"
+              <text x="40" y="120"
+                font-size="150"
                 font-weight="700"
                 fill="#0B0B0B"
                 font-family="Georgia, serif"
                 dominant-baseline="middle"
                 letter-spacing="2">KeksSwap</text>
 
-              <g class="ks-cupcake">
-                <g transform="translate(880,20) scale(1.1)">
-                  <path d="M100 40 C130 10, 200 10, 220 40 C260 45, 270 90, 240 110
-                           C230 130, 200 140, 170 135 C140 145, 100 140, 80 120
-                           C40 110, 40 70, 70 50 Z"
-                        fill="none" stroke="#0B0B0B" stroke-width="10" stroke-linejoin="round"/>
-                  <circle cx="120" cy="70" r="6" fill="#0B0B0B"/>
-                  <circle cx="160" cy="60" r="6" fill="#0B0B0B"/>
-                  <circle cx="200" cy="80" r="6" fill="#0B0B0B"/>
-                  <text class="ks-tetherT" x="155" y="105" font-size="48" font-weight="800"
-                        fill="#26A17B" text-anchor="middle" font-family="Arial, sans-serif">T</text>
-                  <path d="M90 120 L230 120 L200 210 L120 210 Z"
-                        fill="none" stroke="#0B0B0B" stroke-width="10" stroke-linejoin="round"/>
-                  <line x1="120" y1="120" x2="140" y2="210" stroke="#0B0B0B" stroke-width="6"/>
-                  <line x1="160" y1="120" x2="160" y2="210" stroke="#0B0B0B" stroke-width="6"/>
-                  <line x1="200" y1="120" x2="180" y2="210" stroke="#0B0B0B" stroke-width="6"/>
-                </g>
+              <!-- ЧИСТЫЙ кекс (без Tether-знака) -->
+              <g class="ks-cupcake" transform="translate(880,34) scale(1.06)">
+                <!-- крем -->
+                <path d="M70 30
+                         C90 10, 130 10, 150 30
+                         C168 28, 180 44, 170 58
+                         C165 74, 145 80, 130 76
+                         C114 84, 92 80, 84 66
+                         C66 62, 60 42, 70 30 Z"
+                      fill="none" stroke="#0B0B0B" stroke-width="9" stroke-linejoin="round"/>
+                <!-- основа -->
+                <path d="M78 64 L164 64 L146 120 L96 120 Z"
+                      fill="none" stroke="#0B0B0B" stroke-width="9" stroke-linejoin="round"/>
+                <line x1="96" y1="64" x2="105" y2="120" stroke="#0B0B0B" stroke-width="5"/>
+                <line x1="121" y1="64" x2="121" y2="120" stroke="#0B0B0B" stroke-width="5"/>
+                <line x1="146" y1="64" x2="137" y2="120" stroke="#0B0B0B" stroke-width="5"/>
               </g>
             </g>
           </svg>
@@ -133,8 +131,6 @@
           <button data-lang="PL">PL</button>
         </div>
       </div>
-
-      <!-- убрали блок "Заявки после 22:00" полностью -->
 
       <div class="topMenu" id="topMenu">
         <button class="tab active" data-tab="swap">Обмін</button>
@@ -201,8 +197,7 @@
             <div class="h1">Обмін</div>
 
             <div class="label">Віддаєте</div>
-            <input id="giveAmount" class="field" inputmode="decimal" placeholder="0" value="${state.amountGive}" />
-
+            <!-- Сначала выбор валюты -->
             <button class="selectBtn" id="pickGive">
               <div class="selLeft">
                 <img class="icon40" id="giveIcon" alt="">
@@ -213,12 +208,13 @@
               </div>
               <div style="font-weight:1000;">▼</div>
             </button>
+            <!-- Потом ввод суммы -->
+            <input id="giveAmount" class="field" inputmode="decimal" placeholder="0" value="${state.amountGive}" style="margin-top:10px" />
 
             <div class="swapBtn" id="swapSides">⇅</div>
 
             <div class="label">Отримуєте</div>
-            <input id="getAmount" class="field" readonly value="0" />
-
+            <!-- Сначала выбор валюты -->
             <button class="selectBtn" id="pickGet">
               <div class="selLeft">
                 <img class="icon40" id="getIcon" alt="">
@@ -229,6 +225,8 @@
               </div>
               <div style="font-weight:1000;">▼</div>
             </button>
+            <!-- Потом поле результата -->
+            <input id="getAmount" class="field" readonly value="0" style="margin-top:10px" />
 
             <button class="primaryBtn" id="btnContinue">Продовжити</button>
           </div>
@@ -237,7 +235,7 @@
         const giveAmount = document.getElementById("giveAmount");
         giveAmount.addEventListener("input", () => {
           state.amountGive = giveAmount.value;
-          renderSwapNumbers(); // НЕ перерисовываем страницу
+          renderSwapNumbers(); // без перерисовки страницы
         });
 
         document.getElementById("pickGive").addEventListener("click", () => openModal("give"));
@@ -257,7 +255,6 @@
         return;
       }
 
-      // STEP 2 (после Continue)
       const giveItem = findItem(state.give.groupId, state.give.itemId);
       const getItem  = findItem(state.get.groupId, state.get.itemId);
       const out = calcGetAmount();
@@ -296,7 +293,6 @@
         state.step = 1;
         renderContent();
       });
-
       document.getElementById("btnCreate").addEventListener("click", () => {
         alert("Заявка створена (демо). Далі додамо форму реквізитів і підтвердження.");
       });
@@ -322,7 +318,7 @@
         <div class="card">
           <div class="h1">Аккаунт</div>
           <div style="color:var(--muted);font-weight:800;margin-bottom:12px;">
-            Поки без KYC підключення. Зараз зробимо екран входу/реєстрації (демо).
+            Поки без KYC підключення. Зараз робимо екран входу/реєстрації (демо).
           </div>
           <button class="primaryBtn" id="btnLogin">Войти</button>
           <button class="primaryBtn" id="btnRegister" style="background:#111827;">Зарегистрироваться</button>
@@ -331,7 +327,6 @@
           </div>
         </div>
       `;
-
       document.getElementById("btnLogin").addEventListener("click", () => alert("Login (демо)."));
       document.getElementById("btnRegister").addEventListener("click", () => alert("Register (демо)."));
       return;
