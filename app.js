@@ -149,7 +149,7 @@
     toAmount: 0,
 
     modalOpen: false,
-    modalSide: 'from', // 'from' | 'to'
+    modalSide: 'from',
     search: '',
   };
 
@@ -178,7 +178,6 @@
 
   // -------- Calculate --------
   function calcToFromUAH(item) {
-    // item.rateUAH = сколько UAH за 1 unit
     return clampNum(item.rateUAH || 0);
   }
 
@@ -187,12 +186,8 @@
     const fromUAH = calcToFromUAH(state.from);
     const toUAH = calcToFromUAH(state.to);
 
-    if (!fromUAH || !toUAH) {
-      state.toAmount = 0;
-      return;
-    }
+    if (!fromUAH || !toUAH) { state.toAmount = 0; return; }
 
-    // Convert: amount(from) -> UAH -> to
     const uah = a * fromUAH;
     const grossTo = uah / toUAH;
 
@@ -205,13 +200,8 @@
     const fromUAH = calcToFromUAH(state.from);
     const toUAH = calcToFromUAH(state.to);
 
-    if (!fromUAH || !toUAH) {
-      state.fromAmount = 0;
-      return;
-    }
+    if (!fromUAH || !toUAH) { state.fromAmount = 0; return; }
 
-    // reverse: to -> uah -> from, учитывая комиссию
-    // grossTo = b / (1 - feePct)
     const k = 1 - state.feePct / 100;
     const grossTo = k > 0 ? b / k : 0;
 
@@ -227,7 +217,20 @@
         --safeBottom: 14px;
       }
 
-      /* шапка БЕЗ отдельного фона: просто прозрачная */
+      /* ✅ ШРИФТ Tristan (ПОМЕНЯЙ пути если у тебя иначе) */
+      @font-face{
+        font-family: "Tristan";
+        src:
+          url("./Tristan.woff2") format("woff2"),
+          url("./Tristan.ttf") format("truetype");
+        font-display: swap;
+      }
+
+      body{
+        margin: 0;
+        font-family: Tristan, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
       .ks-header{
         position: sticky;
         top: 0;
@@ -237,62 +240,65 @@
         background: transparent;
       }
 
+      /* ✅ верхняя зона: языки абсолютом справа, бренд оставляем место */
       .ks-top{
-        display:flex;
-        align-items:flex-end;
-        justify-content:space-between;
-        gap: 10px;
+        position: relative;
         padding: 14px 14px 6px 14px;
       }
 
       .ks-brand{
         display:flex;
-        align-items:center;
+        align-items:flex-end;
         gap: 10px;
         min-width: 0;
-        padding-top: 12px; /* ✅ логотип ниже кнопки “Закрити” */
+        padding-top: 14px;       /* ✅ логотип ниже кнопки TG */
+        padding-right: 132px;    /* ✅ место под языки, чтобы не наезжали */
       }
 
+      /* ✅ УБРАЛИ “белую плашку”: без фона, без скруглений (если в png прозрачность — будет чисто) */
       .ks-brand img{
         width: 44px;
         height: 44px;
-        border-radius: 14px;
+        border-radius: 0;
+        background: transparent !important;
+        box-shadow: none !important;
         object-fit: contain;
-        background: transparent;
+        display:block;
       }
 
       .ks-title{
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: 0.5px;
-        font-size: 42px; /* ✅ побольше */
+        font-size: 52px;        /* ✅ заметно больше */
         line-height: 1;
         color: #1b1e2b;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         transform: translateY(2px);
-        animation: ksTitleIn 600ms cubic-bezier(.2,.9,.2,1) both;
+        animation: ksTitleIn 650ms cubic-bezier(.2,.9,.2,1) both;
       }
       @keyframes ksTitleIn {
-        from { transform: translateY(10px); opacity: 0; }
+        from { transform: translateY(14px); opacity: 0; }
         to { transform: translateY(2px); opacity: 1; }
       }
 
+      /* ✅ Языки больше НЕ наезжают */
       .ks-lang{
+        position: absolute;
+        right: 14px;
+        top: calc(var(--safeTop) + 34px); /* ✅ ниже */
         display:flex;
         gap: 6px;
-        padding-bottom: 2px;
-        transform: translateY(10px); /* ✅ опустили ниже чтобы не залазили на текст */
       }
-
       .ks-lang button{
         border: 0;
-        padding: 8px 10px;
+        padding: 7px 10px;
         border-radius: 999px;
         background: rgba(255,255,255,.65);
         color: #1b1e2b;
-        font-weight: 800;
-        font-size: 13px; /* ✅ меньше */
+        font-weight: 900;
+        font-size: 13px;
         box-shadow: 0 8px 20px rgba(2,6,23,.08);
       }
       .ks-lang button.active{
@@ -301,16 +307,17 @@
         background-size: 220% 220%;
         animation: ksGrad 2.8s ease-in-out infinite;
       }
+
       @keyframes ksGrad {
         0%{ background-position: 0% 50%; }
         50%{ background-position: 100% 50%; }
         100%{ background-position: 0% 50%; }
       }
 
-      /* меню в один ряд и влазит: горизонтальный скролл */
+      /* меню: один ряд, плотнее, скролл если не влазит */
       .ks-menu{
         display:flex;
-        gap: 8px;
+        gap: 6px;                 /* ✅ ближе друг к другу */
         padding: 0 14px 8px 14px;
         overflow-x:auto;
         -webkit-overflow-scrolling: touch;
@@ -320,13 +327,14 @@
       .ks-menu button{
         flex: 0 0 auto;
         border: 0;
-        padding: 10px 14px;
+        padding: 9px 12px;        /* ✅ компактнее */
         border-radius: 999px;
-        font-weight: 900;
+        font-weight: 1000;
         background: rgba(255,255,255,.65);
         box-shadow: 0 10px 25px rgba(2,6,23,.08);
         color: #1b1e2b;
         white-space: nowrap;
+        font-family: Tristan, system-ui, sans-serif;
       }
       .ks-menu button.active{
         color:#fff;
@@ -350,17 +358,20 @@
       }
 
       .ks-h1{
-        font-size: 52px;
+        font-size: 56px;
         letter-spacing: -1px;
         margin: 0 0 10px 0;
         color: #0f172a;
+        font-weight: 1000;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-label{
-        font-size: 28px;
-        font-weight: 900;
+        font-size: 30px;
+        font-weight: 1000;
         color: #475569;
         margin: 10px 0 8px 0;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-field{
@@ -382,9 +393,7 @@
         cursor:pointer;
       }
 
-      .ks-left{
-        display:flex; align-items:center; gap: 12px; min-width: 0;
-      }
+      .ks-left{ display:flex; align-items:center; gap: 12px; min-width: 0; }
 
       .ks-icon{
         width: 46px;
@@ -396,19 +405,21 @@
       }
 
       .ks-name{
-        font-weight: 900;
+        font-weight: 1000;
         font-size: 26px;
         color: #0f172a;
         line-height: 1.05;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-family: Tristan, system-ui, sans-serif;
       }
       .ks-sub{
-        font-weight: 900;
+        font-weight: 1000;
         font-size: 18px;
         color: #64748b;
         margin-top: 2px;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-chevron{
@@ -418,7 +429,6 @@
         padding-right: 6px;
       }
 
-      /* ✅ порядок: сначала выбор валюты, под ним сумма */
       .ks-amount{
         width: 100%;
         background: rgba(255,255,255,.8);
@@ -426,9 +436,10 @@
         border-radius: 22px;
         padding: 14px 16px;
         font-size: 42px;
-        font-weight: 900;
+        font-weight: 1000;
         outline: none;
         color:#0f172a;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-swapRow{
@@ -437,9 +448,10 @@
         margin: 14px 0;
       }
 
+      /* ✅ swap как активные кнопки меню: переливающий градиент */
       .ks-swapBtn{
-        width: 68px;
-        height: 68px;
+        width: 72px;
+        height: 72px;
         border-radius: 22px;
         border: 0;
         cursor: pointer;
@@ -451,14 +463,16 @@
         align-items:center;
         justify-content:center;
       }
-      .ks-swapBtn svg{ width: 30px; height: 30px; }
+      .ks-swapBtn svg{ width: 34px; height: 34px; }
 
       .ks-meta{
         margin-top: 14px;
         color:#475569;
-        font-weight: 800;
+        font-weight: 900;
         font-size: 16px;
         line-height: 1.35;
+        white-space: pre-line;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-cta{
@@ -467,16 +481,17 @@
         border: 0;
         border-radius: 22px;
         padding: 16px 18px;
-        font-weight: 1000;
+        font-weight: 1100;
         font-size: 18px;
         color:#fff;
         background: linear-gradient(90deg, #6d5efc, #8b5cf6, #6d5efc);
         background-size: 220% 220%;
         animation: ksGrad 2.8s ease-in-out infinite;
         box-shadow: 0 18px 38px rgba(109,94,252,.25);
+        font-family: Tristan, system-ui, sans-serif;
       }
 
-      /* Modal bottom sheet */
+      /* Modal */
       .ks-modalBack{
         position: fixed;
         inset: 0;
@@ -506,8 +521,9 @@
       .ks-sheetTop h3{
         margin: 0;
         font-size: 28px;
-        font-weight: 1000;
+        font-weight: 1100;
         color:#0f172a;
+        font-family: Tristan, system-ui, sans-serif;
       }
       .ks-x{
         width: 44px;
@@ -517,6 +533,7 @@
         background: rgba(255,255,255,.9);
         box-shadow: 0 10px 25px rgba(2,6,23,.10);
         font-size: 22px;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-search{
@@ -526,8 +543,9 @@
         border-radius: 18px;
         padding: 12px 14px;
         font-size: 18px;
-        font-weight: 800;
+        font-weight: 900;
         outline:none;
+        font-family: Tristan, system-ui, sans-serif;
       }
 
       .ks-list{
@@ -551,23 +569,19 @@
       }
       .ks-item .right{
         opacity: .55;
-        font-weight: 1000;
+        font-weight: 1200;
       }
-
-      /* не даём шапке наезжать на системные зоны */
-      body{ padding-top: 0 !important; }
     `;
     document.head.appendChild(el('style', null, { html: css }));
   }
 
-  // -------- Build UI (one-time, no rerender inputs) --------
+  // -------- Build UI --------
   let ui = {};
 
   function build() {
     const root = $('#app');
     root.innerHTML = '';
 
-    // Header
     const header = el('div', 'ks-header');
 
     const top = el('div', 'ks-top');
@@ -588,7 +602,6 @@
     top.appendChild(brand);
     top.appendChild(lang);
 
-    // Menu row
     const menu = el('div', 'ks-menu');
     const mExchange = el('button', null, { onclick: () => setTab('exchange') });
     const mRules = el('button', null, { onclick: () => setTab('rules') });
@@ -605,16 +618,14 @@
     header.appendChild(top);
     header.appendChild(menu);
 
-    // Main
     const wrap = el('div', 'ks-wrap');
-
     const card = el('div', 'ks-card');
 
     const h1 = el('div', 'ks-h1');
     const giveLabel = el('div', 'ks-label');
     const getLabel = el('div', 'ks-label');
 
-    // --- GIVE (currency first, then input) ---
+    // GIVE
     const givePick = el('div', 'ks-field');
     const givePickInner = el('div', 'ks-pick', { onclick: () => openModal('from') });
     const giveLeft = el('div', 'ks-left');
@@ -637,9 +648,8 @@
       recalcFromAmount();
       updateAmountsOnly();
     });
-    giveInput.addEventListener('focus', () => { state.editing = 'from'; });
 
-    // Swap
+    // SWAP
     const swapRow = el('div', 'ks-swapRow');
     const swapBtn = el('button', 'ks-swapBtn', {
       onclick: () => {
@@ -651,23 +661,23 @@
         state.fromAmount = state.toAmount;
         state.toAmount = tmpA;
 
-        // после swap пересчитать “получаете”
         recalcFromAmount();
         updateAll();
       }
     });
 
+    // ✅ более красивые стрелки
     swapBtn.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M7 7h12" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M15 3l4 4-4 4" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17 17H5" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M9 21l-4-4 4-4" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 7h10" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M15.5 4.5L19 7l-3.5 2.5" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 17H7" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M8.5 19.5L5 17l3.5-2.5" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
     swapRow.appendChild(swapBtn);
 
-    // --- GET (currency first, then input) ---
+    // GET
     const getPick = el('div', 'ks-field');
     const getPickInner = el('div', 'ks-pick', { onclick: () => openModal('to') });
     const getLeft = el('div', 'ks-left');
@@ -690,13 +700,10 @@
       recalcToAmount();
       updateAmountsOnly();
     });
-    getInput.addEventListener('focus', () => { state.editing = 'to'; });
 
-    // Meta
     const meta = el('div', 'ks-meta');
     const btnContinue = el('button', 'ks-cta', { onclick: () => alert('Далі зробимо: створення заявки ✅') });
 
-    // Assemble exchange card
     card.appendChild(h1);
 
     card.appendChild(giveLabel);
@@ -724,7 +731,7 @@
     sheetTop.appendChild(sheetTitle);
     sheetTop.appendChild(xBtn);
 
-    const search = el('input', 'ks-search', { });
+    const search = el('input', 'ks-search', {});
     search.addEventListener('input', () => {
       state.search = search.value;
       renderModalList();
@@ -737,34 +744,20 @@
     sheet.appendChild(list);
     modalBack.appendChild(sheet);
 
-    // Mount
     root.appendChild(header);
     root.appendChild(wrap);
     document.body.appendChild(modalBack);
 
-    // store refs
     ui = {
-      // lang buttons
       btnUA, btnEN, btnPL,
-
-      // menu
       mExchange, mRules, mFaq, mContacts, mAccount,
-
-      // texts
       h1, giveLabel, getLabel, meta, btnContinue,
-
-      // pickers
       giveIcon, giveName, giveSub,
       getIcon, getName, getSub,
-
-      // inputs
       giveInput, getInput,
-
-      // modal
       modalBack, sheetTitle, search, list,
     };
 
-    // initial calc
     recalcFromAmount();
     updateAll();
   }
@@ -815,14 +808,9 @@
     ui.getSub.textContent = state.to.sub;
   }
 
-  // ✅ главное: не ререндерим инпуты — только меняем value если не активен
   function updateAmountsOnly() {
-    if (document.activeElement !== ui.giveInput) {
-      ui.giveInput.value = fmt(state.fromAmount, 8);
-    }
-    if (document.activeElement !== ui.getInput) {
-      ui.getInput.value = fmt(state.toAmount, 10);
-    }
+    if (document.activeElement !== ui.giveInput) ui.giveInput.value = fmt(state.fromAmount, 8);
+    if (document.activeElement !== ui.getInput) ui.getInput.value = fmt(state.toAmount, 10);
     updateExchangeTexts();
   }
 
@@ -844,8 +832,6 @@
     ui.search.value = '';
     state.search = '';
     renderModalList();
-
-    // фокус
     setTimeout(() => ui.search.focus(), 60);
   }
 
@@ -856,14 +842,9 @@
 
   function renderModalList() {
     const q = (state.search || '').trim().toLowerCase();
-
     const items = ALL_ITEMS.filter(it => {
       if (!q) return true;
-      return (
-        it.name.toLowerCase().includes(q) ||
-        it.sub.toLowerCase().includes(q) ||
-        (it.groupId || '').toLowerCase().includes(q)
-      );
+      return it.name.toLowerCase().includes(q) || it.sub.toLowerCase().includes(q) || (it.groupId || '').toLowerCase().includes(q);
     });
 
     ui.list.innerHTML = '';
@@ -873,12 +854,9 @@
           if (state.modalSide === 'from') state.from = it;
           else state.to = it;
 
-          // пересчет по текущему активному полю
-          if (document.activeElement === ui.getInput) {
-            recalcToAmount();
-          } else {
-            recalcFromAmount();
-          }
+          // пересчёт по тому, что вводили
+          if (document.activeElement === ui.getInput) recalcToAmount();
+          else recalcFromAmount();
 
           updateAll();
           closeModal();
@@ -915,7 +893,6 @@
     }
   }
 
-  // -------- Lang --------
   function setLang(lang) {
     state.lang = lang;
     updateAll();
