@@ -1,241 +1,283 @@
 :root{
-  --bg1:#f2e7ff;
-  --bg2:#f7f2ff;
-  --card:#ffffffcc;
-  --stroke: rgba(32,26,52,.10);
-  --text:#1b1530;
-  --muted: rgba(27,21,48,.55);
-
-  --grad1:#7c3aed;
-  --grad2:#ec4899;
-  --grad3:#60a5fa;
-
-  --shadow: 0 26px 60px rgba(35,15,75,.12);
-  --shadow2: 0 18px 42px rgba(35,15,75,.10);
-
-  --r: 28px;
+  --bg1:#e9ccff;
+  --bg2:#f6f1ff;
+  --card: rgba(255,255,255,.72);
+  --stroke: rgba(255,255,255,.55);
+  --text:#111318;
+  --muted:#7c7f8a;
+  --shadow: 0 18px 45px rgba(60,10,90,.12);
+  --shadow2: 0 10px 28px rgba(60,10,90,.10);
+  --radius: 22px;
+  --accent1:#7b49ff;
+  --accent2:#ff4dbb;
+  --btnGrad: linear-gradient(90deg, var(--accent1), var(--accent2));
 }
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
+*{box-sizing:border-box}
+html,body{height:100%}
 body{
   margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(1100px 500px at 50% -120px, rgba(236,72,153,.22), transparent 60%),
-    radial-gradient(900px 500px at 30% 40px, rgba(124,58,237,.18), transparent 60%),
-    linear-gradient(180deg, var(--bg1), var(--bg2));
+  color:var(--text);
+  overflow-x:hidden;
 }
 
-#root{
+.bg{
+  position:fixed; inset:0;
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
+  z-index:-1;
+}
+
+.app-header{
+  width:100%;
+  padding: 10px 14px 6px;
   max-width: 520px;
   margin: 0 auto;
-  padding: 10px 12px 14px;
 }
 
-.topbar{
-  background: rgba(255,255,255,.30);
-  border: 1px solid rgba(255,255,255,.30);
-  border-radius: var(--r);
-  box-shadow: var(--shadow2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 10px;
-}
-
-.brandRow{
+.header-top{
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  padding: 8px 10px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.20);
+  border: 1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow2);
 }
 
-.brandLogo{
-  width: clamp(210px, 62vw, 340px);
-  height: clamp(86px, 14vw, 130px);
+/* ЛОГО — большое, как ты рисовал (от левого края до ~середины) */
+.brand-logo{
+  height: 52px;          /* можно поднять до 60 если влезет */
+  width: auto;
+  max-width: 62%;
   object-fit: contain;
-  object-position: left center;
-  display:block;
-  filter: drop-shadow(0 10px 22px rgba(124,58,237,.18));
 }
 
-.langSelect{
-  height: 40px;
+.header-right{position:relative; display:flex; align-items:center; gap:10px;}
+.lang-btn{
+  border:0;
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(255,255,255,.7);
   border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(255,255,255,.60);
-  padding: 0 14px;
-  font-weight: 900;
-  cursor:pointer;
-  outline:none;
+  padding: 10px 14px;
+  font-weight: 800;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.06);
 }
+.lang-btn .chev{opacity:.7}
+
+.lang-menu{
+  position:absolute;
+  right:0;
+  top: 52px;
+  background: rgba(255,255,255,.95);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display:none;
+  min-width: 90px;
+}
+.lang-menu.open{display:block;}
+.lang-item{
+  width:100%;
+  border:0;
+  background:transparent;
+  padding:10px 10px;
+  border-radius: 12px;
+  font-weight:800;
+  text-align:left;
+}
+.lang-item:active{transform:scale(.99)}
+.lang-item:hover{background: rgba(123,73,255,.08);}
 
 .tabs{
-  margin-top: 8px;
   display:flex;
-  gap:8px;
+  gap:10px;
+  margin-top:10px;
+  padding: 8px 10px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.20);
+  border: 1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow2);
 }
+
+/* Меню меньше, чтобы всё влезало */
 .tab{
   flex:1;
-  border: 1px solid rgba(255,255,255,.65);
-  background: rgba(255,255,255,.60);
+  border:0;
   border-radius: 999px;
-  padding: 10px 8px;
-  font-weight: 950;
-  cursor:pointer;
-  text-align:center;
+  padding: 11px 10px;
+  font-weight: 900;
+  background: rgba(255,255,255,.74);
+  color: #1b1f2a;
+  box-shadow: 0 10px 18px rgba(0,0,0,.06);
+  white-space:nowrap;
   font-size: 14px;
-  white-space: nowrap;
 }
 .tab.active{
-  border: 0;
-  color: #fff;
-  background: linear-gradient(90deg, var(--grad1), var(--grad2));
-  box-shadow: 0 18px 44px rgba(236,72,153,.14);
+  background: var(--btnGrad);
+  color:white;
 }
+
+.container{
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 10px 14px 18px;
+}
+
+/* Скрытие экранов */
+.screen{display:none;}
+.screen.active{display:block;}
 
 .card{
-  margin-top: 10px;
+  border-radius: 26px;
   background: var(--card);
-  border: 1px solid rgba(255,255,255,.55);
-  border-radius: 32px;
+  border: 1px solid rgba(255,255,255,.7);
   box-shadow: var(--shadow);
-  padding: 12px;
+  padding: 14px;
 }
 
-.sectionTitle{
-  font-size: 13px;
-  margin: 6px 4px 6px;
-  color: var(--muted);
+/* Компактнее блоки, чтобы без скролла */
+.section{padding: 8px 6px 10px;}
+.label{
+  font-size: 18px;
   font-weight: 900;
+  color: rgba(30,32,38,.55);
+  margin-bottom: 10px;
 }
 
-.field{
-  background: rgba(255,255,255,.82);
-  border: 1px solid var(--stroke);
-  border-radius: 20px;
-  padding: 8px 10px;
-  box-shadow: 0 10px 24px rgba(59,31,120,.05);
-}
-
-.row{
+.picker-row{
   display:flex;
   align-items:center;
   gap:10px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 18px;
+  padding: 8px 10px;          /* высота -20% */
+  box-shadow: 0 10px 18px rgba(0,0,0,.05);
 }
 
-.icon{
-  width:32px;
-  height:32px;
-  border-radius: 12px;
-  background: rgba(0,0,0,.04);
+.icon-wrap{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(0,0,0,.06);
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  flex: 0 0 auto;
 }
-.icon img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+.picker-icon{
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
-.select{
+.picker-select{
   width:100%;
   border:0;
-  outline:0;
   background: transparent;
-  font-weight: 950;
-  font-size: 15px;
-  color: var(--text);
+  font-weight: 900;
+  font-size: 16px;
+  outline:none;
 }
 
-.amount{
+/* Инпут суммы: ниже на 40% по высоте + шрифт меньше */
+.amount-input{
   width:100%;
-  border:0;
-  outline:0;
-  background:transparent;
-  font-size: 18px;           /* меньше */
-  font-weight: 1000;
-  letter-spacing: .2px;
-  padding: 6px 2px;          /* ниже высота */
+  margin-top: 10px;           /* ближе к верхней ячейке */
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.92);
+  padding: 12px 14px;         /* уменьшена высота */
+  font-size: 30px;            /* уменьшен шрифт */
+  font-weight: 900;
+  outline:none;
+  box-shadow: 0 10px 18px rgba(0,0,0,.05);
 }
-.amount::placeholder{ color: rgba(27,21,48,.25); }
+.amount-input.output{
+  background: rgba(255,255,255,.88);
+}
 
-.swapBtn{
-  width: 52px;
-  height: 52px;
-  border-radius: 20px;
-  border: 0;
-  cursor:pointer;
-  box-shadow: 0 18px 40px rgba(236,72,153,.16);
-  background: linear-gradient(90deg, var(--grad1), var(--grad2), var(--grad3));
+.swap-btn{
+  width: 66px;                 /* -20% */
+  height: 66px;                /* -20% */
+  margin: 6px auto 8px;        /* ближе к блокам */
   display:flex;
   align-items:center;
   justify-content:center;
-  margin: 8px auto 6px;
+  border:0;
+  border-radius: 20px;
+  background: var(--btnGrad);
+  box-shadow: 0 18px 34px rgba(123,73,255,.20);
 }
-.swapBtn svg{ width:30px; height:30px; fill:#fff; }
+.swap-arrows{
+  font-size: 30px;
+  color:white;
+  letter-spacing: 6px;         /* стрелки дальше друг от друга */
+  transform: translateX(3px);
+}
 
 .rate{
-  margin: 6px 6px 0;
-  font-size: 12px;
-  color: rgba(27,21,48,.55);
-  font-weight: 900;
   text-align:center;
+  margin: 8px 0 10px;
+  color: rgba(30,32,38,.55);
+  font-weight: 800;
 }
 
-.cta{
-  margin-top: 8px;
-  width: 100%;
-  height: 42px;             /* меньше */
-  border-radius: 20px;
-  border: 0;
-  cursor:pointer;
-  color: #fff;
-  font-weight: 1000;
-  font-size: 16px;
-  box-shadow: 0 18px 42px rgba(124,58,237,.18);
-  background: linear-gradient(90deg, var(--grad1), var(--grad2));
-}
-
-.smallCard{
-  background: rgba(255,255,255,.70);
-  border: 1px solid rgba(255,255,255,.65);
-  border-radius: 24px;
-  padding: 14px;
-  box-shadow: 0 14px 34px rgba(35,15,75,.08);
-}
-
-.h2{ margin:0 0 6px; font-size:24px; font-weight:1000; }
-.p{ margin:0; color:var(--muted); font-weight:800; line-height:1.35; }
-
-.btnRow{ display:flex; gap:10px; margin-top:10px; }
-.btn{
-  flex:1;
-  height: 42px;
-  border-radius: 18px;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(255,255,255,.78);
-  font-weight: 950;
-  cursor:pointer;
-}
-.btn.primary{
+.primary-btn{
+  width:100%;
   border:0;
-  color:#fff;
-  background: linear-gradient(90deg, var(--grad1), var(--grad2));
+  border-radius: 999px;
+  padding: 14px 16px;          /* -40% высоты относительно огромной версии */
+  font-size: 20px;
+  font-weight: 1000;
+  color:white;
+  background: var(--btnGrad);
+  box-shadow: 0 18px 34px rgba(255,77,187,.18);
+}
+.primary-btn:active,
+.swap-btn:active{transform:scale(.99)}
+
+.card.simple h2{
+  margin: 0 0 8px;
+}
+.card.simple p{
+  margin:0;
+  color: rgba(30,32,38,.65);
+  font-weight: 700;
 }
 
-/* Аварийный блок ошибок */
-.fatal{
-  margin-top: 10px;
-  background: rgba(255, 0, 0, .08);
-  border: 1px solid rgba(255, 0, 0, .18);
-  border-radius: 18px;
-  padding: 12px;
-  font-weight: 900;
-  color: rgba(120, 0, 0, .95);
-  white-space: pre-wrap;
+.btn-row{
+  display:flex;
+  gap:10px;
+  margin-top: 14px;
+}
+.primary-btn.small, .ghost-btn.small{
+  padding: 12px 14px;
+  font-size: 18px;
+}
+.ghost-btn{
+  width:100%;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.85);
+  font-weight: 1000;
+}
+
+@media (max-height: 720px){
+  .brand-logo{height:48px;}
+  .tab{padding:10px 8px; font-size:13px;}
+  .label{font-size:16px;}
+  .amount-input{font-size:28px; padding:11px 14px;}
+  .swap-btn{width:60px;height:60px;}
+  .primary-btn{padding:13px 16px; font-size:19px;}
 }
