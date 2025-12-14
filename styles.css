@@ -8,6 +8,7 @@
 
   --radius:28px;
   --shadow:0 18px 40px rgba(0,0,0,0.12);
+
   --grad:linear-gradient(90deg,#6a4cff,#ff4dbb);
   --hSelect:56px;
 }
@@ -34,58 +35,38 @@ body{
 }
 
 .topRow{display:flex; align-items:center; gap:12px;}
-.brandLogo{width: 180px; height:auto; display:block;} /* x3-4 как просил */
+.brandLogo{width:140px; height:auto; display:block;} /* увеличено */
 .spacer{flex:1}
 
-.langWrap{position:relative}
 .langBtn{
-  height:44px; padding:0 14px;
+  height:44px;
+  padding:0 14px;
   border-radius: 18px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.75);
   font-weight:800;
-  display:flex; align-items:center; gap:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 .langBtn .chev{opacity:.6}
 
-.langDropdown{
-  position:absolute;
-  right:0;
-  top: 50px;
-  width: 120px;
-  background: rgba(255,255,255,0.92);
-  border:1px solid var(--stroke);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  padding: 8px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  z-index: 50;
-}
-.langItem{
-  height:38px;
-  border-radius: 14px;
-  border:1px solid var(--stroke);
-  background: rgba(255,255,255,0.9);
-  font-weight:900;
-}
-
 .tabs{display:flex; gap:10px; margin-top:12px;}
 .tab{
-  flex:1; height:46px;
+  flex:1;
+  height:46px;
   border-radius: 18px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.7);
   font-weight:800;
 }
 .tab.active{
-  border:none; color:#fff;
+  border:none;
+  color:#fff;
   background: var(--grad);
   box-shadow: 0 10px 22px rgba(120,60,255,0.25);
 }
 
-.content{display:block}
 .view{display:none}
 .view.active{display:block}
 
@@ -99,12 +80,17 @@ body{
 }
 
 .statusRow{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:10px; margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
 }
 .statusLeft{color:var(--muted); font-weight:800; font-size:14px;}
 .statusRight{
-  display:flex; align-items:center; gap:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
   padding:8px 10px;
   border-radius: 16px;
   border:1px solid var(--stroke);
@@ -115,6 +101,12 @@ body{
 .dot{opacity:.4}
 
 .label{margin: 10px 2px 8px; font-size: 15px; font-weight: 900; color: var(--muted);}
+
+.rowTop{
+  display:flex;
+  gap:10px;
+  align-items:stretch;
+}
 
 .selectBtn, .netBtn{
   height: var(--hSelect);
@@ -128,16 +120,15 @@ body{
   gap:10px;
   min-width: 0;
 }
-.selectBtn{width:100%}
+
+.selectBtn{flex: 0 0 65%;}
+.netBtn{flex: 0 0 35%;}
 
 .left{display:flex; align-items:center; gap:10px; min-width:0;}
 .selText{display:flex; flex-direction:column; align-items:flex-start; line-height:1.05; min-width:0;}
-.main{
-  font-weight:950; font-size:16px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.sub{font-weight:800; font-size:12px; color: var(--muted);}
-.right{opacity:.55; font-weight:950}
+.main{font-weight:950; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.sub{font-weight:900; font-size:12px; color: var(--muted);}
+.right{opacity:.5; font-weight:900}
 
 .icon{
   width:36px; height:36px;
@@ -146,10 +137,9 @@ body{
   background: rgba(255,255,255,0.9);
   object-fit: cover;
 }
-
 .netLeft{display:flex; align-items:center; gap:10px; min-width:0;}
 .netIcon{
-  width:30px; height:30px;
+  width:32px; height:32px;
   border-radius: 12px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
@@ -157,21 +147,13 @@ body{
 }
 .netText{font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-/* GRID вместо flex => ничего не ломается */
-.giveGrid{
-  display:grid;
-  grid-template-columns: 1fr 140px 35%;
-  gap:10px;
-  align-items:stretch;
+.rowAmount{
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
 }
-.getGrid{
-  display:grid;
-  grid-template-columns: 1fr 35%;
-  gap:10px;
-  align-items:stretch;
-}
-
 .amountInput{
+  width:55%;
   height: var(--hSelect);
   border-radius: 18px;
   border:1px solid var(--stroke);
@@ -179,49 +161,50 @@ body{
   font-weight: 950;
   font-size: 22px;
   padding: 0 14px;
-  text-align: center;   /* по центру как просил */
+  text-align: center;
   outline: none;
-  width:100%;
 }
 
 .swapCenter{display:flex; justify-content:center; margin: 12px 0;}
 .swapBtn{
   width:66px; height:66px;
-  border:none; border-radius: 20px;
+  border:none;
+  border-radius: 20px;
   background: var(--grad);
   box-shadow: 0 18px 30px rgba(120,60,255,0.22);
-  display:flex; align-items:center; justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-.swapBtn.anim{animation: pop .28s ease-out;}
-@keyframes pop{0%{transform:scale(.96)} 60%{transform:scale(1.06)} 100%{transform:scale(1)}}
-
-.swapIcon{
-  width: 30px; height: 30px;
-  filter: brightness(0) invert(1);
-  transition: transform .35s ease;
-}
-.swapBtn.anim .swapIcon{transform: rotate(180deg);}
+.swapIcon{width: 30px; height: 30px; filter: brightness(0) invert(1);}
 
 .resultBox{
+  margin-top:10px;
+  width:100%;
   height: var(--hSelect);
   border-radius: 18px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.78);
   padding: 8px 12px;
-  display:flex; flex-direction:column; justify-content:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
-.resultLabel{font-weight:900; font-size:12px; color: var(--muted);}
+.resultLabel{font-weight:950; font-size:12px; color: var(--muted);}
 .resultValue{font-weight: 950; font-size: 18px; margin-top: 2px;}
 
-.rateLine{margin-top: 10px; text-align:center; color: var(--muted); font-weight:900;}
-.hint{margin-top: 6px; text-align:center; color: #7b3cff; font-weight: 900; min-height: 18px;}
+.rateLine{margin-top: 10px; text-align:center; color: var(--muted); font-weight:950;}
+.hint{margin-top: 6px; text-align:center; color: #7b3cff; font-weight: 950; min-height: 18px;}
 
 .cta{
-  width:100%; height:58px;
-  border:none; border-radius: 22px;
+  width:100%;
+  height:58px;
+  border:none;
+  border-radius: 22px;
   background: var(--grad);
   color:#fff;
-  font-weight: 950; font-size: 20px;
+  font-weight: 950;
+  font-size: 20px;
   margin-top: 12px;
   box-shadow: 0 18px 30px rgba(120,60,255,0.22);
 }
@@ -231,9 +214,7 @@ body{
   border:1px solid var(--stroke);
   box-shadow:none;
 }
-.cta.soft{opacity:.95}
 
-/* Rules */
 .rulesCard h2{margin:8px 0 14px}
 .rulesItem{
   display:flex; gap:12px;
@@ -252,9 +233,8 @@ body{
   font-size:18px;
 }
 .rulesHead{font-weight:950; margin-bottom:4px}
-.rulesText{color:var(--muted); font-weight:700}
+.rulesText{color:var(--muted); font-weight:800}
 
-/* FAQ */
 .faq details{
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.7);
@@ -262,24 +242,49 @@ body{
   padding: 10px 12px;
   margin: 10px 0;
 }
-.faq summary{font-weight:900}
-.faq p{color:var(--muted); font-weight:700}
+.faq summary{font-weight:950}
+.faq p{color:var(--muted); font-weight:800}
 
-/* Account */
 .accBtns{display:flex; gap:12px; margin-top: 14px;}
 .accBtns .cta{margin-top:0}
 
-/* Modals: гарантируем кликабельность */
-.hidden{display:none !important;}
+/* small language dropdown */
+.hidden{display:none}
+.dropdown{
+  position:fixed; inset:0;
+  background: transparent;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding: 78px 14px 14px;
+}
+.dropdownCard{
+  width: 160px;
+  background: rgba(255,255,255,0.92);
+  border:1px solid var(--stroke);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 10px;
+  display:grid;
+  gap:8px;
+}
+.pill{
+  height:42px;
+  border-radius: 14px;
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,0.9);
+  font-weight:950;
+}
 
+/* modal bottom sheet */
 .modal{
   position:fixed; inset:0;
   background: rgba(0,0,0,0.25);
-  display:flex; align-items:flex-end; justify-content:center;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
   padding: 10px;
-  z-index: 1000;
 }
-
 .modalSheet{
   width: 100%;
   max-width: 560px;
@@ -289,14 +294,14 @@ body{
   box-shadow: var(--shadow);
   overflow:hidden;
 }
-
 .modalHead{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
   padding: 14px 14px 10px;
   border-bottom:1px solid var(--stroke);
 }
 .modalTitle{font-weight:950}
-
 .closeX{
   width:38px;height:38px;
   border-radius: 14px;
@@ -304,12 +309,12 @@ body{
   background: rgba(255,255,255,0.9);
   font-weight:950;
 }
-
 .list{max-height: 58vh; overflow:auto; padding: 10px 10px 14px;}
 
 .item{
   width:100%;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex;
+  align-items:center;
   gap:12px;
   padding: 10px 10px;
   border-radius: 18px;
@@ -319,19 +324,9 @@ body{
 }
 .itemLeft{display:flex; align-items:center; gap:10px; min-width:0;}
 .itemName{font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.itemSub{font-weight:800; font-size:12px; color:var(--muted);}
-.badge{
-  font-weight:950; font-size:12px;
-  padding: 8px 10px;
-  border-radius: 14px;
-  border:1px solid var(--stroke);
-  background: rgba(0,0,0,0.04);
-  color: rgba(0,0,0,0.6);
-}
+.itemSub{font-weight:900; font-size:12px; color:var(--muted);}
 
-/* мобилки */
 @media (max-width: 380px){
-  .brandLogo{width: 160px;}
-  .amountInput{font-size:20px}
-  .giveGrid{grid-template-columns: 1fr 120px 35%;}
+  .brandLogo{width:130px}
+  .amountInput{width:60%}
 }
