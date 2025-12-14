@@ -47,14 +47,13 @@ body{
 }
 
 .brandLogo{
-  width: 110px;     /* можно еще больше */
+  width: 110px;
   height:auto;
   display:block;
 }
 
 .spacer{flex:1}
 
-/* compact lang button */
 .langBtn{
   height:44px;
   padding:0 14px;
@@ -139,13 +138,7 @@ body{
   color: var(--muted);
 }
 
-.row3{
-  display:flex;
-  gap:10px;
-  align-items:stretch;
-}
-
-.row2{
+.row3, .row2{
   display:flex;
   gap:10px;
   align-items:stretch;
@@ -238,17 +231,17 @@ body{
   width: 35%;
   display:flex;
   align-items:center;
-  justify-content:center; /* по середине */
+  justify-content:center;
 }
 
 .amountInput{
-  width: 82%;           /* меньше чем колонка */
+  width: 82%;
   height: var(--hSelect);
   border-radius: 18px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.78);
   font-weight: 900;
-  font-size: 22px;      /* меньше чем было */
+  font-size: 22px;
   padding: 0 14px;
   text-align: left;
   outline: none;
