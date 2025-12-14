@@ -160,26 +160,28 @@ const views = {
 const tabs = Array.from(document.querySelectorAll(".tab"));
 
 let lang = getLocalLang() || "uk";
-
 const ALL_ASSETS = [...CRYPTO, ...BANKS];
 
 const state = {
-  giveAsset: CRYPTO[0],  // USDT
+  giveAsset: CRYPTO[0],
   giveNet: "TRC20",
-  getAsset: BANKS[1],   // Monobank
+  getAsset: BANKS[1],
   giveAmount: 1000,
   rate: null,
   picking: null,
 };
 
-// ======= Init =======
 function init(){
   try { TG?.ready?.(); TG?.expand?.(); } catch {}
 
-  // UI defaults
+  // IMPORTANT: на старте принудительно закрываем модалки (чтобы ничего не блокировало)
+  forceCloseAllModals();
+
+  // дефолты
   setAssetUI("give", state.giveAsset);
   ensureGiveNetworkVisibility();
   setNetworkUI(state.giveNet);
+
   setAssetUI("get", state.getAsset);
   $("giveAmount").value = String(state.giveAmount);
 
@@ -192,7 +194,7 @@ function init(){
     });
   });
 
-  // asset pickers (банки+крипта в обоих полях)
+  // pickers
   $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("giveAsset"));
   $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("getAsset"));
 
@@ -214,7 +216,7 @@ function init(){
     alert("Заявка: " + state.giveAmount + " " + state.giveAsset.code + (state.giveAsset.type==="crypto" ? " ("+state.giveNet+")" : "") + " → " + state.getAsset.name);
   });
 
-  // language dropdown
+  // language dropdown (не блокирует экран!)
   const langMenu = $("langMenu");
   const langBtn = $("langBtn");
 
@@ -243,7 +245,7 @@ function init(){
     });
   });
 
-  // modal close
+  // close handlers
   $("assetClose").addEventListener("click", closeAssetPicker);
   $("assetModal").addEventListener("click", (e)=>{
     if(e.target.id === "assetModal") closeAssetPicker();
@@ -254,22 +256,46 @@ function init(){
     if(e.target.id === "netModal") closeNetworkPicker();
   });
 
+  // защитно: если случайно где-то открылась сеть — закрыть
+  closeNetworkPicker();
+
   initLanguage().then(()=>{
     applyLang();
-    // убрать блоки фиксации/whitebit
-    hideRateStatusUI();
+    hardHideRateStatusUI();
     recalc();
   });
 }
 
-function hideRateStatusUI(){
-  // убрать правый блок "зафіксовано/таймер"
-  const lockBox = $("lockBox");
-  if (lockBox) lockBox.style.display = "none";
+function forceCloseAllModals(){
+  const assetModal = $("assetModal");
+  const netModal = $("netModal");
+  if(assetModal) assetModal.classList.add("hidden");
+  if(netModal) netModal.classList.add("hidden");
+}
 
-  // убрать левый текст про WhiteBIT
+function hardHideRateStatusUI(){
+  // Жестко скрываем элементы статус-строки, чтобы таймер/WhiteBIT не появлялись вообще
   const rateStatus = $("rateStatus");
-  if (rateStatus) rateStatus.textContent = "";
+  const rateLockedLabel = $("rateLockedLabel");
+  const lockTimer = $("lockTimer");
+
+  if(rateStatus){
+    rateStatus.textContent = "";
+    rateStatus.style.display = "none";
+  }
+  if(rateLockedLabel) rateLockedLabel.style.display = "none";
+  if(lockTimer) lockTimer.style.display = "none";
+
+  // если есть dot
+  document.querySelectorAll(".statusRight .dot").forEach(x=>x.style.display="none");
+
+  // скрыть правую плашку целиком
+  const sr = document.querySelector(".statusRight");
+  if(sr) sr.style.display = "none";
+
+  // и строку целиком убираем (чтобы вообще не занимала место)
+  const row = document.querySelector(".statusRow");
+  if(row) row.style.display = "none";
 }
 
 async function setLangEverywhere(v) {
@@ -279,7 +305,7 @@ async function setLangEverywhere(v) {
   await tgSetItem(LANG_KEY, v);
   $("langLabel").textContent = (v === "uk" ? "UA" : v.toUpperCase());
   applyLang();
-  hideRateStatusUI();
+  hardHideRateStatusUI();
 }
 
 async function initLanguage(){
@@ -434,6 +460,8 @@ function openAssetPicker(which){
         state.giveAsset = it;
         setAssetUI("give", it);
         ensureGiveNetworkVisibility();
+        // если после выбора это bank — сеть закрыта, чтобы не всплывала
+        if(it.type !== "crypto") closeNetworkPicker();
       } else {
         state.getAsset = it;
         setAssetUI("get", it);
