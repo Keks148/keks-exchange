@@ -25,6 +25,27 @@ const ui = {
     account: $("view-account"),
   },
 
+  // i18n targets
+  tabExchange: $("tab-exchange"),
+  tabRules: $("tab-rules"),
+  tabFaq: $("tab-faq"),
+  tabAccount: $("tab-account"),
+  lblGive: $("lbl-give"),
+  lblGet: $("lbl-get"),
+  lblYouGet: $("lbl-youget"),
+  btnCreate: $("createBtn"),
+  rulesTitle: $("rules-title"),
+  rule1: $("rule-1"),
+  rule2: $("rule-2"),
+  rule3: $("rule-3"),
+  rule4: $("rule-4"),
+  faqText: $("faq-text"),
+  accTitle: $("acc-title"),
+  accText: $("acc-text"),
+  btnLogin: $("btn-login"),
+  btnReg: $("btn-reg"),
+  lockText: $("lockText"),
+
   rateStatus: $("rateStatus"),
   rateLine: $("rateLine"),
   rateHint: $("rateHint"),
@@ -48,12 +69,13 @@ const ui = {
   getNetBtn: $("getNetBtn"),
   giveNetLabel: $("giveNetLabel"),
   getNetLabel: $("getNetLabel"),
+  giveNetIcon: $("giveNetIcon"),
+  getNetIcon: $("getNetIcon"),
 
   picker: $("picker"),
   pickerOverlay: $("pickerOverlay"),
   pickerClose: $("pickerClose"),
   pickerTitle: $("pickerTitle"),
-  pickerSearch: $("pickerSearch"),
   pickerList: $("pickerList"),
 
   netPicker: $("netPicker"),
@@ -64,16 +86,121 @@ const ui = {
 
   langBtn: $("langBtn"),
   langLabel: $("langLabel"),
-  langMenu: $("langMenu")
+  langPop: $("langPop")
 };
 
+/* ---------- i18n ---------- */
+const I18N = {
+  UA: {
+    tabs: { exchange:"Обмін", rules:"Правила", faq:"FAQ", account:"Акаунт" },
+    give:"Віддаєте",
+    get:"Отримуєте",
+    youGet:"Ви отримаєте",
+    create:"Створити заявку",
+    lock:"Курс зафіксовано",
+    rulesTitle:"Правила обміну",
+    rule1:"<b>Час обробки:</b> до <b>40 хвилин</b>.",
+    rule2:"У рідкісних випадках — до <b>72 годин</b> (залежить від банків/мереж).",
+    rule3:"<b>Курс фіксується</b> після натискання “Створити заявку” на <b>3 хвилини</b>.",
+    rule4:"Вказуйте коректний Telegram для зв’язку та правильні реквізити.",
+    faq:"Пізніше додамо питання/відповіді.",
+    accTitle:"Акаунт",
+    accText:"Тут буде вхід/реєстрація та KYC (поки без підключення).",
+    login:"Увійти",
+    reg:"Реєстрація",
+    pickGive:"Виберіть що віддаєте",
+    pickGet:"Виберіть що отримуєте",
+    netTitle:"Мережа",
+    rateLoading:"Оновлюємо курс…",
+    rateOk:"WhiteBIT • оновлення кожні 30с",
+    rateFail:"Курс недоступний (WhiteBIT)"
+  },
+  EN: {
+    tabs: { exchange:"Exchange", rules:"Rules", faq:"FAQ", account:"Account" },
+    give:"You give",
+    get:"You get",
+    youGet:"You will receive",
+    create:"Create request",
+    lock:"Rate locked",
+    rulesTitle:"Exchange rules",
+    rule1:"<b>Processing time:</b> up to <b>40 minutes</b>.",
+    rule2:"In rare cases — up to <b>72 hours</b> (depends on banks/networks).",
+    rule3:"<b>Rate is locked</b> after “Create request” for <b>3 minutes</b>.",
+    rule4:"Provide correct Telegram contact and valid details.",
+    faq:"FAQ will be added later.",
+    accTitle:"Account",
+    accText:"Login/registration and KYC will be here (not connected yet).",
+    login:"Login",
+    reg:"Register",
+    pickGive:"Select what you give",
+    pickGet:"Select what you get",
+    netTitle:"Network",
+    rateLoading:"Updating rate…",
+    rateOk:"WhiteBIT • refresh every 30s",
+    rateFail:"Rate unavailable (WhiteBIT)"
+  },
+  PL: {
+    tabs: { exchange:"Wymiana", rules:"Zasady", faq:"FAQ", account:"Konto" },
+    give:"Oddajesz",
+    get:"Otrzymujesz",
+    youGet:"Otrzymasz",
+    create:"Utwórz zlecenie",
+    lock:"Kurs zablokowany",
+    rulesTitle:"Zasady wymiany",
+    rule1:"<b>Czas realizacji:</b> do <b>40 minut</b>.",
+    rule2:"W rzadkich przypadkach — do <b>72 godzin</b> (zależy od banków/sieci).",
+    rule3:"<b>Kurs blokuje się</b> po “Utwórz zlecenie” na <b>3 minuty</b>.",
+    rule4:"Podaj poprawny Telegram i prawidłowe dane.",
+    faq:"FAQ dodamy później.",
+    accTitle:"Konto",
+    accText:"Tu będzie logowanie/rejestracja i KYC (jeszcze nie podłączone).",
+    login:"Zaloguj",
+    reg:"Rejestracja",
+    pickGive:"Wybierz co oddajesz",
+    pickGet:"Wybierz co otrzymujesz",
+    netTitle:"Sieć",
+    rateLoading:"Aktualizacja kursu…",
+    rateOk:"WhiteBIT • odświeżanie co 30s",
+    rateFail:"Kurs niedostępny (WhiteBIT)"
+  }
+};
+
+function t(){ return I18N[state.lang] || I18N.UA; }
+
+function applyI18n(){
+  const tr = t();
+  ui.tabExchange.textContent = tr.tabs.exchange;
+  ui.tabRules.textContent = tr.tabs.rules;
+  ui.tabFaq.textContent = tr.tabs.faq;
+  ui.tabAccount.textContent = tr.tabs.account;
+
+  ui.lblGive.textContent = tr.give;
+  ui.lblGet.textContent = tr.get;
+  ui.lblYouGet.textContent = tr.youGet;
+  ui.btnCreate.textContent = tr.create;
+  ui.lockText.textContent = tr.lock;
+
+  ui.rulesTitle.textContent = tr.rulesTitle;
+  ui.rule1.innerHTML = tr.rule1;
+  ui.rule2.innerHTML = tr.rule2;
+  ui.rule3.innerHTML = tr.rule3;
+  ui.rule4.innerHTML = tr.rule4;
+
+  ui.faqText.textContent = tr.faq;
+  ui.accTitle.textContent = tr.accTitle;
+  ui.accText.textContent = tr.accText;
+  ui.btnLogin.textContent = tr.login;
+  ui.btnReg.textContent = tr.reg;
+
+  // Titles for pickers will be set on open
+}
+
 /* -------------------- DATA -------------------- */
-/* Крипта одна строка, сети отдельно (полный список как есть) */
 const CRYPTO = [
   { asset:"BTC", name:"Bitcoin", icon:"logos/crypto/btc.png", networks:["BTC"] },
   { asset:"ETH", name:"Ethereum", icon:"logos/crypto/eth.png", networks:["ERC20","BEP20","ARB","OP","POL"] },
-  { asset:"USDT", name:"Tether (USDT)", icon:"logos/crypto/tether-usdt.png", networks:["TRC20","ERC20","BEP20","ARB","POL","SOL"] },
-  { asset:"USDC", name:"USD Coin (USDC)", icon:"logos/crypto/usdc-eth.png", networks:["ERC20","POL","ARB","SOL"] },
+  { asset:"USDT", name:"Tether (USDT)", icon:"logos/crypto/tether-usdt.png", networks:["TRC20","ERC20","BEP20","ARB","OP","POL","SOL"] },
+  { asset:"USDC", name:"USD Coin (USDC)", icon:"logos/crypto/usdc.png", networks:["ERC20","POL","ARB","SOL"] },
   { asset:"TRX", name:"TRON", icon:"logos/crypto/trx.png", networks:["TRC20"] },
   { asset:"LTC", name:"Litecoin", icon:"logos/crypto/ltc.png", networks:["LTC"] },
   { asset:"SOL", name:"Solana", icon:"logos/crypto/sol.png", networks:["SOL"] },
@@ -90,7 +217,6 @@ const BANKS = [
   { asset:"izi_uah",    name:"IziBank",    icon:"logos/banks/izi.png" },
   { asset:"sense_uah",  name:"Sense",      icon:"logos/banks/sense.png" },
   { asset:"ukrsib_uah", name:"UkrSib",     icon:"logos/banks/ukr-sib.png" },
-  { asset:"ukrbanki_uah", name:"UkrBanki", icon:"logos/banks/ukr-banki.png" },
   { asset:"visa_master_uah", name:"Visa/Master", icon:"logos/banks/visa-master.png" },
 ];
 
@@ -99,10 +225,15 @@ function findBank(asset){ return BANKS.find(x=>x.asset===asset) || null; }
 
 function codeOf(sel){
   if(sel.type==="bank") return "UAH";
-  return sel.asset; // crypto ticker
+  return sel.asset;
 }
 
-/* -------------------- UI: tabs -------------------- */
+function netIconPath(net){
+  const n = String(net||"").toLowerCase();
+  return `logos/networks/${n}.png`;
+}
+
+/* -------------------- Tabs -------------------- */
 ui.tabs.forEach(btn=>{
   btn.addEventListener("click", ()=>{
     ui.tabs.forEach(b=>b.classList.remove("isActive"));
@@ -113,37 +244,35 @@ ui.tabs.forEach(btn=>{
   });
 });
 
-/* -------------------- Language -------------------- */
+/* -------------------- Language (compact) -------------------- */
 ui.langBtn.addEventListener("click", (e)=>{
   e.stopPropagation();
-  ui.langMenu.classList.toggle("hidden");
+  ui.langPop.classList.toggle("hidden");
 });
-document.addEventListener("click", ()=>ui.langMenu.classList.add("hidden"));
-ui.langMenu.addEventListener("click", (e)=>{
-  const b = e.target.closest(".langItem");
+document.addEventListener("click", ()=>ui.langPop.classList.add("hidden"));
+ui.langPop.addEventListener("click", (e)=>{
+  const b = e.target.closest(".langChip");
   if(!b) return;
   state.lang = b.dataset.lang;
   ui.langLabel.textContent = state.lang;
-  ui.langMenu.classList.add("hidden");
+  ui.langPop.classList.add("hidden");
+  applyI18n();
 });
 
-/* -------------------- Pickers -------------------- */
+/* -------------------- Pickers (NO SEARCH) -------------------- */
 let pickerContext = null; // "give"|"get"
 
-function openPicker(title, ctx){
+function openPicker(ctx){
   pickerContext = ctx;
-  ui.pickerTitle.textContent = title;
+  ui.pickerTitle.textContent = (ctx==="give") ? t().pickGive : t().pickGet;
   ui.picker.classList.remove("hidden");
-  ui.pickerSearch.value = "";
-  renderPicker("");
-  ui.pickerSearch.focus({preventScroll:true});
+  renderPicker();
   document.body.style.overflow = "hidden";
   document.addEventListener("keydown", onEscAsset);
 }
 function closePicker(){
   ui.picker.classList.add("hidden");
   pickerContext = null;
-  ui.pickerSearch.value = "";
   document.body.style.overflow = "";
   document.removeEventListener("keydown", onEscAsset);
 }
@@ -151,82 +280,82 @@ function onEscAsset(e){ if(e.key==="Escape") closePicker(); }
 
 ui.pickerOverlay.addEventListener("click", closePicker);
 ui.pickerClose.addEventListener("click", closePicker);
-ui.pickerSearch.addEventListener("input", ()=>renderPicker(ui.pickerSearch.value));
 
-function renderPicker(q){
-  const query = (q||"").trim().toLowerCase();
-  // список: крипта + банки
-  const items = [
-    ...CRYPTO.map(c=>({ kind:"crypto", ...c })),
-    ...BANKS.map(b=>({ kind:"bank", ...b })),
-  ].filter(it=>{
-    if(!query) return true;
-    return (it.name||"").toLowerCase().includes(query) || (it.asset||"").toLowerCase().includes(query);
-  });
-
-  ui.pickerList.innerHTML = "";
-  items.forEach(it=>{
-    const row = document.createElement("button");
-    row.type="button";
-    row.className="item";
-    row.dataset.kind = it.kind;
-    row.dataset.asset = it.asset;
-
-    const left = document.createElement("div");
-    left.className="itemLeft";
-
-    const img = document.createElement("img");
-    img.className="icon";
-    img.src = it.icon;
-    img.alt = it.name;
-
-    const txt = document.createElement("div");
-    txt.style.minWidth = "0";
-
-    const name = document.createElement("div");
-    name.className="name";
-    name.textContent = it.kind==="bank" ? `${it.name} (UAH)` : it.name;
-
-    const sub = document.createElement("div");
-    sub.className="sub";
-    sub.textContent = it.kind==="bank" ? "UAH" : it.asset;
-
-    txt.appendChild(name);
-    txt.appendChild(sub);
-
-    left.appendChild(img);
-    left.appendChild(txt);
-    row.appendChild(left);
-
-    row.addEventListener("click", ()=>{
-      if(pickerContext==="give"){
-        if(it.kind==="bank"){
-          state.give = { asset: it.asset, type:"bank", network:null };
-        }else{
-          // crypto: default network first
-          state.give = { asset: it.asset, type:"crypto", network: it.networks?.[0] || null };
-        }
-      }else{
-        if(it.kind==="bank"){
-          state.get = { asset: it.asset, type:"bank", network:null };
-        }else{
-          state.get = { asset: it.asset, type:"crypto", network: it.networks?.[0] || null };
-        }
-      }
-      applySelectionsToUI();
-      startLock();
-      recalc();
-      closePicker();
-    });
-
-    ui.pickerList.appendChild(row);
-  });
+function addSectionTitle(text){
+  const h = document.createElement("div");
+  h.className = "sectionTitle";
+  h.textContent = text;
+  ui.pickerList.appendChild(h);
 }
 
-ui.giveSelectBtn.addEventListener("click", ()=>openPicker("Виберіть що віддаєте", "give"));
-ui.getSelectBtn.addEventListener("click", ()=>openPicker("Виберіть що отримуєте", "get"));
+function renderPicker(){
+  ui.pickerList.innerHTML = "";
 
-/* --- Networks picker --- */
+  addSectionTitle("CRYPTO");
+  CRYPTO.forEach(it=>addPickerItem("crypto", it));
+
+  addSectionTitle("BANKS");
+  BANKS.forEach(it=>addPickerItem("bank", it));
+}
+
+function addPickerItem(kind, it){
+  const row = document.createElement("button");
+  row.type="button";
+  row.className="item";
+
+  const left = document.createElement("div");
+  left.className="itemLeft";
+
+  const img = document.createElement("img");
+  img.className="icon";
+  img.src = it.icon;
+  img.alt = it.name;
+
+  const txt = document.createElement("div");
+  txt.style.minWidth = "0";
+
+  const name = document.createElement("div");
+  name.className="name";
+  name.textContent = (kind==="bank") ? `${it.name} (UAH)` : it.name;
+
+  const sub = document.createElement("div");
+  sub.className="sub";
+  sub.textContent = (kind==="bank") ? "UAH" : it.asset;
+
+  txt.appendChild(name);
+  txt.appendChild(sub);
+
+  left.appendChild(img);
+  left.appendChild(txt);
+  row.appendChild(left);
+
+  row.addEventListener("click", ()=>{
+    if(pickerContext==="give"){
+      if(kind==="bank"){
+        state.give = { asset: it.asset, type:"bank", network:null };
+      }else{
+        state.give = { asset: it.asset, type:"crypto", network: it.networks?.[0] || null };
+      }
+    }else{
+      if(kind==="bank"){
+        state.get = { asset: it.asset, type:"bank", network:null };
+      }else{
+        state.get = { asset: it.asset, type:"crypto", network: it.networks?.[0] || null };
+      }
+    }
+    applySelectionsToUI();
+    startLock();
+    recalc();
+    closePicker();
+  });
+
+  ui.pickerList.appendChild(row);
+}
+
+ui.giveSelectBtn.addEventListener("click", ()=>openPicker("give"));
+ui.getSelectBtn.addEventListener("click", ()=>openPicker("get"));
+
+/* --- Networks picker (with icons) --- */
 let netContext = null; // "give"|"get"
 
 function openNetPicker(ctx){
@@ -238,7 +367,7 @@ function openNetPicker(ctx){
   const nets = c?.networks || [];
   if(nets.length <= 1) return;
 
-  ui.netTitle.textContent = "Network";
+  ui.netTitle.textContent = t().netTitle;
   ui.netPicker.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   document.addEventListener("keydown", onEscNet);
@@ -248,30 +377,31 @@ function openNetPicker(ctx){
     const row = document.createElement("button");
     row.type="button";
     row.className="item";
+
     const left = document.createElement("div");
     left.className="itemLeft";
 
-    const img = document.createElement("div");
+    const img = document.createElement("img");
     img.className="icon";
-    img.style.display="flex";
-    img.style.alignItems="center";
-    img.style.justifyContent="center";
-    img.style.fontWeight="950";
-    img.style.fontSize="12px";
-    img.textContent = n;
+    img.src = netIconPath(n);
+    img.alt = n;
+    img.onerror = ()=>{ img.style.display="none"; }; // если нет иконки
 
     const txt = document.createElement("div");
     txt.style.minWidth="0";
+
     const name = document.createElement("div");
     name.className="name";
     name.textContent = n;
+
     const sub = document.createElement("div");
     sub.className="sub";
     sub.textContent = `${sel.asset} network`;
-    txt.appendChild(name); txt.appendChild(sub);
 
+    txt.appendChild(name); txt.appendChild(sub);
     left.appendChild(img);
     left.appendChild(txt);
+
     row.appendChild(left);
 
     row.addEventListener("click", ()=>{
@@ -317,35 +447,36 @@ ui.giveAmount.addEventListener("input", ()=>{
 });
 
 /* -------------------- WhiteBIT rate -------------------- */
-async function fetchWhitebitTicker(){
+async function fetchWhitebitTickerAll(){
   const url = "https://whitebit.com/api/v4/public/ticker";
   const r = await fetch(url, { method:"GET" });
-  if(!r.ok) throw new Error("Ticker HTTP " + r.status);
+  if(!r.ok) throw new Error("HTTP " + r.status);
   return await r.json();
 }
 
 function pickMarket(obj, candidates){
   for(const m of candidates){
-    if(obj?.[m]?.last_price) return Number(obj[m].last_price);
+    if(obj?.[m]?.last_price) return { market:m, price:Number(obj[m].last_price) };
   }
   return null;
 }
 
 async function refreshRates(){
-  ui.rateStatus.textContent = "Оновлюємо курс…";
+  ui.rateStatus.textContent = t().rateLoading;
   try{
-    const t = await fetchWhitebitTicker();
-    const usdtUah = pickMarket(t, ["USDT_UAH","UAH_USDT"]);
-    if(!usdtUah) throw new Error("No USDT_UAH market");
-    // normalize if reversed
-    state.base.USDT_UAH = t["USDT_UAH"] ? usdtUah : (1/usdtUah);
+    const tkr = await fetchWhitebitTickerAll();
+    const found = pickMarket(tkr, ["USDT_UAH","UAH_USDT"]);
+    if(!found) throw new Error("No USDT_UAH market");
+
+    state.base.USDT_UAH = (found.market === "USDT_UAH") ? found.price : (1/found.price);
     state.lastRatesAt = Date.now();
-    ui.rateStatus.textContent = "WhiteBIT • оновлення кожні 30с";
+
+    ui.rateStatus.textContent = t().rateOk;
     ui.rateHint.textContent = "";
     if(!isLocked()) recalc();
   }catch(e){
-    ui.rateStatus.textContent = "Курс недоступний (WhiteBIT)";
-    ui.rateHint.textContent = String(e?.message || e);
+    ui.rateStatus.textContent = t().rateFail;
+    ui.rateHint.textContent = "";
   }
 }
 
@@ -409,6 +540,9 @@ function applySelectionsToUI(){
     if(nets.length > 1){
       ui.giveNetBtn.classList.remove("hidden");
       ui.giveNetLabel.textContent = state.give.network || nets[0];
+      ui.giveNetIcon.src = netIconPath(ui.giveNetLabel.textContent);
+      ui.giveNetIcon.onerror = ()=>{ ui.giveNetIcon.style.display="none"; };
+      ui.giveNetIcon.style.display="block";
     }else{
       ui.giveNetBtn.classList.add("hidden");
       state.give.network = nets[0] || null;
@@ -432,6 +566,9 @@ function applySelectionsToUI(){
     if(nets.length > 1){
       ui.getNetBtn.classList.remove("hidden");
       ui.getNetLabel.textContent = state.get.network || nets[0];
+      ui.getNetIcon.src = netIconPath(ui.getNetLabel.textContent);
+      ui.getNetIcon.onerror = ()=>{ ui.getNetIcon.style.display="none"; };
+      ui.getNetIcon.style.display="block";
     }else{
       ui.getNetBtn.classList.add("hidden");
       state.get.network = nets[0] || null;
@@ -439,7 +576,7 @@ function applySelectionsToUI(){
   }
 }
 
-/* -------------------- Calculate (пока считаем по USDT_UAH) -------------------- */
+/* -------------------- Calculate (USDT<->UAH) -------------------- */
 function recalc(){
   const giveAmount = toNumberSafe(ui.giveAmount.value);
   if(!(giveAmount > 0)){
@@ -453,7 +590,6 @@ function recalc(){
     return;
   }
 
-  // Сейчас делаем основу: USDT <-> UAH (для других монет позже добавим кросс через USDT)
   const giveCode = codeOf(state.give);
   const getCode  = codeOf(state.get);
 
@@ -461,18 +597,15 @@ function recalc(){
   if(giveCode==="USDT" && getCode==="UAH") baseRate = state.base.USDT_UAH;
   if(giveCode==="UAH" && getCode==="USDT") baseRate = 1/state.base.USDT_UAH;
 
-  // если выбрали другие монеты — пока выводим подсказку (чтобы не ломалось)
   if(baseRate === null){
     ui.resultValue.textContent = "—";
     ui.rateLine.textContent = "Курс: —";
-    ui.rateHint.textContent = "Поки що авто-курс тільки для USDT⇄UAH. Інші пари додамо наступним кроком.";
+    ui.rateHint.textContent = "Поки що авто-курс тільки для USDT⇄UAH (наступний крок — всі монети).";
     return;
   }
 
-  // UAH эквивалент для спреда
   const uahEquiv = (giveCode==="UAH") ? giveAmount : (giveAmount * state.base.USDT_UAH);
   const spread = spreadForUAH(uahEquiv);
-
   const finalRate = baseRate * (1 - spread);
 
   let applied = finalRate;
@@ -517,13 +650,19 @@ function startAutoRefresh(){
 }
 
 function init(){
-  // defaults
+  ui.langLabel.textContent = state.lang;
+  applyI18n();
+
   state.give = { asset:"USDT", type:"crypto", network:"TRC20" };
   state.get  = { asset:"mono_uah", type:"bank",  network:null };
+
   ui.giveAmount.value = "1000";
   applySelectionsToUI();
   recalc();
   startAutoRefresh();
 }
+
+/* Close language popover if scroll/touch outside */
+document.addEventListener("scroll", ()=>ui.langPop.classList.add("hidden"), { passive:true });
 
 init();
