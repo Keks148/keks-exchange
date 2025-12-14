@@ -11,7 +11,6 @@ const BANKS = [
   { id:"izi", name:"IziBank (UAH)", code:"UAH", icon:"logos/banks/izi.png", type:"bank" },
   { id:"sense", name:"Sense (UAH)", code:"UAH", icon:"logos/banks/sense.png", type:"bank" },
   { id:"ukrsib", name:"UkrSib (UAH)", code:"UAH", icon:"logos/banks/ukr-sib.png", type:"bank" },
-  { id:"ukrbanki", name:"UkrBanki (UAH)", code:"UAH", icon:"logos/banks/ukr-banki.png", type:"bank" },
   { id:"visamaster", name:"Visa/Master (UAH)", code:"UAH", icon:"logos/banks/visa-master.png", type:"bank" },
 ];
 
@@ -43,9 +42,7 @@ const CRYPTO = [
   },
 ];
 
-const ASSETS_ALL = [...CRYPTO, ...BANKS];
-
-// Network icons (если каких-то файлов нет — просто оставь trc20.png как заглушку)
+// Network icons
 const NET_ICON = {
   "TRC20":"logos/networks/trc20.png",
   "ERC20":"logos/networks/erc20.png",
@@ -55,10 +52,10 @@ const NET_ICON = {
   "SOL":"logos/networks/sol.png",
   "OP":"logos/networks/op.png",
   "BTC":"logos/networks/btc.png",
+  "ETH":"logos/networks/eth.png",
   "LTC":"logos/networks/ltc.png",
   "TON":"logos/networks/ton.png",
   "TRX":"logos/networks/trx.png",
-  "ERC":"logos/networks/erc20.png",
 };
 
 // ======= Translations =======
@@ -78,6 +75,7 @@ const I18N = {
     pickGive:"Виберіть що віддаєте",
     pickGet:"Виберіть що отримуєте",
     pickNet:"Оберіть мережу",
+    failed:"Не вдалося отримати курс",
   },
   en: {
     tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
@@ -94,6 +92,7 @@ const I18N = {
     pickGive:"Choose what you give",
     pickGet:"Choose what you get",
     pickNet:"Choose network",
+    failed:"Failed to fetch rate",
   },
   pl: {
     tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
@@ -110,6 +109,7 @@ const I18N = {
     pickGive:"Wybierz co dajesz",
     pickGet:"Wybierz co otrzymujesz",
     pickNet:"Wybierz sieć",
+    failed:"Nie udało się pobrać kursu",
   }
 };
 
@@ -140,7 +140,9 @@ function tgGetItem(key) {
         return;
       }
       resolve(null);
-    } catch { resolve(null); }
+    } catch {
+      resolve(null);
+    }
   });
 }
 
@@ -152,13 +154,14 @@ function tgSetItem(key, value) {
         return;
       }
       resolve(false);
-    } catch { resolve(false); }
+    } catch {
+      resolve(false);
+    }
   });
 }
 
-// ======= UI =======
+// ======= UI refs =======
 const $ = (id) => document.getElementById(id);
-const tabs = Array.from(document.querySelectorAll(".tab"));
 
 const views = {
   swap: $("viewSwap"),
@@ -167,67 +170,121 @@ const views = {
   account: $("viewAccount"),
 };
 
+const tabs = Array.from(document.querySelectorAll(".tab"));
+
 let lang = getLocalLang() || "uk";
 
+const ALL_ASSETS = [...CRYPTO, ...BANKS];
+
 const state = {
-  giveAsset: CRYPTO[0],
+  giveAsset: CRYPTO[0],  // USDT
   giveNet: "TRC20",
-
-  getAsset: BANKS[1],
-  getNet: "TRC20",
-
+  getAsset: BANKS[1],   // Monobank
   giveAmount: 1000,
   rate: null,
-
   lockSeconds: 180,
   lockTimerId: null,
-
-  picking: null, // give|get
+  picking: null, // "giveAsset" | "getAsset"
 };
 
-// ======= helpers =======
-function isCrypto(a){ return a?.type === "crypto"; }
+// ======= Init =======
+function init(){
+  // Telegram init
+  try { TG?.ready?.(); TG?.expand?.(); } catch {}
 
-function setAssetUI(prefix, asset){
-  $(prefix+"Icon").src = asset.icon;
-  $(prefix+"Icon").alt = asset.code;
-  $(prefix+"Name").textContent = asset.name;
-  $(prefix+"Sub").textContent = asset.code;
-}
+  // defaults
+  setAssetUI("give", state.giveAsset);
+  ensureGiveNetworkVisibility();
+  setNetworkUI(state.giveNet);
 
-function setNetUI(prefix, net){
-  $(prefix+"NetLabel").textContent = net;
-  $(prefix+"NetIcon").src = NET_ICON[net] || "logos/networks/trc20.png";
-  $(prefix+"NetIcon").alt = net;
-}
+  setAssetUI("get", state.getAsset);
 
-function ensureNet(prefix){
-  const asset = prefix === "give" ? state.giveAsset : state.getAsset;
-  const btn = $(prefix+"NetBtn");
+  $("giveAmount").value = String(state.giveAmount);
 
-  if(!isCrypto(asset)){
-    btn.style.display = "none";
-    return;
+  // tabs
+  tabs.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      tabs.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      showView(btn.dataset.tab);
+    });
+  });
+
+  // asset pickers (ОБА поля показывают банки+крипту)
+  $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("giveAsset"));
+  $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("getAsset"));
+
+  // network
+  $("giveNetBtn").addEventListener("click", ()=> openNetworkPicker());
+
+  // swap
+  $("swapBtn").addEventListener("click", onSwap);
+
+  // amount change
+  $("giveAmount").addEventListener("input", ()=>{
+    const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
+    state.giveAmount = isFinite(v) ? v : 0;
+    recalc();
+  });
+
+  // create request
+  $("createBtn").addEventListener("click", ()=>{
+    alert("Заявка: " + state.giveAmount + " " + state.giveAsset.code + (state.giveAsset.type==="crypto" ? " ("+state.giveNet+")" : "") + " → " + state.getAsset.name);
+  });
+
+  // language dropdown (НЕ блокирует экран)
+  const langMenu = $("langMenu");
+  const langBtn = $("langBtn");
+
+  function placeLangMenu(){
+    const r = langBtn.getBoundingClientRect();
+    const x = Math.max(8, Math.min(window.innerWidth - 8 - 170, r.right - 160));
+    const y = r.bottom + 8 + window.scrollY;
+
+    langMenu.style.left = x + "px";
+    langMenu.style.top = y + "px";
   }
 
-  btn.style.display = "flex";
-  const nets = asset.networks || ["TRC20"];
-  const cur = prefix === "give" ? state.giveNet : state.getNet;
-  const next = nets.includes(cur) ? cur : nets[0];
+  langBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    placeLangMenu();
+    langMenu.classList.toggle("hidden");
+  });
 
-  if(prefix === "give") state.giveNet = next;
-  else state.getNet = next;
+  document.addEventListener("click", ()=> langMenu.classList.add("hidden"));
+  window.addEventListener("resize", ()=> { if(!langMenu.classList.contains("hidden")) placeLangMenu(); });
 
-  setNetUI(prefix, next);
+  document.querySelectorAll(".pill[data-lang]").forEach(p=>{
+    p.addEventListener("click", async (e)=>{
+      e.stopPropagation();
+      await setLangEverywhere(p.dataset.lang);
+      langMenu.classList.add("hidden");
+    });
+  });
+
+  // modals close
+  $("assetClose").addEventListener("click", closeAssetPicker);
+  $("assetModal").addEventListener("click", (e)=>{
+    if(e.target.id === "assetModal") closeAssetPicker();
+  });
+
+  $("netClose").addEventListener("click", closeNetworkPicker);
+  $("netModal").addEventListener("click", (e)=>{
+    if(e.target.id === "netModal") closeNetworkPicker();
+  });
+
+  // start lock timer
+  startLockTimer();
+
+  // language init (async)
+  initLanguage().then(()=>{
+    applyLang();
+    recalc();
+  });
 }
 
-function showView(key){
-  Object.values(views).forEach(v=>v.classList.remove("active"));
-  views[key].classList.add("active");
-}
-
-// ======= Language =======
 async function setLangEverywhere(v) {
+  if(!I18N[v]) v = "uk";
   lang = v;
   setLocalLang(v);
   await tgSetItem(LANG_KEY, v);
@@ -239,16 +296,30 @@ async function initLanguage(){
   $("langLabel").textContent = (lang === "uk" ? "UA" : lang.toUpperCase());
 
   const cloud = await tgGetItem(LANG_KEY);
-  if (cloud && I18N[cloud]) { await setLangEverywhere(cloud); return; }
+  if (cloud && I18N[cloud]) {
+    await setLangEverywhere(cloud);
+    return;
+  }
 
   const local = getLocalLang();
-  if (local && I18N[local]) { lang = local; applyLang(); return; }
+  if (local && I18N[local]) {
+    lang = local;
+    return;
+  }
 
   const mapped = mapTgLang(TG?.initDataUnsafe?.user?.language_code);
-  if (mapped && I18N[mapped]) { await setLangEverywhere(mapped); return; }
+  if (mapped && I18N[mapped]) {
+    await setLangEverywhere(mapped);
+    return;
+  }
 
-  // first run: just default uk (без блокирующего экрана)
-  applyLang();
+  // если ничего нет — пусть будет uk без блокировок
+  await setLangEverywhere("uk");
+}
+
+function showView(key){
+  Object.values(views).forEach(v=>v.classList.remove("active"));
+  views[key].classList.add("active");
 }
 
 function applyLang(){
@@ -267,6 +338,7 @@ function applyLang(){
   $("rateStatus").textContent = state.rate ? "" : t.rateUnavailable;
   $("rateLockedLabel").textContent = t.locked;
   $("createBtn").textContent = t.create;
+
   $("rulesTitle").textContent = t.rulesTitle;
   $("faqTitle").textContent = t.faqTitle;
   $("accTitle").textContent = t.accTitle;
@@ -277,19 +349,80 @@ function applyLang(){
   $("netTitle").textContent = t.pickNet;
 }
 
-// ======= Modals =======
+function setAssetUI(prefix, asset){
+  $(prefix+"Icon").src = asset.icon;
+  $(prefix+"Icon").alt = asset.code;
+  $(prefix+"Name").textContent = asset.name;
+  $(prefix+"Sub").textContent = asset.code;
+}
+
+function setNetworkUI(net){
+  $("giveNetLabel").textContent = net;
+  $("giveNetIcon").src = NET_ICON[net] || "logos/networks/trc20.png";
+  $("giveNetIcon").alt = net;
+}
+
+function ensureGiveNetworkVisibility(){
+  if(state.giveAsset.type === "crypto"){
+    const nets = state.giveAsset.networks || [];
+    state.giveNet = nets.includes(state.giveNet) ? state.giveNet : (nets[0] || "TRC20");
+    setNetworkUI(state.giveNet);
+    $("giveNetBtn").style.display = "flex";
+  } else {
+    $("giveNetBtn").style.display = "none";
+  }
+}
+
+function onSwap(){
+  // просто меняем местами выбранные ассеты
+  const oldGive = state.giveAsset;
+  const oldGet  = state.getAsset;
+
+  state.giveAsset = oldGet;
+  state.getAsset  = oldGive;
+
+  setAssetUI("give", state.giveAsset);
+  setAssetUI("get", state.getAsset);
+
+  ensureGiveNetworkVisibility();
+
+  recalc();
+}
+
+function recalc(){
+  const t = I18N[lang] || I18N.uk;
+
+  // тут пока нет реального курса — оставляем как было, но текст нормальный
+  if(!state.rate){
+    $("rateValue").textContent = "—";
+    $("resultValue").textContent = "—";
+    $("rateHint").textContent = t.failed;
+    return;
+  }
+
+  const res = state.giveAmount * state.rate;
+  $("resultValue").textContent = format(res);
+  $("rateValue").textContent = format(state.rate);
+  $("rateHint").textContent = "";
+}
+
+function format(n){
+  if(!isFinite(n)) return "—";
+  return n.toLocaleString(undefined, {maximumFractionDigits: 6});
+}
+
+// ======= Asset picker (банки+крипта, без badge) =======
 function openAssetPicker(which){
-  state.picking = which; // "give" | "get"
+  state.picking = which;
   $("assetModal").classList.remove("hidden");
 
   const t = I18N[lang] || I18N.uk;
-  $("assetTitle").textContent = which === "give" ? t.pickGive : t.pickGet;
+  $("assetTitle").textContent = which === "giveAsset" ? t.pickGive : t.pickGet;
 
   const list = $("assetList");
   list.innerHTML = "";
 
-  // ВАЖНО: в обоих полях показываем и банки и крипту
-  ASSETS_ALL.forEach(it=>{
+  ALL_ASSETS.forEach(it=>{
     const btn = document.createElement("button");
     btn.className = "item";
     btn.type = "button";
@@ -311,7 +444,7 @@ function openAssetPicker(which){
 
     const sub = document.createElement("div");
     sub.className = "itemSub";
-    sub.textContent = it.type === "crypto" ? (it.code + " • Crypto") : (it.code + " • Bank"); // без бейджа справа
+    sub.textContent = it.code;
 
     txt.appendChild(name);
     txt.appendChild(sub);
@@ -322,15 +455,15 @@ function openAssetPicker(which){
     btn.appendChild(left);
 
     btn.addEventListener("click", ()=>{
-      if(which === "give"){
+      if(which === "giveAsset"){
         state.giveAsset = it;
         setAssetUI("give", it);
-        ensureNet("give");
+        ensureGiveNetworkVisibility();
       } else {
         state.getAsset = it;
         setAssetUI("get", it);
-        ensureNet("get");
       }
+
       closeAssetPicker();
       recalc();
     });
@@ -344,15 +477,15 @@ function closeAssetPicker(){
   state.picking = null;
 }
 
-function openNetPicker(prefix){
-  const asset = prefix === "give" ? state.giveAsset : state.getAsset;
-  if(!isCrypto(asset)) return;
+// ======= Network picker =======
+function openNetworkPicker(){
+  if(state.giveAsset.type !== "crypto") return;
 
   $("netModal").classList.remove("hidden");
   const list = $("netList");
   list.innerHTML = "";
 
-  const nets = asset.networks || [];
+  const nets = state.giveAsset.networks || [];
   nets.forEach(net=>{
     const btn = document.createElement("button");
     btn.className = "item";
@@ -367,28 +500,26 @@ function openNetPicker(prefix){
     img.alt = net;
 
     const txt = document.createElement("div");
-
     const name = document.createElement("div");
     name.className = "itemName";
     name.textContent = net;
 
     const sub = document.createElement("div");
     sub.className = "itemSub";
-    sub.textContent = asset.code + " network";
+    sub.textContent = state.giveAsset.code + " network";
 
     txt.appendChild(name);
     txt.appendChild(sub);
 
     left.appendChild(img);
     left.appendChild(txt);
+
     btn.appendChild(left);
 
     btn.addEventListener("click", ()=>{
-      if(prefix === "give") state.giveNet = net;
-      else state.getNet = net;
-
-      setNetUI(prefix, net);
-      closeNetPicker();
+      state.giveNet = net;
+      setNetworkUI(net);
+      closeNetworkPicker();
       recalc();
     });
 
@@ -396,48 +527,11 @@ function openNetPicker(prefix){
   });
 }
 
-function closeNetPicker(){
+function closeNetworkPicker(){
   $("netModal").classList.add("hidden");
 }
 
-// ======= Swap =======
-function onSwap(){
-  // меняем местами ассеты
-  const a1 = state.giveAsset;
-  const n1 = state.giveNet;
-  const a2 = state.getAsset;
-  const n2 = state.getNet;
-
-  state.giveAsset = a2;
-  state.getAsset = a1;
-
-  state.giveNet = n2;
-  state.getNet = n1;
-
-  setAssetUI("give", state.giveAsset);
-  setAssetUI("get", state.getAsset);
-
-  ensureNet("give");
-  ensureNet("get");
-
-  // анимация кнопки
-  const btn = $("swapBtn");
-  btn.classList.remove("spin");
-  void btn.offsetWidth;
-  btn.classList.add("spin");
-
-  recalc();
-}
-
-// ======= Calc =======
-function recalc(){
-  // пока нет fetch — оставим заглушку
-  $("rateValue").textContent = "—";
-  $("resultValue").textContent = "—";
-  $("rateHint").textContent = "Failed to fetch";
-}
-
-// ======= Lock timer =======
+// ======= Lock timer (3 min) =======
 function startLockTimer(){
   if(state.lockTimerId) clearInterval(state.lockTimerId);
   state.lockSeconds = 180;
@@ -456,73 +550,5 @@ function startLockTimer(){
   }, 1000);
 }
 
-// ======= Init =======
-function init(){
-  try { TG?.ready?.(); TG?.expand?.(); } catch {}
-
-  setAssetUI("give", state.giveAsset);
-  setNetUI("give", state.giveNet);
-
-  setAssetUI("get", state.getAsset);
-  setNetUI("get", state.getNet);
-
-  $("giveAmount").value = String(state.giveAmount);
-
-  ensureNet("give");
-  ensureNet("get");
-
-  tabs.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      tabs.forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      showView(btn.dataset.tab);
-    });
-  });
-
-  $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("give"));
-  $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("get"));
-
-  $("giveNetBtn").addEventListener("click", ()=> openNetPicker("give"));
-  $("getNetBtn").addEventListener("click", ()=> openNetPicker("get"));
-
-  $("swapBtn").addEventListener("click", onSwap);
-
-  $("giveAmount").addEventListener("input", ()=>{
-    const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
-    state.giveAmount = isFinite(v) ? v : 0;
-    recalc();
-  });
-
-  $("createBtn").addEventListener("click", ()=>{
-    alert(`Заявка: ${state.giveAmount} ${state.giveAsset.code}${isCrypto(state.giveAsset)?` (${state.giveNet})`:``} → ${state.getAsset.name}${isCrypto(state.getAsset)?` (${state.getNet})`:``}`);
-  });
-
-  // language dropdown
-  const langMenu = $("langMenu");
-  $("langBtn").addEventListener("click", (e)=>{
-    e.stopPropagation();
-    langMenu.classList.toggle("hidden");
-  });
-
-  document.querySelectorAll(".pill[data-lang]").forEach(p=>{
-    p.addEventListener("click", async ()=>{
-      await setLangEverywhere(p.dataset.lang);
-      langMenu.classList.add("hidden");
-    });
-  });
-
-  // click outside closes dropdown
-  document.addEventListener("click", ()=> langMenu.classList.add("hidden"));
-
-  // modals close
-  $("assetClose").addEventListener("click", closeAssetPicker);
-  $("assetModal").addEventListener("click", (e)=>{ if(e.target.id==="assetModal") closeAssetPicker(); });
-
-  $("netClose").addEventListener("click", closeNetPicker);
-  $("netModal").addEventListener("click", (e)=>{ if(e.target.id==="netModal") closeNetPicker(); });
-
-  startLockTimer();
-  initLanguage().then(()=>{ applyLang(); recalc(); });
-}
-
+// Boot
 document.addEventListener("DOMContentLoaded", init);
