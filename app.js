@@ -15,7 +15,7 @@ const BANKS = [
   { id:"visamaster", name:"Visa/Master (UAH)", code:"UAH", icon:"logos/banks/visa-master.png", type:"bank" },
 ];
 
-// Crypto (сетевые варианты только там, где реально нужно)
+// Crypto
 const CRYPTO = [
   { id:"usdt", name:"Tether (USDT)", code:"USDT", icon:"logos/crypto/tether-usdt.png", type:"crypto",
     networks:["TRC20","ERC20","BEP20","ARB","POL","SOL","OP"]
@@ -27,7 +27,7 @@ const CRYPTO = [
     networks:["BTC"]
   },
   { id:"eth", name:"Ethereum (ETH)", code:"ETH", icon:"logos/crypto/eth.png", type:"crypto",
-    networks:["ERC20"]
+    networks:["ERC20","ARB","OP"]
   },
   { id:"ltc", name:"Litecoin (LTC)", code:"LTC", icon:"logos/crypto/ltc.png", type:"crypto",
     networks:["LTC"]
@@ -43,7 +43,9 @@ const CRYPTO = [
   },
 ];
 
-// Network icons (только те, что у тебя реально есть в logos/networks)
+const ASSETS_ALL = [...CRYPTO, ...BANKS];
+
+// Network icons (если каких-то файлов нет — просто оставь trc20.png как заглушку)
 const NET_ICON = {
   "TRC20":"logos/networks/trc20.png",
   "ERC20":"logos/networks/erc20.png",
@@ -52,6 +54,11 @@ const NET_ICON = {
   "POL":"logos/networks/pol.png",
   "SOL":"logos/networks/sol.png",
   "OP":"logos/networks/op.png",
+  "BTC":"logos/networks/btc.png",
+  "LTC":"logos/networks/ltc.png",
+  "TON":"logos/networks/ton.png",
+  "TRX":"logos/networks/trx.png",
+  "ERC":"logos/networks/erc20.png",
 };
 
 // ======= Translations =======
@@ -70,9 +77,7 @@ const I18N = {
     login:"Увійти", reg:"Реєстрація",
     pickGive:"Виберіть що віддаєте",
     pickGet:"Виберіть що отримуєте",
-    network:"Мережа",
-    fetching:"Оновлюємо курс…",
-    fetchFail:"Failed to fetch",
+    pickNet:"Оберіть мережу",
   },
   en: {
     tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
@@ -88,9 +93,7 @@ const I18N = {
     login:"Login", reg:"Sign up",
     pickGive:"Choose what you give",
     pickGet:"Choose what you get",
-    network:"Network",
-    fetching:"Refreshing rate…",
-    fetchFail:"Failed to fetch",
+    pickNet:"Choose network",
   },
   pl: {
     tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
@@ -106,13 +109,11 @@ const I18N = {
     login:"Zaloguj", reg:"Rejestracja",
     pickGive:"Wybierz co dajesz",
     pickGet:"Wybierz co otrzymujesz",
-    network:"Sieć",
-    fetching:"Odświeżanie kursu…",
-    fetchFail:"Failed to fetch",
+    pickNet:"Wybierz sieć",
   }
 };
 
-// ===== Telegram + storage =====
+// ===== Language Storage (Telegram Cloud + local) =====
 const TG = window.Telegram?.WebApp || null;
 const LANG_KEY = "keksswap_lang";
 
@@ -123,8 +124,13 @@ function mapTgLang(code) {
   if (c.startsWith("en")) return "en";
   return null;
 }
-function getLocalLang() { try { return localStorage.getItem(LANG_KEY); } catch { return null; } }
-function setLocalLang(v) { try { localStorage.setItem(LANG_KEY, v); } catch {} }
+
+function getLocalLang() {
+  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+}
+function setLocalLang(v) {
+  try { localStorage.setItem(LANG_KEY, v); } catch {}
+}
 
 function tgGetItem(key) {
   return new Promise((resolve) => {
@@ -137,6 +143,7 @@ function tgGetItem(key) {
     } catch { resolve(null); }
   });
 }
+
 function tgSetItem(key, value) {
   return new Promise((resolve) => {
     try {
@@ -149,8 +156,9 @@ function tgSetItem(key, value) {
   });
 }
 
-// ======= UI helpers =======
+// ======= UI =======
 const $ = (id) => document.getElementById(id);
+const tabs = Array.from(document.querySelectorAll(".tab"));
 
 const views = {
   swap: $("viewSwap"),
@@ -158,175 +166,89 @@ const views = {
   faq: $("viewFaq"),
   account: $("viewAccount"),
 };
-const tabs = Array.from(document.querySelectorAll(".tab"));
 
-let lang = "uk";
+let lang = getLocalLang() || "uk";
 
-// ======= State =======
 const state = {
-  // режим: crypto->bank или bank->crypto
-  mode: "crypto_to_bank",
-
-  giveCrypto: CRYPTO[0],     // USDT
+  giveAsset: CRYPTO[0],
   giveNet: "TRC20",
-  giveBank: BANKS[1],        // Monobank
+
+  getAsset: BANKS[1],
+  getNet: "TRC20",
+
   giveAmount: 1000,
-
-  // выбранная сторона "get"
-  getBank: BANKS[1],
-  getCrypto: CRYPTO[0],
-
   rate: null,
+
   lockSeconds: 180,
   lockTimerId: null,
 
-  picking: null, // "give" | "get"
+  picking: null, // give|get
 };
 
-// ======= WhiteBIT rate =======
-// Public endpoint: https://whitebit.com/api/v4/public/ticker (всё) 0
-async function fetchWhitebitTicker() {
-  const r = await fetch("https://whitebit.com/api/v4/public/ticker", { method: "GET" });
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  return await r.json();
+// ======= helpers =======
+function isCrypto(a){ return a?.type === "crypto"; }
+
+function setAssetUI(prefix, asset){
+  $(prefix+"Icon").src = asset.icon;
+  $(prefix+"Icon").alt = asset.code;
+  $(prefix+"Name").textContent = asset.name;
+  $(prefix+"Sub").textContent = asset.code;
 }
 
-function marketKey(base, quote) {
-  return `${base}_${quote}`;
+function setNetUI(prefix, net){
+  $(prefix+"NetLabel").textContent = net;
+  $(prefix+"NetIcon").src = NET_ICON[net] || "logos/networks/trc20.png";
+  $(prefix+"NetIcon").alt = net;
 }
 
-async function updateRate() {
-  const t = I18N[lang] || I18N.uk;
-  $("rateHint").textContent = t.fetching;
+function ensureNet(prefix){
+  const asset = prefix === "give" ? state.giveAsset : state.getAsset;
+  const btn = $(prefix+"NetBtn");
 
-  try {
-    const ticker = await fetchWhitebitTicker();
-
-    // считаем только пары с UAH
-    if (state.mode === "crypto_to_bank") {
-      const base = state.giveCrypto.code;
-      const key = marketKey(base, "UAH");
-      const row = ticker[key];
-      if (!row?.last_price) throw new Error("No market " + key);
-
-      state.rate = parseFloat(row.last_price);
-      $("rateStatus").textContent = "";
-    } else {
-      // bank_to_crypto: нужно сколько crypto за 1 UAH => 1 / (UAH price)
-      const base = state.getCrypto.code;
-      const key = marketKey(base, "UAH");
-      const row = ticker[key];
-      if (!row?.last_price) throw new Error("No market " + key);
-
-      const priceUAH = parseFloat(row.last_price); // 1 crypto = X UAH
-      state.rate = 1 / priceUAH;                   // 1 UAH = Y crypto
-      $("rateStatus").textContent = "";
-    }
-
-    $("rateHint").textContent = "";
-    recalc();
-  } catch (e) {
-    state.rate = null;
-    $("rateStatus").textContent = t.rateUnavailable;
-    $("rateHint").textContent = t.fetchFail;
-    $("rateValue").textContent = "—";
-    $("resultValue").textContent = "—";
+  if(!isCrypto(asset)){
+    btn.style.display = "none";
+    return;
   }
+
+  btn.style.display = "flex";
+  const nets = asset.networks || ["TRC20"];
+  const cur = prefix === "give" ? state.giveNet : state.getNet;
+  const next = nets.includes(cur) ? cur : nets[0];
+
+  if(prefix === "give") state.giveNet = next;
+  else state.getNet = next;
+
+  setNetUI(prefix, next);
 }
 
-// ======= Init =======
-async function init() {
-  try { TG?.ready?.(); TG?.expand?.(); } catch {}
-
-  // язык: cloud > local > tg auto > uk
-  const cloud = await tgGetItem(LANG_KEY);
-  const local = getLocalLang();
-  const mapped = mapTgLang(TG?.initDataUnsafe?.user?.language_code);
-
-  lang = (cloud && I18N[cloud]) ? cloud :
-         (local && I18N[local]) ? local :
-         (mapped && I18N[mapped]) ? mapped : "uk";
-
-  setLangLabel();
-  applyLang();
-
-  // initial UI
-  applyModeUI();
-  $("giveAmount").value = String(state.giveAmount);
-
-  // tabs
-  tabs.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      tabs.forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      showView(btn.dataset.tab);
-    });
-  });
-
-  // dropdown language
-  $("langBtn").addEventListener("click", (e) => {
-    e.stopPropagation();
-    $("langDropdown").classList.toggle("hidden");
-  });
-  document.addEventListener("click", () => $("langDropdown").classList.add("hidden"));
-  document.querySelectorAll(".langItem[data-lang]").forEach(b=>{
-    b.addEventListener("click", async (e)=>{
-      e.stopPropagation();
-      await setLangEverywhere(b.dataset.lang);
-      $("langDropdown").classList.add("hidden");
-    });
-  });
-
-  // asset modals
-  $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("give"));
-  $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("get"));
-  $("assetClose").addEventListener("click", closeAssetPicker);
-  $("assetModal").addEventListener("click", (e)=>{ if(e.target.id==="assetModal") closeAssetPicker(); });
-
-  // network modal
-  $("giveNetBtn").addEventListener("click", ()=> openNetworkPicker());
-  $("netClose").addEventListener("click", closeNetworkPicker);
-  $("netModal").addEventListener("click", (e)=>{ if(e.target.id==="netModal") closeNetworkPicker(); });
-
-  // swap button
-  $("swapBtn").addEventListener("click", onSwap);
-
-  // amount change
-  $("giveAmount").addEventListener("input", ()=>{
-    const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
-    state.giveAmount = isFinite(v) ? v : 0;
-    recalc();
-  });
-
-  // create
-  $("createBtn").addEventListener("click", ()=>{
-    if (!state.rate) return alert((I18N[lang]||I18N.uk).fetchFail);
-
-    if (state.mode === "crypto_to_bank") {
-      alert(`Заявка: ${state.giveAmount} ${state.giveCrypto.code} (${state.giveNet}) → ${state.getBank.name}`);
-    } else {
-      alert(`Заявка: ${state.giveAmount} ${state.giveBank.code} → ${state.getCrypto.name} (${state.giveNet})`);
-    }
-  });
-
-  // timer + rate
-  startLockTimer();
-  await updateRate();
+function showView(key){
+  Object.values(views).forEach(v=>v.classList.remove("active"));
+  views[key].classList.add("active");
 }
 
-// ======= UI / language =======
-function setLangLabel() {
-  $("langLabel").textContent = (lang === "uk" ? "UA" : lang.toUpperCase());
-}
-
+// ======= Language =======
 async function setLangEverywhere(v) {
-  if (!I18N[v]) return;
   lang = v;
   setLocalLang(v);
   await tgSetItem(LANG_KEY, v);
-  setLangLabel();
+  $("langLabel").textContent = (v === "uk" ? "UA" : v.toUpperCase());
   applyLang();
-  recalc();
+}
+
+async function initLanguage(){
+  $("langLabel").textContent = (lang === "uk" ? "UA" : lang.toUpperCase());
+
+  const cloud = await tgGetItem(LANG_KEY);
+  if (cloud && I18N[cloud]) { await setLangEverywhere(cloud); return; }
+
+  const local = getLocalLang();
+  if (local && I18N[local]) { lang = local; applyLang(); return; }
+
+  const mapped = mapTgLang(TG?.initDataUnsafe?.user?.language_code);
+  if (mapped && I18N[mapped]) { await setLangEverywhere(mapped); return; }
+
+  // first run: just default uk (без блокирующего экрана)
+  applyLang();
 }
 
 function applyLang(){
@@ -342,9 +264,9 @@ function applyLang(){
 
   $("lblResult").textContent = t.youReceive;
   $("rateLineLabel").textContent = t.rate;
+  $("rateStatus").textContent = state.rate ? "" : t.rateUnavailable;
   $("rateLockedLabel").textContent = t.locked;
   $("createBtn").textContent = t.create;
-
   $("rulesTitle").textContent = t.rulesTitle;
   $("faqTitle").textContent = t.faqTitle;
   $("accTitle").textContent = t.accTitle;
@@ -352,101 +274,22 @@ function applyLang(){
   $("btnLogin").textContent = t.login;
   $("btnReg").textContent = t.reg;
 
-  if(!state.rate) $("rateStatus").textContent = t.rateUnavailable;
+  $("netTitle").textContent = t.pickNet;
 }
 
-function showView(key){
-  Object.values(views).forEach(v=>v.classList.remove("active"));
-  views[key].classList.add("active");
-}
-
-function setAssetUI(prefix, asset){
-  $(prefix+"Icon").src = asset.icon;
-  $(prefix+"Icon").alt = asset.code;
-  $(prefix+"Name").textContent = asset.name;
-  $(prefix+"Sub").textContent = asset.code;
-}
-
-function setNetworkUI(net){
-  $("giveNetLabel").textContent = net;
-  $("giveNetIcon").src = NET_ICON[net] || "logos/networks/trc20.png";
-  $("giveNetIcon").alt = net;
-}
-
-// ======= Mode logic =======
-function applyModeUI() {
-  if (state.mode === "crypto_to_bank") {
-    setAssetUI("give", state.giveCrypto);
-    setAssetUI("get", state.getBank);
-
-    // network button visibility
-    const nets = state.giveCrypto.networks || [];
-    if (nets.length > 1) {
-      $("giveNetBtn").style.display = "flex";
-      if (!nets.includes(state.giveNet)) state.giveNet = nets[0];
-      setNetworkUI(state.giveNet);
-    } else {
-      $("giveNetBtn").style.display = "none";
-      state.giveNet = nets[0] || "TRC20";
-    }
-  } else {
-    // bank -> crypto
-    setAssetUI("give", state.giveBank);
-    setAssetUI("get", state.getCrypto);
-
-    // network shown для "получаемой" crypto (мы всё равно выбираем сеть)
-    const nets = state.getCrypto.networks || [];
-    $("giveNetBtn").style.display = (nets.length > 1) ? "flex" : "none";
-    state.giveNet = nets[0] || "ERC20";
-    if (nets.length > 1) setNetworkUI(state.giveNet);
-  }
-}
-
-function onSwap(){
-  // анимация кнопки
-  const btn = $("swapBtn");
-  btn.classList.remove("anim");
-  void btn.offsetWidth;
-  btn.classList.add("anim");
-  setTimeout(()=>btn.classList.remove("anim"), 420);
-
-  state.mode = (state.mode === "crypto_to_bank") ? "bank_to_crypto" : "crypto_to_bank";
-  applyModeUI();
-  updateRate();
-}
-
-// ======= Calc =======
-function recalc(){
-  if(!state.rate){
-    $("rateValue").textContent = "—";
-    $("resultValue").textContent = "—";
-    return;
-  }
-
-  const res = state.giveAmount * state.rate;
-  $("resultValue").textContent = format(res);
-  $("rateValue").textContent = format(state.rate);
-}
-
-function format(n){
-  if(!isFinite(n)) return "—";
-  return n.toLocaleString(undefined, {maximumFractionDigits: 6});
-}
-
-// ======= Asset picker =======
+// ======= Modals =======
 function openAssetPicker(which){
-  state.picking = which;
+  state.picking = which; // "give" | "get"
   $("assetModal").classList.remove("hidden");
 
   const t = I18N[lang] || I18N.uk;
-  $("assetTitle").textContent = (which === "give") ? t.pickGive : t.pickGet;
+  $("assetTitle").textContent = which === "give" ? t.pickGive : t.pickGet;
 
   const list = $("assetList");
   list.innerHTML = "";
 
-  const items = buildItemsForPicker(which);
-
-  items.forEach(it=>{
+  // ВАЖНО: в обоих полях показываем и банки и крипту
+  ASSETS_ALL.forEach(it=>{
     const btn = document.createElement("button");
     btn.className = "item";
     btn.type = "button";
@@ -468,60 +311,32 @@ function openAssetPicker(which){
 
     const sub = document.createElement("div");
     sub.className = "itemSub";
-    sub.textContent = it.code;
+    sub.textContent = it.type === "crypto" ? (it.code + " • Crypto") : (it.code + " • Bank"); // без бейджа справа
 
     txt.appendChild(name);
     txt.appendChild(sub);
+
     left.appendChild(img);
     left.appendChild(txt);
 
-    const badge = document.createElement("div");
-    badge.className = "badge";
-    badge.textContent = it.type === "crypto" ? "Crypto" : "Bank";
-
     btn.appendChild(left);
-    btn.appendChild(badge);
 
-    btn.addEventListener("click", async ()=>{
-      applyPicked(which, it);
+    btn.addEventListener("click", ()=>{
+      if(which === "give"){
+        state.giveAsset = it;
+        setAssetUI("give", it);
+        ensureNet("give");
+      } else {
+        state.getAsset = it;
+        setAssetUI("get", it);
+        ensureNet("get");
+      }
       closeAssetPicker();
-      await updateRate();
+      recalc();
     });
 
     list.appendChild(btn);
   });
-}
-
-function buildItemsForPicker(which){
-  // правило: одна сторона crypto, другая bank
-  if (state.mode === "crypto_to_bank") {
-    return (which === "give") ? CRYPTO : BANKS;
-  } else {
-    // bank_to_crypto
-    return (which === "give") ? BANKS : CRYPTO;
-  }
-}
-
-function applyPicked(which, it){
-  if (state.mode === "crypto_to_bank") {
-    if (which === "give") {
-      state.giveCrypto = it;
-      const nets = it.networks || [];
-      state.giveNet = nets[0] || "TRC20";
-    } else {
-      state.getBank = it;
-    }
-  } else {
-    // bank_to_crypto
-    if (which === "give") {
-      state.giveBank = it;
-    } else {
-      state.getCrypto = it;
-      const nets = it.networks || [];
-      state.giveNet = nets[0] || "ERC20";
-    }
-  }
-  applyModeUI();
 }
 
 function closeAssetPicker(){
@@ -529,28 +344,15 @@ function closeAssetPicker(){
   state.picking = null;
 }
 
-// ======= Network picker =======
-function openNetworkPicker(){
-  const t = I18N[lang] || I18N.uk;
-  $("netTitle").textContent = t.network;
-
-  let nets = [];
-  let coinCode = "";
-
-  if (state.mode === "crypto_to_bank") {
-    nets = state.giveCrypto.networks || [];
-    coinCode = state.giveCrypto.code;
-  } else {
-    nets = state.getCrypto.networks || [];
-    coinCode = state.getCrypto.code;
-  }
-
-  if (nets.length <= 1) return;
+function openNetPicker(prefix){
+  const asset = prefix === "give" ? state.giveAsset : state.getAsset;
+  if(!isCrypto(asset)) return;
 
   $("netModal").classList.remove("hidden");
   const list = $("netList");
   list.innerHTML = "";
 
+  const nets = asset.networks || [];
   nets.forEach(net=>{
     const btn = document.createElement("button");
     btn.className = "item";
@@ -565,38 +367,77 @@ function openNetworkPicker(){
     img.alt = net;
 
     const txt = document.createElement("div");
+
     const name = document.createElement("div");
     name.className = "itemName";
     name.textContent = net;
 
     const sub = document.createElement("div");
     sub.className = "itemSub";
-    sub.textContent = `${coinCode} network`;
+    sub.textContent = asset.code + " network";
 
     txt.appendChild(name);
     txt.appendChild(sub);
 
     left.appendChild(img);
     left.appendChild(txt);
-
     btn.appendChild(left);
 
-    btn.addEventListener("click", async ()=>{
-      state.giveNet = net;
-      setNetworkUI(net);
-      closeNetworkPicker();
-      await updateRate();
+    btn.addEventListener("click", ()=>{
+      if(prefix === "give") state.giveNet = net;
+      else state.getNet = net;
+
+      setNetUI(prefix, net);
+      closeNetPicker();
+      recalc();
     });
 
     list.appendChild(btn);
   });
 }
 
-function closeNetworkPicker(){
+function closeNetPicker(){
   $("netModal").classList.add("hidden");
 }
 
-// ======= Lock timer (3 min) =======
+// ======= Swap =======
+function onSwap(){
+  // меняем местами ассеты
+  const a1 = state.giveAsset;
+  const n1 = state.giveNet;
+  const a2 = state.getAsset;
+  const n2 = state.getNet;
+
+  state.giveAsset = a2;
+  state.getAsset = a1;
+
+  state.giveNet = n2;
+  state.getNet = n1;
+
+  setAssetUI("give", state.giveAsset);
+  setAssetUI("get", state.getAsset);
+
+  ensureNet("give");
+  ensureNet("get");
+
+  // анимация кнопки
+  const btn = $("swapBtn");
+  btn.classList.remove("spin");
+  void btn.offsetWidth;
+  btn.classList.add("spin");
+
+  recalc();
+}
+
+// ======= Calc =======
+function recalc(){
+  // пока нет fetch — оставим заглушку
+  $("rateValue").textContent = "—";
+  $("resultValue").textContent = "—";
+  $("rateHint").textContent = "Failed to fetch";
+}
+
+// ======= Lock timer =======
 function startLockTimer(){
   if(state.lockTimerId) clearInterval(state.lockTimerId);
   state.lockSeconds = 180;
@@ -615,5 +456,73 @@ function startLockTimer(){
   }, 1000);
 }
 
-// Boot
+// ======= Init =======
+function init(){
+  try { TG?.ready?.(); TG?.expand?.(); } catch {}
+
+  setAssetUI("give", state.giveAsset);
+  setNetUI("give", state.giveNet);
+
+  setAssetUI("get", state.getAsset);
+  setNetUI("get", state.getNet);
+
+  $("giveAmount").value = String(state.giveAmount);
+
+  ensureNet("give");
+  ensureNet("get");
+
+  tabs.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      tabs.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      showView(btn.dataset.tab);
+    });
+  });
+
+  $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("give"));
+  $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("get"));
+
+  $("giveNetBtn").addEventListener("click", ()=> openNetPicker("give"));
+  $("getNetBtn").addEventListener("click", ()=> openNetPicker("get"));
+
+  $("swapBtn").addEventListener("click", onSwap);
+
+  $("giveAmount").addEventListener("input", ()=>{
+    const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
+    state.giveAmount = isFinite(v) ? v : 0;
+    recalc();
+  });
+
+  $("createBtn").addEventListener("click", ()=>{
+    alert(`Заявка: ${state.giveAmount} ${state.giveAsset.code}${isCrypto(state.giveAsset)?` (${state.giveNet})`:``} → ${state.getAsset.name}${isCrypto(state.getAsset)?` (${state.getNet})`:``}`);
+  });
+
+  // language dropdown
+  const langMenu = $("langMenu");
+  $("langBtn").addEventListener("click", (e)=>{
+    e.stopPropagation();
+    langMenu.classList.toggle("hidden");
+  });
+
+  document.querySelectorAll(".pill[data-lang]").forEach(p=>{
+    p.addEventListener("click", async ()=>{
+      await setLangEverywhere(p.dataset.lang);
+      langMenu.classList.add("hidden");
+    });
+  });
+
+  // click outside closes dropdown
+  document.addEventListener("click", ()=> langMenu.classList.add("hidden"));
+
+  // modals close
+  $("assetClose").addEventListener("click", closeAssetPicker);
+  $("assetModal").addEventListener("click", (e)=>{ if(e.target.id==="assetModal") closeAssetPicker(); });
+
+  $("netClose").addEventListener("click", closeNetPicker);
+  $("netModal").addEventListener("click", (e)=>{ if(e.target.id==="netModal") closeNetPicker(); });
+
+  startLockTimer();
+  initLanguage().then(()=>{ applyLang(); recalc(); });
+}
+
 document.addEventListener("DOMContentLoaded", init);
