@@ -10,18 +10,15 @@
   <div class="bg"></div>
 
   <main class="app">
-    <!-- Header block (это часть сайта, не Telegram-шапка) -->
     <section class="top">
       <div class="topRow">
         <div class="brand">
-          <!-- твой путь -->
           <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
         </div>
 
         <div class="langWrap">
           <button id="langBtn" class="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-            <span id="langLabel">UA</span>
-            <span class="chev">▾</span>
+            <span id="langLabel">UA</span><span class="chev">▾</span>
           </button>
         </div>
       </div>
@@ -40,47 +37,58 @@
         <div class="rateBar">
           <div class="rateText" id="rateStatus">Оновлюємо курс…</div>
           <div class="ratePill" id="rateLockPill" hidden>
-            <span>Курс зафіксовано</span>
-            <span class="dot">•</span>
-            <span id="lockCountdown">180s</span>
+            <span>Курс зафіксовано</span><span class="dot">•</span><span id="lockCountdown">180s</span>
           </div>
         </div>
 
         <div class="field">
           <div class="label">Віддаєте</div>
-          <button id="giveSelectBtn" class="selectBtn" type="button">
-            <span class="left">
-              <img id="giveIcon" class="icon" alt="" />
-              <span class="selText">
-                <span id="giveName" class="main">—</span>
-                <span id="giveSub" class="sub">—</span>
+
+          <div class="row2col">
+            <button id="giveSelectBtn" class="selectBtn" type="button">
+              <span class="left">
+                <img id="giveIcon" class="icon" alt="" />
+                <span class="selText">
+                  <span id="giveName" class="main">—</span>
+                  <span id="giveSub" class="sub">—</span>
+                </span>
               </span>
-            </span>
-            <span class="right">▾</span>
-          </button>
+              <span class="right">▾</span>
+            </button>
+
+            <button id="giveNetBtn" class="netBtn hidden" type="button">
+              <span id="giveNetLabel">Network</span><span class="right">▾</span>
+            </button>
+          </div>
 
           <input id="giveAmount" class="amount" inputmode="decimal" placeholder="0" value="1000" />
         </div>
 
         <div class="swapRow">
           <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
-            <span class="arr">←</span>
-            <span class="arr">→</span>
+            <span class="arr">↔</span>
           </button>
         </div>
 
         <div class="field">
           <div class="label">Отримуєте</div>
-          <button id="getSelectBtn" class="selectBtn" type="button">
-            <span class="left">
-              <img id="getIcon" class="icon" alt="" />
-              <span class="selText">
-                <span id="getName" class="main">—</span>
-                <span id="getSub" class="sub">—</span>
+
+          <div class="row2col">
+            <button id="getSelectBtn" class="selectBtn" type="button">
+              <span class="left">
+                <img id="getIcon" class="icon" alt="" />
+                <span class="selText">
+                  <span id="getName" class="main">—</span>
+                  <span id="getSub" class="sub">—</span>
+                </span>
               </span>
-            </span>
-            <span class="right">▾</span>
-          </button>
+              <span class="right">▾</span>
+            </button>
+
+            <button id="getNetBtn" class="netBtn hidden" type="button">
+              <span id="getNetLabel">Network</span><span class="right">▾</span>
+            </button>
+          </div>
 
           <div class="resultBox">
             <div class="resultLabel">Ви отримаєте</div>
@@ -96,21 +104,27 @@
 
       <!-- RULES -->
       <div id="view-rules" class="view hidden">
-        <h2 class="h">Правила</h2>
-        <p class="p">Тут будуть правила обміну (поки заглушка).</p>
+        <h2 class="h">Правила обміну</h2>
+
+        <div class="rulesBox">
+          <div class="ruleItem"><span class="dot2"></span><span><b>Час обробки:</b> до <b>40 хвилин</b>.</span></div>
+          <div class="ruleItem"><span class="dot2"></span><span>У рідкісних випадках — до <b>72 годин</b> (залежить від банків/мереж).</span></div>
+          <div class="ruleItem"><span class="dot2"></span><span><b>Курс фіксується</b> після натискання “Створити заявку” на <b>3 хвилини</b>.</span></div>
+          <div class="ruleItem"><span class="dot2"></span><span>Вказуйте коректні реквізити та контакт у Telegram.</span></div>
+          <div class="ruleItem"><span class="dot2"></span><span>У разі помилки в реквізитах — обробка заявки може бути призупинена.</span></div>
+        </div>
       </div>
 
       <!-- FAQ -->
       <div id="view-faq" class="view hidden">
         <h2 class="h">FAQ</h2>
-        <p class="p">Тут буде FAQ (поки заглушка).</p>
+        <p class="p">Пізніше додамо питання/відповіді.</p>
       </div>
 
       <!-- ACCOUNT -->
       <div id="view-account" class="view hidden">
         <h2 class="h">Акаунт</h2>
         <p class="p">Тут буде вхід/реєстрація та KYC (поки без підключення).</p>
-
         <div class="row2">
           <button class="ghostBtn" type="button">Увійти</button>
           <button class="ghostBtn2" type="button">Реєстрація</button>
@@ -119,7 +133,7 @@
     </section>
   </main>
 
-  <!-- Universal picker modal -->
+  <!-- Picker modal (asset) -->
   <div id="picker" class="picker hidden" role="dialog" aria-modal="true">
     <div id="pickerOverlay" class="overlay"></div>
     <div class="sheet">
@@ -132,7 +146,19 @@
     </div>
   </div>
 
-  <!-- Language mini-list (simple, no popup bug) -->
+  <!-- Picker modal (networks) -->
+  <div id="netPicker" class="picker hidden" role="dialog" aria-modal="true">
+    <div id="netOverlay" class="overlay"></div>
+    <div class="sheet">
+      <div class="sheetTop">
+        <div class="sheetTitle" id="netTitle">Network</div>
+        <button id="netClose" class="xBtn" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="netList" class="list" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- Language -->
   <div id="langMenu" class="langMenu hidden" role="listbox" aria-label="Language">
     <button class="langItem" data-lang="UA" type="button">UA</button>
     <button class="langItem" data-lang="EN" type="button">EN</button>
