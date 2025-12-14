@@ -64,8 +64,7 @@ const I18N = {
     tabSwap:"Обмін", tabRules:"Правила", tabFaq:"FAQ", tabAccount:"Акаунт",
     give:"Віддаєте", get:"Отримуєте",
     youReceive:"Ви отримаєте",
-    rate:"Курс:", rateUnavailable:"Курс недоступний",
-    create:"Створити заявку",
+    rate:"Курс:", create:"Створити заявку",
     rulesTitle:"Умови обміну",
     faqTitle:"FAQ",
     accTitle:"Акаунт",
@@ -73,16 +72,27 @@ const I18N = {
     login:"Увійти", reg:"Реєстрація",
     pickGive:"Виберіть що віддаєте",
     pickGet:"Виберіть що отримуєте",
-    pickAsset:"Виберіть актив",
     pickNet:"Оберіть мережу",
     failed:"Не вдалося отримати курс",
+    rulesT1:"Час обробки",
+    rulesB1:"Зазвичай до <b>40 хвилин</b>.",
+    rulesB1b:"У рідкісних випадках — до <b>72 годин</b>.",
+    rulesT2:"Фіксація курсу",
+    rulesB2:"Курс фіксується на момент створення заявки.",
+    rulesT3:"Контакт у Telegram",
+    rulesB3:"Вкажіть ваш Telegram для звʼязку.",
+    rulesT4:"Підтвердження",
+    rulesB4:"Оператор підтвердить реквізити та суму.",
+    faqQ1:"Коли фіксується курс?",
+    faqA1:"Після створення заявки.",
+    faqQ2:"Скільки триває обмін?",
+    faqA2:"Зазвичай до 40 хвилин.",
   },
   en: {
     tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
     give:"You give", get:"You get",
     youReceive:"You will receive",
-    rate:"Rate:", rateUnavailable:"Rate unavailable",
-    create:"Create request",
+    rate:"Rate:", create:"Create request",
     rulesTitle:"Exchange terms",
     faqTitle:"FAQ",
     accTitle:"Account",
@@ -90,16 +100,27 @@ const I18N = {
     login:"Login", reg:"Sign up",
     pickGive:"Choose what you give",
     pickGet:"Choose what you get",
-    pickAsset:"Choose asset",
     pickNet:"Choose network",
     failed:"Failed to fetch rate",
+    rulesT1:"Processing time",
+    rulesB1:"Usually up to <b>40 minutes</b>.",
+    rulesB1b:"In rare cases — up to <b>72 hours</b>.",
+    rulesT2:"Rate lock",
+    rulesB2:"The rate is locked at the moment you create the request.",
+    rulesT3:"Telegram contact",
+    rulesB3:"Provide your Telegram username for communication.",
+    rulesT4:"Confirmation",
+    rulesB4:"An operator will confirm details and the amount.",
+    faqQ1:"When is the rate locked?",
+    faqA1:"After you create the request.",
+    faqQ2:"How long does the exchange take?",
+    faqA2:"Usually up to 40 minutes.",
   },
   pl: {
     tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
     give:"Dajesz", get:"Otrzymujesz",
     youReceive:"Otrzymasz",
-    rate:"Kurs:", rateUnavailable:"Kurs niedostępny",
-    create:"Utwórz zgłoszenie",
+    rate:"Kurs:", create:"Utwórz zgłoszenie",
     rulesTitle:"Warunki wymiany",
     faqTitle:"FAQ",
     accTitle:"Konto",
@@ -107,9 +128,21 @@ const I18N = {
     login:"Zaloguj", reg:"Rejestracja",
     pickGive:"Wybierz co dajesz",
     pickGet:"Wybierz co otrzymujesz",
-    pickAsset:"Wybierz aktywo",
     pickNet:"Wybierz sieć",
     failed:"Nie udało się pobrać kursu",
+    rulesT1:"Czas realizacji",
+    rulesB1:"Zwykle do <b>40 minut</b>.",
+    rulesB1b:"W rzadkich przypadkach — do <b>72 godzin</b>.",
+    rulesT2:"Blokada kursu",
+    rulesB2:"Kurs jest blokowany w momencie utworzenia zgłoszenia.",
+    rulesT3:"Kontakt w Telegramie",
+    rulesB3:"Podaj swój Telegram do kontaktu.",
+    rulesT4:"Potwierdzenie",
+    rulesB4:"Operator potwierdzi dane i kwotę.",
+    faqQ1:"Kiedy kurs jest blokowany?",
+    faqA1:"Po utworzeniu zgłoszenia.",
+    faqQ2:"Ile trwa wymiana?",
+    faqA2:"Zwykle do 40 minut.",
   }
 };
 
@@ -171,29 +204,26 @@ const views = {
 };
 
 const tabs = Array.from(document.querySelectorAll(".tab"));
-
 let lang = getLocalLang() || "uk";
 
 const state = {
-  giveAsset: CRYPTO[0],  // USDT
+  giveAsset: CRYPTO[0],
   giveNet: "TRC20",
-  getAsset: BANKS[1],   // Monobank
+  getAsset: BANKS[1],
   giveAmount: 1000,
   rate: null,
-  picking: null, // "giveAsset" | "getAsset"
+  picking: null,
 };
 
 // ======= Init =======
 function init(){
   try { TG?.ready?.(); TG?.expand?.(); } catch {}
 
-  // default UI
   setAssetUI("give", state.giveAsset);
   setNetworkUI(state.giveNet);
   setAssetUI("get", state.getAsset);
   $("giveAmount").value = String(state.giveAmount);
 
-  // tabs
   tabs.forEach(btn=>{
     btn.addEventListener("click", ()=>{
       tabs.forEach(b=>b.classList.remove("active"));
@@ -202,27 +232,22 @@ function init(){
     });
   });
 
-  // open modals
   $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("giveAsset"));
   $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("getAsset"));
   $("giveNetBtn").addEventListener("click", ()=> openNetworkPicker());
 
-  // swap
   $("swapBtn").addEventListener("click", onSwap);
 
-  // amount change
   $("giveAmount").addEventListener("input", ()=>{
     const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
     state.giveAmount = isFinite(v) ? v : 0;
     recalc();
   });
 
-  // create
   $("createBtn").addEventListener("click", ()=>{
-    alert("Заявка: " + state.giveAmount + " " + state.giveAsset.code + " ("+state.giveNet+") → " + state.getAsset.name);
+    alert("Request: " + state.giveAmount + " " + state.giveAsset.code + " ("+state.giveNet+") → " + state.getAsset.name);
   });
 
-  // language dropdown (не overlay)
   $("langBtn").addEventListener("click", (e)=> {
     e.stopPropagation();
     $("langMenu").classList.toggle("hidden");
@@ -240,7 +265,6 @@ function init(){
     });
   });
 
-  // modals close
   $("assetClose").addEventListener("click", closeAssetPicker);
   $("assetModal").addEventListener("click", (e)=>{
     if(e.target.id === "assetModal") closeAssetPicker();
@@ -251,7 +275,6 @@ function init(){
     if(e.target.id === "netModal") closeNetworkPicker();
   });
 
-  // language init
   initLanguage().then(()=>{
     applyLang();
     recalc();
@@ -264,6 +287,7 @@ async function setLangEverywhere(v) {
   await tgSetItem(LANG_KEY, v);
   $("langLabel").textContent = (v === "uk" ? "UA" : v.toUpperCase());
   applyLang();
+  recalc();
 }
 
 async function initLanguage(){
@@ -293,6 +317,12 @@ function showView(key){
   views[key].classList.add("active");
 }
 
+function setHTML(id, html){
+  const el = $(id);
+  if(!el) return;
+  el.innerHTML = html;
+}
+
 function applyLang(){
   const t = I18N[lang] || I18N.uk;
 
@@ -307,6 +337,7 @@ function applyLang(){
   $("lblResult").textContent = t.youReceive;
   $("rateLineLabel").textContent = t.rate;
   $("createBtn").textContent = t.create;
+
   $("rulesTitle").textContent = t.rulesTitle;
   $("faqTitle").textContent = t.faqTitle;
   $("accTitle").textContent = t.accTitle;
@@ -314,8 +345,22 @@ function applyLang(){
   $("btnLogin").textContent = t.login;
   $("btnReg").textContent = t.reg;
 
-  // hint message
-  if(!state.rate) $("rateHint").textContent = t.failed;
+  // Rules / FAQ full i18n (fix)
+  if($("rulesT1")) $("rulesT1").textContent = t.rulesT1;
+  if($("rulesT2")) $("rulesT2").textContent = t.rulesT2;
+  if($("rulesT3")) $("rulesT3").textContent = t.rulesT3;
+  if($("rulesT4")) $("rulesT4").textContent = t.rulesT4;
+
+  setHTML("rulesB1", t.rulesB1);
+  setHTML("rulesB1b", t.rulesB1b);
+  setHTML("rulesB2", t.rulesB2);
+  setHTML("rulesB3", t.rulesB3);
+  setHTML("rulesB4", t.rulesB4);
+
+  if($("faqQ1")) $("faqQ1").textContent = t.faqQ1;
+  if($("faqA1")) $("faqA1").textContent = t.faqA1;
+  if($("faqQ2")) $("faqQ2").textContent = t.faqQ2;
+  if($("faqA2")) $("faqA2").textContent = t.faqA2;
 }
 
 function setAssetUI(prefix, asset){
@@ -332,14 +377,12 @@ function setNetworkUI(net){
 }
 
 function onSwap(){
-  // swap local state: give <-> get
   const a = state.giveAsset;
   const b = state.getAsset;
 
   state.giveAsset = b;
   state.getAsset = a;
 
-  // if give is crypto => show network
   if(state.giveAsset.type === "crypto"){
     const nets = state.giveAsset.networks || [];
     state.giveNet = nets.includes(state.giveNet) ? state.giveNet : (nets[0] || "TRC20");
@@ -376,7 +419,7 @@ function format(n){
   return n.toLocaleString(undefined, {maximumFractionDigits: 6});
 }
 
-// ======= Asset picker (в обоих полях: банки + крипта) =======
+// ======= Asset picker (banks + crypto in BOTH) =======
 function openAssetPicker(which){
   state.picking = which;
   $("assetModal").classList.remove("hidden");
@@ -387,7 +430,6 @@ function openAssetPicker(which){
   const list = $("assetList");
   list.innerHTML = "";
 
-  // и банки и крипта в обоих полях
   const items = [...CRYPTO, ...BANKS];
 
   items.forEach(it=>{
@@ -510,5 +552,4 @@ function closeNetworkPicker(){
   $("netModal").classList.add("hidden");
 }
 
-// Boot
 document.addEventListener("DOMContentLoaded", init);
