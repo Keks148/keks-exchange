@@ -64,11 +64,8 @@ const I18N = {
     tabSwap:"Обмін", tabRules:"Правила", tabFaq:"FAQ", tabAccount:"Акаунт",
     give:"Віддаєте", get:"Отримуєте",
     youReceive:"Ви отримаєте",
-    rate:"Курс:", rateUnavailable:"Курс недоступний (WhiteBIT)",
-    locked:"Курс зафіксовано",
-    create:"Створити заявку",
-    rulesTitle:"Умови обміну",
-    faqTitle:"FAQ",
+    rate:"Курс:", create:"Створити заявку",
+    rulesTitle:"Умови обміну", faqTitle:"FAQ",
     accTitle:"Акаунт",
     accText:"Тут буде вхід/реєстрація та KYC (поки без підключення).",
     login:"Увійти", reg:"Реєстрація",
@@ -81,11 +78,8 @@ const I18N = {
     tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
     give:"You give", get:"You get",
     youReceive:"You will receive",
-    rate:"Rate:", rateUnavailable:"Rate unavailable (WhiteBIT)",
-    locked:"Rate locked",
-    create:"Create request",
-    rulesTitle:"Exchange terms",
-    faqTitle:"FAQ",
+    rate:"Rate:", create:"Create request",
+    rulesTitle:"Exchange terms", faqTitle:"FAQ",
     accTitle:"Account",
     accText:"Login/registration & KYC (not connected yet).",
     login:"Login", reg:"Sign up",
@@ -98,11 +92,8 @@ const I18N = {
     tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
     give:"Dajesz", get:"Otrzymujesz",
     youReceive:"Otrzymasz",
-    rate:"Kurs:", rateUnavailable:"Kurs niedostępny (WhiteBIT)",
-    locked:"Kurs zablokowany",
-    create:"Utwórz zgłoszenie",
-    rulesTitle:"Warunki wymiany",
-    faqTitle:"FAQ",
+    rate:"Kurs:", create:"Utwórz zgłoszenie",
+    rulesTitle:"Warunki wymiany", faqTitle:"FAQ",
     accTitle:"Konto",
     accText:"Logowanie/rejestracja i KYC (jeszcze nie podłączone).",
     login:"Zaloguj", reg:"Rejestracja",
@@ -140,9 +131,7 @@ function tgGetItem(key) {
         return;
       }
       resolve(null);
-    } catch {
-      resolve(null);
-    }
+    } catch { resolve(null); }
   });
 }
 
@@ -154,9 +143,7 @@ function tgSetItem(key, value) {
         return;
       }
       resolve(false);
-    } catch {
-      resolve(false);
-    }
+    } catch { resolve(false); }
   });
 }
 
@@ -182,23 +169,18 @@ const state = {
   getAsset: BANKS[1],   // Monobank
   giveAmount: 1000,
   rate: null,
-  lockSeconds: 180,
-  lockTimerId: null,
-  picking: null, // "giveAsset" | "getAsset"
+  picking: null,
 };
 
 // ======= Init =======
 function init(){
-  // Telegram init
   try { TG?.ready?.(); TG?.expand?.(); } catch {}
 
-  // defaults
+  // UI defaults
   setAssetUI("give", state.giveAsset);
   ensureGiveNetworkVisibility();
   setNetworkUI(state.giveNet);
-
   setAssetUI("get", state.getAsset);
-
   $("giveAmount").value = String(state.giveAmount);
 
   // tabs
@@ -210,7 +192,7 @@ function init(){
     });
   });
 
-  // asset pickers (ОБА поля показывают банки+крипту)
+  // asset pickers (банки+крипта в обоих полях)
   $("giveAssetBtn").addEventListener("click", ()=> openAssetPicker("giveAsset"));
   $("getAssetBtn").addEventListener("click", ()=> openAssetPicker("getAsset"));
 
@@ -220,27 +202,26 @@ function init(){
   // swap
   $("swapBtn").addEventListener("click", onSwap);
 
-  // amount change
+  // amount
   $("giveAmount").addEventListener("input", ()=>{
     const v = parseFloat(($("giveAmount").value || "0").replace(",", "."));
     state.giveAmount = isFinite(v) ? v : 0;
     recalc();
   });
 
-  // create request
+  // create
   $("createBtn").addEventListener("click", ()=>{
     alert("Заявка: " + state.giveAmount + " " + state.giveAsset.code + (state.giveAsset.type==="crypto" ? " ("+state.giveNet+")" : "") + " → " + state.getAsset.name);
   });
 
-  // language dropdown (НЕ блокирует экран)
+  // language dropdown
   const langMenu = $("langMenu");
   const langBtn = $("langBtn");
 
   function placeLangMenu(){
     const r = langBtn.getBoundingClientRect();
-    const x = Math.max(8, Math.min(window.innerWidth - 8 - 170, r.right - 160));
-    const y = r.bottom + 8 + window.scrollY;
-
+    const x = Math.max(6, Math.min(window.innerWidth - 6 - 150, r.right - 140));
+    const y = r.bottom + 6 + window.scrollY;
     langMenu.style.left = x + "px";
     langMenu.style.top = y + "px";
   }
@@ -262,7 +243,7 @@ function init(){
     });
   });
 
-  // modals close
+  // modal close
   $("assetClose").addEventListener("click", closeAssetPicker);
   $("assetModal").addEventListener("click", (e)=>{
     if(e.target.id === "assetModal") closeAssetPicker();
@@ -273,14 +254,22 @@ function init(){
     if(e.target.id === "netModal") closeNetworkPicker();
   });
 
-  // start lock timer
-  startLockTimer();
-
-  // language init (async)
   initLanguage().then(()=>{
     applyLang();
+    // убрать блоки фиксации/whitebit
+    hideRateStatusUI();
     recalc();
   });
+}
+
+function hideRateStatusUI(){
+  // убрать правый блок "зафіксовано/таймер"
+  const lockBox = $("lockBox");
+  if (lockBox) lockBox.style.display = "none";
+
+  // убрать левый текст про WhiteBIT
+  const rateStatus = $("rateStatus");
+  if (rateStatus) rateStatus.textContent = "";
 }
 
 async function setLangEverywhere(v) {
@@ -290,30 +279,21 @@ async function setLangEverywhere(v) {
   await tgSetItem(LANG_KEY, v);
   $("langLabel").textContent = (v === "uk" ? "UA" : v.toUpperCase());
   applyLang();
+  hideRateStatusUI();
 }
 
 async function initLanguage(){
   $("langLabel").textContent = (lang === "uk" ? "UA" : lang.toUpperCase());
 
   const cloud = await tgGetItem(LANG_KEY);
-  if (cloud && I18N[cloud]) {
-    await setLangEverywhere(cloud);
-    return;
-  }
+  if (cloud && I18N[cloud]) { await setLangEverywhere(cloud); return; }
 
   const local = getLocalLang();
-  if (local && I18N[local]) {
-    lang = local;
-    return;
-  }
+  if (local && I18N[local]) { lang = local; return; }
 
   const mapped = mapTgLang(TG?.initDataUnsafe?.user?.language_code);
-  if (mapped && I18N[mapped]) {
-    await setLangEverywhere(mapped);
-    return;
-  }
+  if (mapped && I18N[mapped]) { await setLangEverywhere(mapped); return; }
 
-  // если ничего нет — пусть будет uk без блокировок
   await setLangEverywhere("uk");
 }
 
@@ -335,8 +315,6 @@ function applyLang(){
 
   $("lblResult").textContent = t.youReceive;
   $("rateLineLabel").textContent = t.rate;
-  $("rateStatus").textContent = state.rate ? "" : t.rateUnavailable;
-  $("rateLockedLabel").textContent = t.locked;
   $("createBtn").textContent = t.create;
 
   $("rulesTitle").textContent = t.rulesTitle;
@@ -346,7 +324,8 @@ function applyLang(){
   $("btnLogin").textContent = t.login;
   $("btnReg").textContent = t.reg;
 
-  $("netTitle").textContent = t.pickNet;
+  const netTitle = $("netTitle");
+  if(netTitle) netTitle.textContent = t.pickNet;
 }
 
 function setAssetUI(prefix, asset){
@@ -374,7 +353,6 @@ function ensureGiveNetworkVisibility(){
 }
 
 function onSwap(){
-  // просто меняем местами выбранные ассеты
   const oldGive = state.giveAsset;
   const oldGet  = state.getAsset;
 
@@ -385,14 +363,12 @@ function onSwap(){
   setAssetUI("get", state.getAsset);
 
   ensureGiveNetworkVisibility();
-
   recalc();
 }
 
 function recalc(){
   const t = I18N[lang] || I18N.uk;
 
-  // тут пока нет реального курса — оставляем как было, но текст нормальный
   if(!state.rate){
     $("rateValue").textContent = "—";
     $("resultValue").textContent = "—";
@@ -411,7 +387,7 @@ function format(n){
   return n.toLocaleString(undefined, {maximumFractionDigits: 6});
 }
 
-// ======= Asset picker (банки+крипта, без badge) =======
+// ======= Asset picker (банки+крипта) =======
 function openAssetPicker(which){
   state.picking = which;
   $("assetModal").classList.remove("hidden");
@@ -451,7 +427,6 @@ function openAssetPicker(which){
 
     left.appendChild(img);
     left.appendChild(txt);
-
     btn.appendChild(left);
 
     btn.addEventListener("click", ()=>{
@@ -500,6 +475,7 @@ function openNetworkPicker(){
     img.alt = net;
 
     const txt = document.createElement("div");
+
     const name = document.createElement("div");
     name.className = "itemName";
     name.textContent = net;
@@ -513,7 +489,6 @@ function openNetworkPicker(){
 
     left.appendChild(img);
     left.appendChild(txt);
-
     btn.appendChild(left);
 
     btn.addEventListener("click", ()=>{
@@ -529,25 +504,6 @@ function openNetworkPicker(){
 
 function closeNetworkPicker(){
   $("netModal").classList.add("hidden");
-}
-
-// ======= Lock timer (3 min) =======
-function startLockTimer(){
-  if(state.lockTimerId) clearInterval(state.lockTimerId);
-  state.lockSeconds = 180;
-  $("lockTimer").textContent = state.lockSeconds + "s";
-
-  state.lockTimerId = setInterval(()=>{
-    state.lockSeconds -= 1;
-    if(state.lockSeconds <= 0){
-      state.lockSeconds = 0;
-      $("lockTimer").textContent = "0s";
-      clearInterval(state.lockTimerId);
-      state.lockTimerId = null;
-    } else {
-      $("lockTimer").textContent = state.lockSeconds + "s";
-    }
-  }, 1000);
 }
 
 // Boot
