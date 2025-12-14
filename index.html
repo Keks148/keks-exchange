@@ -10,11 +10,13 @@
 <body>
   <div class="page">
 
+    <!-- Header card -->
     <header class="headerCard">
       <div class="topRow">
         <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
         <div class="spacer"></div>
 
+        <!-- Compact language selector -->
         <button id="langBtn" class="langBtn" type="button" aria-label="Language">
           <span id="langLabel">UA</span>
           <span class="chev">▾</span>
@@ -29,12 +31,14 @@
       </nav>
     </header>
 
+    <!-- Content -->
     <main class="content">
+      <!-- Swap -->
       <section id="viewSwap" class="view active">
         <div class="card">
           <div class="statusRow">
             <div id="rateStatus" class="statusLeft">Курс недоступний (WhiteBIT)</div>
-            <div class="statusRight">
+            <div class="statusRight" id="lockBox">
               <span id="rateLockedLabel">Курс зафіксовано</span>
               <span class="dot">•</span>
               <span id="lockTimer">180s</span>
@@ -43,8 +47,8 @@
 
           <div class="label" id="lblGive">Віддаєте</div>
 
-          <!-- ROW 1: asset (65%) + network (35%) -->
-          <div class="rowTop">
+          <!-- Give row: asset (60%) + network (40%) -->
+          <div class="row2Top">
             <button id="giveAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="giveIcon" class="icon" alt="" />
@@ -65,11 +69,12 @@
             </button>
           </div>
 
-          <!-- ROW 2: amount center 55% -->
-          <div class="rowAmount">
+          <!-- Amount centered (like верхняя ячейка) -->
+          <div class="amountRow">
             <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
           </div>
 
+          <!-- Swap button -->
           <div class="swapCenter">
             <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
               <img class="swapIcon" src="logos/arrows.svg" alt="swap" />
@@ -78,8 +83,8 @@
 
           <div class="label" id="lblGet">Отримуєте</div>
 
-          <!-- ROW 1: asset (65%) + network (35%) -->
-          <div class="rowTop">
+          <!-- Get row -->
+          <div class="row2">
             <button id="getAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="getIcon" class="icon" alt="" />
@@ -91,18 +96,10 @@
               <span class="right">▾</span>
             </button>
 
-            <button id="getNetBtn" class="netBtn" type="button">
-              <span class="netLeft">
-                <img id="getNetIcon" class="netIcon" alt="" />
-                <span id="getNetLabel" class="netText">TRC20</span>
-              </span>
-              <span class="right">▾</span>
-            </button>
-          </div>
-
-          <div class="resultBox">
-            <div class="resultLabel" id="lblResult">Ви отримаєте</div>
-            <div id="resultValue" class="resultValue">—</div>
+            <div class="resultBox">
+              <div class="resultLabel" id="lblResult">Ви отримаєте</div>
+              <div id="resultValue" class="resultValue">—</div>
+            </div>
           </div>
 
           <div class="rateLine">
@@ -111,10 +108,12 @@
           </div>
 
           <div id="rateHint" class="hint"></div>
+
           <button id="createBtn" class="cta" type="button">Створити заявку</button>
         </div>
       </section>
 
+      <!-- Rules -->
       <section id="viewRules" class="view">
         <div class="card rulesCard">
           <h2 id="rulesTitle">Умови обміну</h2>
@@ -140,7 +139,7 @@
             <div class="rulesIcon">📲</div>
             <div>
               <div class="rulesHead" id="rulesT3">Контакт у Telegram</div>
-              <div class="rulesText" id="rulesB3">Вкажіть ваш робочий Telegram для звʼязку. Якщо він невірний або ви не відповідаєте — обробка може бути призупинена.</div>
+              <div class="rulesText" id="rulesB3">Вкажіть ваш робочий Telegram для звʼязку. Якщо він невірний або ви не відповідаєте — обробка може бути призупинена до підтвердження.</div>
             </div>
           </div>
 
@@ -154,6 +153,7 @@
         </div>
       </section>
 
+      <!-- FAQ -->
       <section id="viewFaq" class="view">
         <div class="card">
           <h2 id="faqTitle">FAQ</h2>
@@ -170,6 +170,7 @@
         </div>
       </section>
 
+      <!-- Account -->
       <section id="viewAccount" class="view">
         <div class="card">
           <h2 id="accTitle">Акаунт</h2>
@@ -183,8 +184,8 @@
     </main>
   </div>
 
-  <!-- Language dropdown (small) -->
-  <div id="langMenu" class="dropdown hidden" role="dialog" aria-modal="true">
+  <!-- Language dropdown (НЕ блокирует клики) -->
+  <div id="langMenu" class="dropdown hidden" role="dialog" aria-modal="false">
     <div class="dropdownCard">
       <button class="pill" data-lang="uk">UA</button>
       <button class="pill" data-lang="en">EN</button>
@@ -192,7 +193,7 @@
     </div>
   </div>
 
-  <!-- Asset picker -->
+  <!-- Asset picker (банки + крипта в обоих полях, без badge справа) -->
   <div id="assetModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modalSheet">
       <div class="modalHead">
@@ -207,7 +208,7 @@
   <div id="netModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modalSheet">
       <div class="modalHead">
-        <div id="netTitle" class="modalTitle">Network</div>
+        <div class="modalTitle" id="netTitle">Оберіть мережу</div>
         <button id="netClose" class="closeX" type="button">✕</button>
       </div>
       <div id="netList" class="list"></div>
