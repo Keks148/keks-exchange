@@ -16,7 +16,6 @@ const BANKS = [
 ];
 
 // Crypto
-// Сети можно расширять, это “твоя матрица” (позже подтянешь с биржи)
 const CRYPTO = [
   { id:"usdt", name:"Tether (USDT)", code:"USDT", icon:"logos/crypto/tether-usdt.png", type:"crypto",
     networks:["TRC20","ERC20","BEP20","ARB","POL","SOL","OP"]
@@ -44,7 +43,7 @@ const CRYPTO = [
   },
 ];
 
-// Network icons (твои файлы: logos/networks/*.png)
+// Network icons
 const NET_ICON = {
   "TRC20":"logos/networks/trc20.png",
   "ERC20":"logos/networks/erc20.png",
@@ -60,7 +59,7 @@ const NET_ICON = {
   "TRX":"logos/networks/trx.png",
 };
 
-// ======= Translations (минимум, расширишь) =======
+// ======= Translations =======
 const I18N = {
   uk: {
     tabSwap:"Обмін", tabRules:"Правила", tabFaq:"FAQ", tabAccount:"Акаунт",
@@ -74,6 +73,8 @@ const I18N = {
     accTitle:"Акаунт",
     accText:"Тут буде вхід/реєстрація та KYC (поки без підключення).",
     login:"Увійти", reg:"Реєстрація",
+    pickGive:"Виберіть що віддаєте",
+    pickGet:"Виберіть що отримуєте",
   },
   en: {
     tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
@@ -87,6 +88,8 @@ const I18N = {
     accTitle:"Account",
     accText:"Login/registration & KYC (not connected yet).",
     login:"Login", reg:"Sign up",
+    pickGive:"Choose what you give",
+    pickGet:"Choose what you get",
   },
   pl: {
     tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
@@ -100,10 +103,57 @@ const I18N = {
     accTitle:"Konto",
     accText:"Logowanie/rejestracja i KYC (jeszcze nie podłączone).",
     login:"Zaloguj", reg:"Rejestracja",
+    pickGive:"Wybierz co dajesz",
+    pickGet:"Wybierz co otrzymujesz",
   }
 };
 
-let lang = "uk";
+// ===== Language Storage (Telegram Cloud + local) =====
+const TG = window.Telegram?.WebApp || null;
+const LANG_KEY = "keksswap_lang";
+
+function mapTgLang(code) {
+  const c = String(code || "").toLowerCase();
+  if (c.startsWith("uk") || c.startsWith("ua")) return "uk";
+  if (c.startsWith("pl")) return "pl";
+  if (c.startsWith("en")) return "en";
+  return null;
+}
+
+function getLocalLang() {
+  try { return localStorage.getItem(LANG_KEY); } catch { return null; }
+}
+function setLocalLang(v) {
+  try { localStorage.setItem(LANG_KEY, v); } catch {}
+}
+
+function tgGetItem(key) {
+  return new Promise((resolve) => {
+    try {
+      if (TG?.CloudStorage?.getItem) {
+        TG.CloudStorage.getItem(key, (err, value) => resolve(err ? null : (value ?? null)));
+        return;
+      }
+      resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+function tgSetItem(key, value) {
+  return new Promise((resolve) => {
+    try {
+      if (TG?.CloudStorage?.setItem) {
+        TG.CloudStorage.setItem(key, String(value), () => resolve(true));
+        return;
+      }
+      resolve(false);
+    } catch {
+      resolve(false);
+    }
+  });
+}
 
 // ======= UI refs =======
 const $ = (id) => document.getElementById(id);
@@ -116,6 +166,8 @@ const views = {
 };
 
 const tabs = Array.from(document.querySelectorAll(".tab"));
+
+let lang = getLocalLang() || "uk";
 
 const state = {
   giveAsset: CRYPTO[0],  // USDT
@@ -130,6 +182,9 @@ const state = {
 
 // ======= Init =======
 function init(){
+  // Telegram init
+  try { TG?.ready?.(); TG?.expand?.(); } catch {}
+
   // set defaults icons/text
   setAssetUI("give", state.giveAsset);
   setNetworkUI(state.giveNet);
@@ -165,18 +220,19 @@ function init(){
     alert("Заявка: " + state.giveAmount + " " + state.giveAsset.code + " ("+state.giveNet+") → " + state.getAsset.name);
   });
 
-  // language
+  // language UI
   $("langBtn").addEventListener("click", ()=> $("langMenu").classList.remove("hidden"));
-  $("langClose").addEventListener("click", ()=> $("langMenu").classList.add("hidden"));
-  $("langMenu").addEventListener("click", (e)=>{
-    if(e.target.id === "langMenu") $("langMenu").classList.add("hidden");
+  $("langClose").addEventListener("click", ()=> {
+    // нельзя закрыть, пока язык не выбран (первый запуск)
+    if (getLocalLang()) $("langMenu").classList.add("hidden");
   });
-  document.querySelectorAll(".pill").forEach(p=>{
-    p.addEventListener("click", ()=>{
-      lang = p.dataset.lang;
-      $("langLabel").textContent = (lang==="uk"?"UA":lang.toUpperCase());
+  $("langMenu").addEventListener("click", (e)=>{
+    if(e.target.id === "langMenu" && getLocalLang()) $("langMenu").classList.add("hidden");
+  });
+  document.querySelectorAll(".pill[data-lang]").forEach(p=>{
+    p.addEventListener("click", async ()=>{
+      await setLangEverywhere(p.dataset.lang);
       $("langMenu").classList.add("hidden");
-      applyLang();
     });
   });
 
@@ -194,8 +250,49 @@ function init(){
   // start lock timer
   startLockTimer();
 
+  // language init (async)
+  initLanguage().then(()=>{
+    applyLang();
+    recalc();
+  });
+}
+
+async function setLangEverywhere(v) {
+  lang = v;
+  setLocalLang(v);
+  await tgSetItem(LANG_KEY, v);
+  $("langLabel").textContent = (v === "uk" ? "UA" : v.toUpperCase());
   applyLang();
-  recalc();
+}
+
+async function initLanguage(){
+  // label from local immediately
+  $("langLabel").textContent = (lang === "uk" ? "UA" : lang.toUpperCase());
+
+  // cloud > local > tg auto > show picker
+  const cloud = await tgGetItem(LANG_KEY);
+  if (cloud && I18N[cloud]) {
+    await setLangEverywhere(cloud);
+    $("langMenu").classList.add("hidden");
+    return;
+  }
+
+  const local = getLocalLang();
+  if (local && I18N[local]) {
+    lang = local;
+    $("langMenu").classList.add("hidden");
+    return;
+  }
+
+  const mapped = mapTgLang(TG?.initDataUnsafe?.user?.language_code);
+  if (mapped && I18N[mapped]) {
+    await setLangEverywhere(mapped);
+    $("langMenu").classList.add("hidden");
+    return;
+  }
+
+  // first run: show picker and force choose
+  $("langMenu").classList.remove("hidden");
 }
 
 function showView(key){
@@ -242,34 +339,28 @@ function setNetworkUI(net){
 }
 
 function onSwap(){
-  // swap: crypto <-> bank, keep amount
   const oldGive = state.giveAsset;
   const oldGet = state.getAsset;
 
-  // если слева крипта, справа банк -> меняем местами
-  state.giveAsset = oldGet.type === "bank" ? CRYPTO[0] : oldGet; // защитный
-  state.getAsset = oldGive.type === "crypto" ? BANKS[1] : oldGive; // защитный
+  state.giveAsset = oldGet.type === "bank" ? CRYPTO[0] : oldGet;
+  state.getAsset = oldGive.type === "crypto" ? BANKS[1] : oldGive;
 
-  // если слева стало крипто — сеть подставим
   if(state.giveAsset.type === "crypto"){
     const nets = state.giveAsset.networks || [];
     state.giveNet = nets.includes(state.giveNet) ? state.giveNet : (nets[0] || "TRC20");
     setNetworkUI(state.giveNet);
+    $("giveNetBtn").style.display = "flex";
+  } else {
+    $("giveNetBtn").style.display = "none";
   }
 
   setAssetUI("give", state.giveAsset.type === "crypto" ? state.giveAsset : CRYPTO[0]);
   setAssetUI("get", state.getAsset.type === "bank" ? state.getAsset : BANKS[1]);
 
-  // Здесь оставляем твою логику: обмен всегда crypto->UAH или UAH->crypto
-  // Если хочешь — сделаю реальный “swap” по правилам пары.
-
   recalc();
 }
 
 function recalc(){
-  // Тут потом подключим WhiteBIT и расчет твоей маржи.
-  // Сейчас просто выводим "—" пока нет курса.
-
   if(!state.rate){
     $("rateValue").textContent = "—";
     $("resultValue").textContent = "—";
@@ -277,8 +368,6 @@ function recalc(){
     return;
   }
 
-  // пример: если give crypto -> UAH
-  // result = amount * rate
   const res = state.giveAmount * state.rate;
   $("resultValue").textContent = format(res);
   $("rateValue").textContent = format(state.rate);
@@ -295,9 +384,8 @@ function openAssetPicker(which){
   state.picking = which;
   $("assetModal").classList.remove("hidden");
 
-  const title = which === "giveAsset" ? (lang==="en"?"Choose what you give":"Виберіть що віддаєте")
-                                     : (lang==="en"?"Choose what you get":"Виберіть що отримуєте");
-  $("assetTitle").textContent = title;
+  const t = I18N[lang] || I18N.uk;
+  $("assetTitle").textContent = which === "giveAsset" ? t.pickGive : t.pickGet;
 
   const list = $("assetList");
   list.innerHTML = "";
@@ -345,7 +433,6 @@ function openAssetPicker(which){
         state.giveAsset = it;
         setAssetUI("give", it);
 
-        // сеть показываем только для крипты
         if(it.type === "crypto"){
           const nets = it.networks || [];
           state.giveNet = nets[0] || "TRC20";
@@ -439,7 +526,6 @@ function startLockTimer(){
       $("lockTimer").textContent = "0s";
       clearInterval(state.lockTimerId);
       state.lockTimerId = null;
-      // тут позже: авто-обновление курса
     } else {
       $("lockTimer").textContent = state.lockSeconds + "s";
     }
