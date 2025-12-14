@@ -1,11 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <path fill="none"
-        stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M7 7h10l-2.5-2.5
-           M17 17H7l2.5 2.5
-           M7 7v5
-           M17 17v-5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none">
+  <path d="M7 7h9.2l-1.9-1.9a1 1 0 0 1 1.4-1.4l3.7 3.7a1 1 0 0 1 0 1.4l-3.7 3.7a1 1 0 1 1-1.4-1.4L16.2 9H7a3 3 0 0 0-3 3v1a1 1 0 1 1-2 0v-1a5 5 0 0 1 5-5Z"
+        fill="currentColor"/>
+  <path d="M17 17H7.8l1.9 1.9a1 1 0 1 1-1.4 1.4l-3.7-3.7a1 1 0 0 1 0-1.4l3.7-3.7a1 1 0 1 1 1.4 1.4L7.8 15H17a3 3 0 0 0 3-3v-1a1 1 0 1 1 2 0v1a5 5 0 0 1-5 5Z"
+        fill="currentColor"/>
 </svg>
