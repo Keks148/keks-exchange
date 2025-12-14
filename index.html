@@ -17,17 +17,23 @@
         </div>
 
         <div class="langWrap">
-          <button id="langBtn" class="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <button id="langBtn" class="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <span id="langLabel">UA</span><span class="chev">▾</span>
           </button>
+
+          <div id="langPop" class="langPop hidden">
+            <button class="langChip" data-lang="UA" type="button">UA</button>
+            <button class="langChip" data-lang="EN" type="button">EN</button>
+            <button class="langChip" data-lang="PL" type="button">PL</button>
+          </div>
         </div>
       </div>
 
       <nav class="menu">
-        <button class="tab isActive" data-tab="exchange" type="button">Обмін</button>
-        <button class="tab" data-tab="rules" type="button">Правила</button>
-        <button class="tab" data-tab="faq" type="button">FAQ</button>
-        <button class="tab" data-tab="account" type="button">Акаунт</button>
+        <button class="tab isActive" data-tab="exchange" type="button" id="tab-exchange">Обмін</button>
+        <button class="tab" data-tab="rules" type="button" id="tab-rules">Правила</button>
+        <button class="tab" data-tab="faq" type="button" id="tab-faq">FAQ</button>
+        <button class="tab" data-tab="account" type="button" id="tab-account">Акаунт</button>
       </nav>
     </section>
 
@@ -37,12 +43,12 @@
         <div class="rateBar">
           <div class="rateText" id="rateStatus">Оновлюємо курс…</div>
           <div class="ratePill" id="rateLockPill" hidden>
-            <span>Курс зафіксовано</span><span class="dot">•</span><span id="lockCountdown">180s</span>
+            <span id="lockText">Курс зафіксовано</span><span class="dot">•</span><span id="lockCountdown">180s</span>
           </div>
         </div>
 
         <div class="field">
-          <div class="label">Віддаєте</div>
+          <div class="label" id="lbl-give">Віддаєте</div>
 
           <div class="row2col">
             <button id="giveSelectBtn" class="selectBtn" type="button">
@@ -57,7 +63,11 @@
             </button>
 
             <button id="giveNetBtn" class="netBtn hidden" type="button">
-              <span id="giveNetLabel">Network</span><span class="right">▾</span>
+              <span class="netLeft">
+                <img id="giveNetIcon" class="netIcon" alt="" />
+                <span id="giveNetLabel">Network</span>
+              </span>
+              <span class="right">▾</span>
             </button>
           </div>
 
@@ -71,7 +81,7 @@
         </div>
 
         <div class="field">
-          <div class="label">Отримуєте</div>
+          <div class="label" id="lbl-get">Отримуєте</div>
 
           <div class="row2col">
             <button id="getSelectBtn" class="selectBtn" type="button">
@@ -86,12 +96,16 @@
             </button>
 
             <button id="getNetBtn" class="netBtn hidden" type="button">
-              <span id="getNetLabel">Network</span><span class="right">▾</span>
+              <span class="netLeft">
+                <img id="getNetIcon" class="netIcon" alt="" />
+                <span id="getNetLabel">Network</span>
+              </span>
+              <span class="right">▾</span>
             </button>
           </div>
 
           <div class="resultBox">
-            <div class="resultLabel">Ви отримаєте</div>
+            <div class="resultLabel" id="lbl-youget">Ви отримаєте</div>
             <div id="resultValue" class="resultValue">—</div>
           </div>
 
@@ -104,36 +118,50 @@
 
       <!-- RULES -->
       <div id="view-rules" class="view hidden">
-        <h2 class="h">Правила обміну</h2>
+        <h2 class="h" id="rules-title">Правила обміну</h2>
 
-        <div class="rulesBox">
-          <div class="ruleItem"><span class="dot2"></span><span><b>Час обробки:</b> до <b>40 хвилин</b>.</span></div>
-          <div class="ruleItem"><span class="dot2"></span><span>У рідкісних випадках — до <b>72 годин</b> (залежить від банків/мереж).</span></div>
-          <div class="ruleItem"><span class="dot2"></span><span><b>Курс фіксується</b> після натискання “Створити заявку” на <b>3 хвилини</b>.</span></div>
-          <div class="ruleItem"><span class="dot2"></span><span>Вказуйте коректні реквізити та контакт у Telegram.</span></div>
-          <div class="ruleItem"><span class="dot2"></span><span>У разі помилки в реквізитах — обробка заявки може бути призупинена.</span></div>
+        <div class="rulesGrid">
+          <div class="ruleCard">
+            <div class="ruleIcon">⏱️</div>
+            <div class="ruleText" id="rule-1"><b>Час обробки:</b> до <b>40 хвилин</b>.</div>
+          </div>
+
+          <div class="ruleCard">
+            <div class="ruleIcon">🕒</div>
+            <div class="ruleText" id="rule-2">У рідкісних випадках — до <b>72 годин</b> (залежить від банків/мереж).</div>
+          </div>
+
+          <div class="ruleCard">
+            <div class="ruleIcon">⚠️</div>
+            <div class="ruleText" id="rule-3"><b>Курс фіксується</b> після натискання “Створити заявку” на <b>3 хвилини</b>.</div>
+          </div>
+
+          <div class="ruleCard">
+            <div class="ruleIcon">📲</div>
+            <div class="ruleText" id="rule-4">Вказуйте коректний Telegram для зв’язку та правильні реквізити.</div>
+          </div>
         </div>
       </div>
 
       <!-- FAQ -->
       <div id="view-faq" class="view hidden">
         <h2 class="h">FAQ</h2>
-        <p class="p">Пізніше додамо питання/відповіді.</p>
+        <p class="p" id="faq-text">Пізніше додамо питання/відповіді.</p>
       </div>
 
       <!-- ACCOUNT -->
       <div id="view-account" class="view hidden">
-        <h2 class="h">Акаунт</h2>
-        <p class="p">Тут буде вхід/реєстрація та KYC (поки без підключення).</p>
+        <h2 class="h" id="acc-title">Акаунт</h2>
+        <p class="p" id="acc-text">Тут буде вхід/реєстрація та KYC (поки без підключення).</p>
         <div class="row2">
-          <button class="ghostBtn" type="button">Увійти</button>
-          <button class="ghostBtn2" type="button">Реєстрація</button>
+          <button class="ghostBtn" type="button" id="btn-login">Увійти</button>
+          <button class="ghostBtn2" type="button" id="btn-reg">Реєстрація</button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Picker modal (asset) -->
+  <!-- ASSET Picker -->
   <div id="picker" class="picker hidden" role="dialog" aria-modal="true">
     <div id="pickerOverlay" class="overlay"></div>
     <div class="sheet">
@@ -141,12 +169,12 @@
         <div class="sheetTitle" id="pickerTitle">Вибір</div>
         <button id="pickerClose" class="xBtn" type="button" aria-label="Close">✕</button>
       </div>
-      <input id="pickerSearch" class="search" placeholder="Пошук…" />
+
       <div id="pickerList" class="list" role="listbox"></div>
     </div>
   </div>
 
-  <!-- Picker modal (networks) -->
+  <!-- NETWORK Picker -->
   <div id="netPicker" class="picker hidden" role="dialog" aria-modal="true">
     <div id="netOverlay" class="overlay"></div>
     <div class="sheet">
@@ -156,13 +184,6 @@
       </div>
       <div id="netList" class="list" role="listbox"></div>
     </div>
-  </div>
-
-  <!-- Language -->
-  <div id="langMenu" class="langMenu hidden" role="listbox" aria-label="Language">
-    <button class="langItem" data-lang="UA" type="button">UA</button>
-    <button class="langItem" data-lang="EN" type="button">EN</button>
-    <button class="langItem" data-lang="PL" type="button">PL</button>
   </div>
 
   <script src="app.js"></script>
