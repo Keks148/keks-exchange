@@ -10,17 +10,24 @@
 <body>
   <div class="page">
 
-    <!-- Header card -->
     <header class="headerCard">
       <div class="topRow">
         <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
         <div class="spacer"></div>
 
-        <!-- Compact language selector -->
-        <button id="langBtn" class="langBtn" type="button" aria-label="Language">
-          <span id="langLabel">UA</span>
-          <span class="chev">▾</span>
-        </button>
+        <!-- компактный язык: кнопка + маленький дропдаун -->
+        <div class="langWrap">
+          <button id="langBtn" class="langBtn" type="button" aria-label="Language">
+            <span id="langLabel">UA</span>
+            <span class="chev">▾</span>
+          </button>
+
+          <div id="langDropdown" class="langDropdown hidden" role="menu" aria-label="Language menu">
+            <button class="langItem" data-lang="uk" type="button">UA</button>
+            <button class="langItem" data-lang="en" type="button">EN</button>
+            <button class="langItem" data-lang="pl" type="button">PL</button>
+          </div>
+        </div>
       </div>
 
       <nav class="tabs">
@@ -31,7 +38,6 @@
       </nav>
     </header>
 
-    <!-- Content -->
     <main class="content">
       <!-- Swap -->
       <section id="viewSwap" class="view active">
@@ -47,8 +53,8 @@
 
           <div class="label" id="lblGive">Віддаєте</div>
 
-          <!-- Give row: asset + network + amount -->
-          <div class="row3">
+          <!-- Give: asset + network + amount (grid, чтобы не ломалось) -->
+          <div class="giveGrid">
             <button id="giveAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="giveIcon" class="icon" alt="" />
@@ -68,9 +74,7 @@
               <span class="right">▾</span>
             </button>
 
-            <div class="amountWrap">
-              <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
-            </div>
+            <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
           </div>
 
           <!-- Swap button -->
@@ -82,8 +86,8 @@
 
           <div class="label" id="lblGet">Отримуєте</div>
 
-          <!-- Get row -->
-          <div class="row2">
+          <!-- Get: asset + result (ровно как сверху по вертикали) -->
+          <div class="getGrid">
             <button id="getAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="getIcon" class="icon" alt="" />
@@ -183,22 +187,9 @@
     </main>
   </div>
 
-  <!-- Language popup -->
-  <div id="langMenu" class="popup hidden" role="dialog" aria-modal="true">
-    <div class="popupCard">
-      <button class="closeX" id="langClose" type="button">✕</button>
-      <div class="popupTitle" id="langTitle">Мова</div>
-      <div class="popupGrid">
-        <button class="pill" data-lang="uk">UA</button>
-        <button class="pill" data-lang="en">EN</button>
-        <button class="pill" data-lang="pl">PL</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Asset picker (no search) -->
+  <!-- Asset picker (без поиска) -->
   <div id="assetModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modalSheet">
+    <div class="modalSheet" role="document">
       <div class="modalHead">
         <div id="assetTitle" class="modalTitle">Виберіть</div>
         <button id="assetClose" class="closeX" type="button">✕</button>
@@ -209,9 +200,9 @@
 
   <!-- Network picker -->
   <div id="netModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modalSheet">
+    <div class="modalSheet" role="document">
       <div class="modalHead">
-        <div class="modalTitle">Network</div>
+        <div class="modalTitle" id="netTitle">Network</div>
         <button id="netClose" class="closeX" type="button">✕</button>
       </div>
       <div id="netList" class="list"></div>
