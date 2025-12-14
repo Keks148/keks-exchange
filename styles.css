@@ -6,11 +6,13 @@
   --text:#101014;
   --muted:rgba(16,16,20,0.55);
 
-  --radius:24px;
+  --radius:26px;
+  --radius2:18px;
   --shadow:0 14px 34px rgba(0,0,0,0.12);
 
   --grad:linear-gradient(90deg,#6a4cff,#ff4dbb);
 
+  /* компактнее */
   --hSelect:46px;
 }
 
@@ -25,111 +27,96 @@ body{
 
 .page{
   min-height:100%;
-  padding:10px 10px 16px;
+  padding:12px 10px 18px;
 }
 
-/* Header */
 .headerCard{
   background: var(--card);
   backdrop-filter: blur(10px);
   border:1px solid var(--stroke);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 10px 10px 8px;
+  padding: 10px 10px 10px;
   margin-bottom:10px;
 }
 
 .topRow{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:10px;
 }
 
-.brandLogo{ width:145px; height:auto; display:block; }
+.brandLogo{
+  width: 140px;
+  height:auto;
+  display:block;
+}
+
 .spacer{flex:1}
 
+/* язык в 2 раза меньше */
 .langBtn{
-  height:26px;
-  padding:0 8px;
-  border-radius: 12px;
+  height:32px;
+  padding:0 10px;
+  border-radius: 14px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.75);
-  font-weight:850;
+  font-weight:900;
   display:flex;
   align-items:center;
   gap:6px;
-  font-size:12px;
+  font-size:13px;
 }
-.langBtn .chev{opacity:.6; font-size:11px}
+.langBtn .chev{opacity:.6}
 
 .tabs{
   display:flex;
-  gap:6px;
-  margin-top:8px;
+  gap:8px;
+  margin-top:10px;
 }
 
 .tab{
   flex:1;
-  height:34px;
-  border-radius: 14px;
+  height:38px;
+  border-radius: 16px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.7);
-  font-weight:850;
+  font-weight:900;
   font-size:13px;
-  padding:0 6px;
 }
 
 .tab.active{
   border:none;
   color:#fff;
   background: var(--grad);
-  box-shadow: 0 10px 18px rgba(120,60,255,0.22);
+  box-shadow: 0 10px 22px rgba(120,60,255,0.22);
 }
 
 .content{display:block}
 .view{display:none}
 .view.active{display:block}
 
-/* main card */
 .card{
   background: var(--card);
   backdrop-filter: blur(10px);
   border:1px solid var(--stroke);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 10px;
+  padding: 12px;
 }
 
-/* status */
-.statusRow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:6px;
-}
-.statusLeft{color:var(--muted); font-weight:850; font-size:13px}
-.statusRight{
-  display:flex; align-items:center; gap:6px;
-  padding:6px 8px;
-  border-radius: 14px;
-  border:1px solid var(--stroke);
-  background: rgba(255,255,255,0.75);
-  font-weight:900;
-  font-size:12px;
-  white-space: nowrap;
-}
-.dot{opacity:.4}
+/* статус скрыт */
+.isHidden{display:none !important}
 
 .label{
-  margin: 6px 2px 6px;
+  margin: 8px 2px 6px;
   font-size: 14px;
   font-weight: 900;
   color: var(--muted);
 }
 
-/* верхняя строка (60/40) */
-.row2Top, .row2{
+/* верх: 60/40 */
+.rowTop{
   display:flex;
   gap:8px;
   align-items:stretch;
@@ -144,12 +131,12 @@ body{
   align-items:center;
   justify-content:space-between;
   padding: 8px 10px;
-  gap:8px;
+  gap:10px;
   min-width: 0;
 }
 
-.selectBtn{flex: 0 0 60%;}
-.netBtn{flex: 0 0 40%;}
+.selectBtn{flex: 0 0 60%}
+.netBtn{flex: 0 0 40%}
 
 .left{
   display:flex;
@@ -172,19 +159,20 @@ body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  max-width: 220px;
 }
+
 .sub{
-  font-weight:850;
+  font-weight:900;
   font-size:11px;
   color: var(--muted);
 }
+
 .right{opacity:.5; font-weight:900}
 
 .icon{
   width:30px;
   height:30px;
-  border-radius: 11px;
+  border-radius: 10px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
   object-fit: cover;
@@ -199,90 +187,70 @@ body{
 .netIcon{
   width:28px;
   height:28px;
-  border-radius: 11px;
+  border-radius: 10px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
   object-fit: cover;
 }
 .netText{
   font-weight:950;
-  font-size:13px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-/* input — СДЕЛАЛ -30% по ширине */
+/* сумма по центру 55%, уже на ~30% */
 .amountRow{
   display:flex;
   justify-content:center;
-  margin-top: 8px;
+  margin-top:8px;
 }
 .amountInput{
-  width:38.5%; /* было 55%, уменьшили на 30% */
+  width:55%;
   height: var(--hSelect);
   border-radius: 16px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.78);
   font-weight: 950;
   font-size: 18px;
-  padding: 0 10px;
+  padding: 0 12px;
   text-align: center;
   outline: none;
 }
-.amountInput:focus{
-  box-shadow: 0 10px 18px rgba(120,60,255,0.16);
-}
 
-/* swap — увеличить на 35% */
+/* swap +35%, но компактно */
 .swapCenter{
   display:flex;
   justify-content:center;
-  margin: 10px 0;
+  margin: 10px 0 6px;
 }
 .swapBtn{
-  width:44px;   /* 32px * 1.35 ≈ 43.2 */
-  height:44px;
+  width:56px;
+  height:56px;
   border:none;
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--grad);
-  box-shadow: 0 12px 18px rgba(120,60,255,0.20);
+  box-shadow: 0 16px 26px rgba(120,60,255,0.22);
   display:flex;
   align-items:center;
   justify-content:center;
-  position: relative;
-  overflow:hidden;
-}
-.swapBtn::after{
-  content:"";
-  position:absolute;
-  inset:-60%;
-  background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 55%);
-  transform: translateX(-60%) rotate(25deg);
-  animation: shimmer 2.4s infinite linear;
-  pointer-events:none;
-}
-@keyframes shimmer{
-  0%{transform: translateX(-60%) rotate(25deg);}
-  100%{transform: translateX(60%) rotate(25deg);}
 }
 .swapIcon{
-  width: 18px;
-  height: 18px;
-  display:block;
+  width: 22px;
+  height: 22px;
   filter: brightness(0) invert(1);
-  transform-origin: 50% 50%;
-}
-.swapBtn:active .swapIcon{ animation: spin 0.45s ease-in-out; }
-@keyframes spin{
-  0%{transform: rotate(0deg) scale(1);}
-  70%{transform: rotate(180deg) scale(1.12);}
-  100%{transform: rotate(180deg) scale(1);}
 }
 
-/* нижний ряд */
+/* низ */
+.rowBottom{
+  display:flex;
+  gap:8px;
+  align-items:stretch;
+}
+.rowBottom .selectBtn{flex:1}
+
 .resultBox{
-  width: 35%;
+  width: 40%;
   height: var(--hSelect);
   border-radius: 16px;
   border:1px solid var(--stroke);
@@ -309,29 +277,29 @@ body{
   color: var(--muted);
   font-weight:950;
 }
+
 .hint{
-  margin-top: 4px;
+  margin-top: 6px;
   text-align:center;
   color: #7b3cff;
   font-weight: 950;
-  min-height: 16px;
-  font-size: 13px;
+  min-height: 18px;
 }
 
-/* CTA */
 .cta{
   width:100%;
-  height:50px;
+  height:52px;
   border:none;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--grad);
   color:#fff;
   font-weight: 950;
   font-size: 18px;
   margin-top: 10px;
-  box-shadow: 0 16px 24px rgba(120,60,255,0.20);
+  box-shadow: 0 18px 30px rgba(120,60,255,0.18);
 }
-.cta.soft{ background: var(--grad); opacity:.95; }
+
+.cta.soft{opacity:.95}
 .cta.white{
   background: rgba(255,255,255,0.78);
   color: var(--text);
@@ -339,85 +307,143 @@ body{
   box-shadow:none;
 }
 
-/* language dropdown */
-.hidden{display:none}
+.rulesCard h2{margin:6px 0 12px}
+
+.rulesItem{
+  display:flex;
+  gap:10px;
+  padding: 10px;
+  border-radius: 18px;
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+}
+.rulesIcon{
+  width:36px;height:36px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.85);
+  border:1px solid var(--stroke);
+  font-size:16px;
+}
+.rulesHead{font-weight:950; margin-bottom:3px}
+.rulesText{color:var(--muted); font-weight:800}
+
+.faq details{
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,0.7);
+  border-radius: 16px;
+  padding: 10px 12px;
+  margin: 10px 0;
+}
+.faq summary{font-weight:950}
+.faq p{color:var(--muted); font-weight:800}
+
+.accBtns{
+  display:flex;
+  gap:10px;
+  margin-top: 12px;
+}
+.accBtns .cta{margin-top:0}
+
+/* ===== DROPDOWN LANG ===== */
+.hidden{
+  display:none !important;
+  pointer-events:none !important;
+  opacity:0 !important;
+}
+
 .dropdown{
-  position:absolute;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  background: transparent;
+  position:fixed;
+  top: 58px;
+  right: 10px;
+  z-index: 50;
 }
 .dropdownCard{
-  width: 140px;
+  width: 110px;
   background: rgba(255,255,255,0.92);
   border:1px solid var(--stroke);
   border-radius: 16px;
   box-shadow: var(--shadow);
   padding: 8px;
   display:grid;
-  gap:6px;
+  gap:8px;
 }
 .pill{
-  height:36px;
+  height:34px;
   border-radius: 12px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
   font-weight:950;
-  font-size:13px;
 }
 
-/* modal bottom sheet */
+/* ===== MODALS (FIXED BUG) ===== */
 .modal{
-  position:fixed; inset:0;
+  position:fixed;
+  inset:0;
   background: rgba(0,0,0,0.25);
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  padding: 8px;
-  z-index: 5000;
+  padding: 10px;
+  z-index: 60;
+  pointer-events:auto;
 }
+
+.modal.hidden{
+  display:none !important;
+  pointer-events:none !important;
+}
+
 .modalSheet{
   width: 100%;
   max-width: 560px;
   background: rgba(255,255,255,0.95);
-  border-radius: 18px;
+  border-radius: 20px;
   border:1px solid var(--stroke);
   box-shadow: var(--shadow);
   overflow:hidden;
 }
+
 .modalHead{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding: 10px 10px 8px;
+  padding: 12px 12px 10px;
   border-bottom:1px solid var(--stroke);
 }
-.modalTitle{font-weight:950; font-size:15px}
+
+.modalTitle{font-weight:950}
+
 .closeX{
-  width:34px;height:34px;
+  width:36px;height:36px;
   border-radius: 12px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
   font-weight:950;
 }
+
 .list{
   max-height: 58vh;
   overflow:auto;
-  padding: 8px 8px 10px;
+  padding: 10px 10px 14px;
 }
+
 .item{
   width:100%;
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  gap:10px;
-  padding: 8px 8px;
+  justify-content:flex-start; /* без правого badge */
+  gap:12px;
+  padding: 10px 10px;
   border-radius: 16px;
   border:1px solid var(--stroke);
   background: rgba(255,255,255,0.9);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
+
 .itemLeft{
   display:flex;
   align-items:center;
@@ -426,19 +452,18 @@ body{
 }
 .itemName{
   font-weight:950;
-  font-size:14px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 .itemSub{
   font-weight:850;
-  font-size:11px;
+  font-size:12px;
   color:var(--muted);
 }
 
-@media (max-width: 360px){
-  .brandLogo{width: 135px;}
-  .main{max-width: 140px}
-  .amountInput{width: 44%;}
+@media (max-width: 380px){
+  .brandLogo{width:132px}
+  .selectBtn{flex-basis:58%}
+  .netBtn{flex-basis:42%}
 }
