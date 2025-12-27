@@ -1,212 +1,176 @@
-<!doctype html>
-<html lang="uk">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-  <title>KeksSwap</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
+/* =========================
+   KEKSSWAP — FINAL UI
+   ========================= */
 
-<body>
-  <div class="page">
+:root{
+  --bg1:#f2d6ff;
+  --bg2:#f9f3ff;
+  --card:#ffffffcc;
+  --stroke:#ffffffb8;
 
-    <header class="headerCard">
-      <div class="topRow">
-        <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
-        <div class="spacer"></div>
+  --text:#161616;
+  --muted:#7a7a7a;
 
-        <button id="langBtn" class="langBtn" type="button">
-          <span id="langLabel">UA</span>
-          <span class="chev">▾</span>
-        </button>
-      </div>
+  --g1:#6b5cff;
+  --g2:#ff4fb8;
 
-      <nav class="tabs">
-        <button class="tab active" data-tab="swap" id="tabSwap">Обмін</button>
-        <button class="tab" data-tab="rules" id="tabRules">Правила</button>
-        <button class="tab" data-tab="faq" id="tabFaq">FAQ</button>
-        <button class="tab" data-tab="account" id="tabAccount">Акаунт</button>
-      </nav>
-    </header>
+  --shadow: 0 18px 40px rgba(0,0,0,.12);
+  --soft: 0 8px 20px rgba(0,0,0,.08);
+}
 
-    <main class="content">
+*{box-sizing:border-box}
+html,body{height:100%}
 
-      <!-- SWAP -->
-      <section id="viewSwap" class="view active">
-        <div class="card">
+body{
+  margin:0;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 50% -120px,#fff 0%,var(--bg2) 45%,var(--bg1) 100%);
+}
 
-          <div class="label" id="lblGive">Віддаєте</div>
+/* =========================
+   CARDS / BLOCKS
+   ========================= */
 
-          <div class="row2">
-            <button id="giveAssetBtn" class="selectBtn" type="button">
-              <span class="left">
-                <img id="giveIcon" class="icon" alt="" />
-                <span class="selText">
-                  <span id="giveName" class="main">Tether (USDT)</span>
-                  <span id="giveSub" class="sub">USDT</span>
-                </span>
-              </span>
-              <span class="chev2">▾</span>
-            </button>
+.card,
+.block{
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:26px;
+  box-shadow:var(--shadow);
+}
 
-            <button id="giveNetBtn" class="netBtn" type="button">
-              <span class="netLeft">
-                <img id="giveNetIcon" class="netIcon" alt="" />
-                <span id="giveNetLabel" class="netText">TRC20</span>
-              </span>
-              <span class="chev2">▾</span>
-            </button>
-          </div>
+/* =========================
+   AMOUNT INPUT (ПРЕМИУМ)
+   ========================= */
 
-          <div class="amountWrap">
-            <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
-          </div>
+.amount-input,
+#amountInput,
+input.amount{
+  width:100%;
+  height:56px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.85);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    0 10px 22px rgba(0,0,0,.08);
 
-          <div class="swapCenter">
-            <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
-              <img class="swapIcon" src="logos/arrows.svg" alt="swap" />
-            </button>
-          </div>
+  font-size:22px;
+  font-weight:700;
+  text-align:center;
+  color:#111;
+  outline:none;
+}
 
-          <div class="label" id="lblGet">Отримуєте</div>
+.amount-input::placeholder{
+  color:#aaa;
+  font-weight:600;
+}
 
-          <div class="row2">
-            <button id="getAssetBtn" class="selectBtn" type="button">
-              <span class="left">
-                <img id="getIcon" class="icon" alt="" />
-                <span class="selText">
-                  <span id="getName" class="main">Monobank (UAH)</span>
-                  <span id="getSub" class="sub">UAH</span>
-                </span>
-              </span>
-              <span class="chev2">▾</span>
-            </button>
+.amount-input:focus{
+  border-color:rgba(107,92,255,.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.7),
+    0 12px 26px rgba(107,92,255,.18);
+}
 
-            <!-- ВАЖНО: сеть для "Отримуєте" -->
-            <button id="getNetBtn" class="netBtn hidden" type="button">
-              <span class="netLeft">
-                <img id="getNetIcon" class="netIcon" alt="" />
-                <span id="getNetLabel" class="netText">TRC20</span>
-              </span>
-              <span class="chev2">▾</span>
-            </button>
-          </div>
+/* =========================
+   SWAP BUTTON — FINAL
+   ========================= */
 
-          <div class="resultBox">
-            <div class="resultLabel" id="lblResult">Ви отримаєте</div>
-            <div id="resultValue" class="resultValue">—</div>
-          </div>
+.swap-btn,
+.swapBtn,
+#swapBtn{
+  width:72px;
+  height:72px;
+  border-radius:22px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  border:1px solid rgba(255,255,255,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  position:relative;
 
-          <div class="rateLine">
-            <span id="rateLineLabel">Курс:</span>
-            <span id="rateValue">—</span>
-          </div>
+  box-shadow:
+    0 14px 34px rgba(107,92,255,.28),
+    0 10px 22px rgba(255,79,184,.22),
+    inset 0 1px 0 rgba(255,255,255,.4);
 
-          <div id="rateHint" class="hint"></div>
+  transition:.15s ease;
+}
 
-          <button id="createBtn" class="cta" type="button">Створити заявку</button>
-        </div>
-      </section>
+/* ЧИСТЫЙ GLOW */
+.swap-btn::after,
+.swapBtn::after,
+#swapBtn::after{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:34px;
+  background:
+    radial-gradient(circle at 40% 40%,rgba(255,79,184,.35),transparent 60%),
+    radial-gradient(circle at 60% 60%,rgba(107,92,255,.32),transparent 65%);
+  filter:blur(14px);
+  opacity:.9;
+  pointer-events:none;
+}
 
-      <!-- RULES -->
-      <section id="viewRules" class="view">
-        <div class="card">
-          <h2 id="rulesTitle">Умови обміну</h2>
-          <div class="rulesItem">
-            <div class="rulesIcon">⏳</div>
-            <div>
-              <div class="rulesHead" id="rulesT1">Час обробки</div>
-              <div class="rulesText" id="rulesB1">Зазвичай до 40 хвилин. У рідкісних випадках — до 72 годин.</div>
-            </div>
-          </div>
-          <div class="rulesItem">
-            <div class="rulesIcon">⚠️</div>
-            <div>
-              <div class="rulesHead" id="rulesT2">Фіксація курсу</div>
-              <div class="rulesText" id="rulesB2">Курс оновлюється автоматично. При створенні заявки курс фіксується.</div>
-            </div>
-          </div>
-          <div class="rulesItem">
-            <div class="rulesIcon">📲</div>
-            <div>
-              <div class="rulesHead" id="rulesT3">Контакт у Telegram</div>
-              <div class="rulesText" id="rulesB3">Вкажіть ваш Telegram для звʼязку.</div>
-            </div>
-          </div>
-          <div class="rulesItem">
-            <div class="rulesIcon">✅</div>
-            <div>
-              <div class="rulesHead" id="rulesT4">Підтвердження</div>
-              <div class="rulesText" id="rulesB4">Оператор підтвердить реквізити та суму.</div>
-            </div>
-          </div>
-        </div>
-      </section>
+.swap-btn svg,
+.swapBtn svg,
+#swapBtn svg{
+  width:28px;
+  height:28px;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
 
-      <!-- FAQ -->
-      <section id="viewFaq" class="view">
-        <div class="card">
-          <h2 id="faqTitle">FAQ</h2>
-          <div class="faq">
-            <details>
-              <summary id="faqQ1">Коли оновлюється курс?</summary>
-              <p id="faqA1">Курс оновлюється автоматично (раз на хвилину).</p>
-            </details>
-            <details>
-              <summary id="faqQ2">Скільки триває обмін?</summary>
-              <p id="faqA2">Зазвичай до 40 хвилин, інколи до 72 годин.</p>
-            </details>
-          </div>
-        </div>
-      </section>
+.swap-btn:active{
+  transform:scale(.96);
+  box-shadow:
+    0 10px 26px rgba(107,92,255,.25),
+    0 8px 18px rgba(255,79,184,.2),
+    inset 0 1px 0 rgba(255,255,255,.35);
+}
 
-      <!-- ACCOUNT -->
-      <section id="viewAccount" class="view">
-        <div class="card">
-          <h2 id="accTitle">Акаунт</h2>
-          <p id="accText">Тут буде вхід/реєстрація та KYC (поки без підключення).</p>
-          <div class="accBtns">
-            <button class="btnSoft" type="button" id="btnLogin">Увійти</button>
-            <button class="btnWhite" type="button" id="btnReg">Реєстрація</button>
-          </div>
-        </div>
-      </section>
+/* =========================
+   DISABLED
+   ========================= */
 
-    </main>
-  </div>
+.swap-btn.disabled,
+.swap-btn[disabled]{
+  opacity:.55;
+  filter:grayscale(.3);
+  cursor:not-allowed;
+}
 
-  <!-- Language menu -->
-  <div id="langMenu" class="dropdown hidden">
-    <div class="dropdownCard">
-      <button class="pill" data-lang="uk">UA</button>
-      <button class="pill" data-lang="en">EN</button>
-      <button class="pill" data-lang="pl">PL</button>
-      <button class="pill" data-lang="tr">TR</button>
-    </div>
-  </div>
+/* =========================
+   TEXT HELPERS
+   ========================= */
 
-  <!-- Asset modal -->
-  <div id="assetModal" class="modal hidden">
-    <div class="sheet">
-      <div class="sheetHead">
-        <div id="assetTitle" class="sheetTitle">Виберіть</div>
-        <button id="assetClose" class="closeX" type="button">✕</button>
-      </div>
-      <div id="assetList" class="list"></div>
-    </div>
-  </div>
+.rate-text{
+  font-size:14px;
+  font-weight:600;
+  color:#7a62ff;
+  text-align:center;
+  margin-top:6px;
+}
 
-  <!-- Network modal -->
-  <div id="netModal" class="modal hidden">
-    <div class="sheet">
-      <div class="sheetHead">
-        <div id="netTitle" class="sheetTitle">Оберіть мережу</div>
-        <button id="netClose" class="closeX" type="button">✕</button>
-      </div>
-      <div id="netList" class="list"></div>
-    </div>
-  </div>
+/* =========================
+   BUTTON MAIN (Create request)
+   ========================= */
 
-  <script src="app.js"></script>
-</body>
-</html>
+.main-btn{
+  height:56px;
+  border-radius:22px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  border:none;
+  color:#fff;
+  font-size:17px;
+  font-weight:700;
+  box-shadow:0 16px 34px rgba(0,0,0,.18);
+}
+
+.main-btn:active{transform:scale(.98)}
