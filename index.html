@@ -1,176 +1,176 @@
-/* =========================
-   KEKSSWAP — FINAL UI
-   ========================= */
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>KeksSwap</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
 
-:root{
-  --bg1:#f2d6ff;
-  --bg2:#f9f3ff;
-  --card:#ffffffcc;
-  --stroke:#ffffffb8;
+    <header class="top">
+      <div class="brand">
+        <img class="brand__logo" src="logos/keks-logo.png" alt="KeksSwap" />
+        <div class="brand__name">KEKS<br/>SWAP</div>
+      </div>
 
-  --text:#161616;
-  --muted:#7a7a7a;
+      <button class="lang" id="langBtn">
+        <span id="langLabel">UA</span>
+        <span class="chev">▼</span>
+      </button>
+    </header>
 
-  --g1:#6b5cff;
-  --g2:#ff4fb8;
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="swap" id="tabSwap"></button>
+      <button class="tab" data-tab="rules" id="tabRules"></button>
+      <button class="tab" data-tab="faq" id="tabFaq"></button>
+      <button class="tab" data-tab="account" id="tabAccount"></button>
+    </nav>
 
-  --shadow: 0 18px 40px rgba(0,0,0,.12);
-  --soft: 0 8px 20px rgba(0,0,0,.08);
-}
+    <main class="content">
 
-*{box-sizing:border-box}
-html,body{height:100%}
+      <!-- SWAP -->
+      <section class="panel is-active" id="panel-swap">
+        <div class="card">
+          <div class="h2" id="giveTitle"></div>
 
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(900px 500px at 50% -120px,#fff 0%,var(--bg2) 45%,var(--bg1) 100%);
-}
+          <div class="row2">
+            <button class="select" id="giveAssetBtn">
+              <span class="select__left">
+                <span class="iconwrap"><img id="giveAssetIcon" alt="" /></span>
+                <span class="select__text">
+                  <span class="select__title" id="giveAssetTitle"></span>
+                  <span class="select__sub" id="giveAssetSub"></span>
+                </span>
+              </span>
+              <span class="select__chev">▼</span>
+            </button>
 
-/* =========================
-   CARDS / BLOCKS
-   ========================= */
+            <button class="select" id="giveNetworkBtn">
+              <span class="select__left">
+                <span class="iconwrap"><img id="giveNetworkIcon" alt="" /></span>
+                <span class="select__text">
+                  <span class="select__title" id="giveNetworkTitle"></span>
+                  <span class="select__sub" id="giveNetworkSub"></span>
+                </span>
+              </span>
+              <span class="select__chev">▼</span>
+            </button>
+          </div>
 
-.card,
-.block{
-  background:var(--card);
-  border:1px solid var(--stroke);
-  border-radius:26px;
-  box-shadow:var(--shadow);
-}
+          <div class="amountbox">
+            <input id="amountInput" inputmode="numeric" autocomplete="off" class="amount" placeholder="0" />
+            <div class="amountHint" id="amountHint"></div>
+          </div>
 
-/* =========================
-   AMOUNT INPUT (ПРЕМИУМ)
-   ========================= */
+          <div class="swapCenter">
+            <button class="swapBtn" id="swapBtn" aria-label="Swap">
+              <img src="logos/arrows.svg" alt="" />
+            </button>
+          </div>
 
-.amount-input,
-#amountInput,
-input.amount{
-  width:100%;
-  height:56px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.85);
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.6),
-    0 10px 22px rgba(0,0,0,.08);
+          <div class="h2 mt" id="getTitle"></div>
 
-  font-size:22px;
-  font-weight:700;
-  text-align:center;
-  color:#111;
-  outline:none;
-}
+          <div class="row2">
+            <button class="select" id="getAssetBtn">
+              <span class="select__left">
+                <span class="iconwrap"><img id="getAssetIcon" alt="" /></span>
+                <span class="select__text">
+                  <span class="select__title" id="getAssetTitle"></span>
+                  <span class="select__sub" id="getAssetSub"></span>
+                </span>
+              </span>
+              <span class="select__chev">▼</span>
+            </button>
 
-.amount-input::placeholder{
-  color:#aaa;
-  font-weight:600;
-}
+            <button class="select" id="getNetworkBtn">
+              <span class="select__left">
+                <span class="iconwrap"><img id="getNetworkIcon" alt="" /></span>
+                <span class="select__text">
+                  <span class="select__title" id="getNetworkTitle"></span>
+                  <span class="select__sub" id="getNetworkSub"></span>
+                </span>
+              </span>
+              <span class="select__chev">▼</span>
+            </button>
+          </div>
 
-.amount-input:focus{
-  border-color:rgba(107,92,255,.45);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.7),
-    0 12px 26px rgba(107,92,255,.18);
-}
+          <div class="result">
+            <div class="result__label" id="youGetLabel"></div>
+            <div class="result__value" id="youGetValue">—</div>
+          </div>
 
-/* =========================
-   SWAP BUTTON — FINAL
-   ========================= */
+          <div class="rate">
+            <div class="rate__line">
+              <span id="rateLabel"></span>
+              <b id="rateValue">—</b>
+            </div>
+            <div class="rate__hint" id="rateHint"></div>
+          </div>
 
-.swap-btn,
-.swapBtn,
-#swapBtn{
-  width:72px;
-  height:72px;
-  border-radius:22px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  border:1px solid rgba(255,255,255,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  position:relative;
+          <button class="primary" id="createBtn"></button>
+        </div>
+      </section>
 
-  box-shadow:
-    0 14px 34px rgba(107,92,255,.28),
-    0 10px 22px rgba(255,79,184,.22),
-    inset 0 1px 0 rgba(255,255,255,.4);
+      <!-- RULES -->
+      <section class="panel" id="panel-rules">
+        <div class="card">
+          <h1 id="rulesTitle"></h1>
+          <div class="ruleList" id="rulesList"></div>
+        </div>
+      </section>
 
-  transition:.15s ease;
-}
+      <!-- FAQ -->
+      <section class="panel" id="panel-faq">
+        <div class="card">
+          <h1 id="faqTitle"></h1>
+          <div class="faq" id="faqList"></div>
+        </div>
+      </section>
 
-/* ЧИСТЫЙ GLOW */
-.swap-btn::after,
-.swapBtn::after,
-#swapBtn::after{
-  content:"";
-  position:absolute;
-  inset:-18px;
-  border-radius:34px;
-  background:
-    radial-gradient(circle at 40% 40%,rgba(255,79,184,.35),transparent 60%),
-    radial-gradient(circle at 60% 60%,rgba(107,92,255,.32),transparent 65%);
-  filter:blur(14px);
-  opacity:.9;
-  pointer-events:none;
-}
+      <!-- ACCOUNT -->
+      <section class="panel" id="panel-account">
+        <div class="card">
+          <h1 id="accountTitle"></h1>
+          <div class="muted" id="accountText"></div>
+          <div class="accountActions">
+            <button class="ghost" id="loginBtn"></button>
+            <button class="ghost" id="kycBtn"></button>
+          </div>
+        </div>
+      </section>
 
-.swap-btn svg,
-.swapBtn svg,
-#swapBtn svg{
-  width:28px;
-  height:28px;
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
-}
+    </main>
 
-.swap-btn:active{
-  transform:scale(.96);
-  box-shadow:
-    0 10px 26px rgba(107,92,255,.25),
-    0 8px 18px rgba(255,79,184,.2),
-    inset 0 1px 0 rgba(255,255,255,.35);
-}
+    <!-- LANG SHEET -->
+    <div class="sheet hidden" id="langSheet" role="dialog" aria-modal="true">
+      <div class="sheet__box">
+        <div class="sheet__head">
+          <div class="sheet__title" id="chooseLangTitle"></div>
+          <button class="x" id="closeLang">×</button>
+        </div>
+        <div class="sheet__list">
+          <button class="sheetItem" data-lang="uk">UA</button>
+          <button class="sheetItem" data-lang="en">EN</button>
+          <button class="sheetItem" data-lang="tr">TR</button>
+        </div>
+      </div>
+    </div>
 
-/* =========================
-   DISABLED
-   ========================= */
+    <!-- PICKER SHEET -->
+    <div class="sheet hidden" id="pickerSheet" role="dialog" aria-modal="true">
+      <div class="sheet__box">
+        <div class="sheet__head">
+          <div class="sheet__title" id="pickerTitle"></div>
+          <button class="x" id="pickerClose">×</button>
+        </div>
+        <div class="sheet__list" id="pickerList"></div>
+      </div>
+    </div>
 
-.swap-btn.disabled,
-.swap-btn[disabled]{
-  opacity:.55;
-  filter:grayscale(.3);
-  cursor:not-allowed;
-}
+  </div>
 
-/* =========================
-   TEXT HELPERS
-   ========================= */
-
-.rate-text{
-  font-size:14px;
-  font-weight:600;
-  color:#7a62ff;
-  text-align:center;
-  margin-top:6px;
-}
-
-/* =========================
-   BUTTON MAIN (Create request)
-   ========================= */
-
-.main-btn{
-  height:56px;
-  border-radius:22px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  border:none;
-  color:#fff;
-  font-size:17px;
-  font-weight:700;
-  box-shadow:0 16px 34px rgba(0,0,0,.18);
-}
-
-.main-btn:active{transform:scale(.98)}
+  <script src="app.js"></script>
+</body>
+</html>
