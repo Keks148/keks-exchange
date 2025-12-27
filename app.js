@@ -1,495 +1,601 @@
-// =========================
-// KeksSwap — base app (UI + pickers + i18n + amount formatting)
-// =========================
-
-const $ = (id) => document.getElementById(id);
-
-// --- Assets paths
-const ICON = {
-  crypto: (name) => `logos/crypto/${name}`,
-  networks: (name) => `logos/networks/${name}`,
-  banks: (name) => `logos/banks/${name}`,
-  wallets: (name) => `logos/wallets/${name}`,
-};
-
-// --- i18n dictionary (ВСЕ СТРОКИ ТОЛЬКО ОТСЮДА)
-const I18N = {
-  uk: {
-    tabSwap: "Обмін",
-    tabRules: "Правила",
-    tabFaq: "FAQ",
-    tabAccount: "Акаунт",
-
-    give: "Віддаєте",
-    get: "Отримуєте",
-    youGet: "Ви отримаєте",
-    rate: "Курс:",
-    rateHint: "Оновлюю курс з WhiteBIT...",
-    create: "Створити заявку",
-
-    chooseAssetGive: "Виберіть що віддаєте",
-    chooseAssetGet: "Виберіть що отримуєте",
-    chooseNetwork: "Оберіть мережу",
-    chooseLang: "Мова",
-
-    amountHint0: "Введіть суму",
-    amountHint1: "Наприклад: 10 000",
-
-    rulesTitle: "Умови обміну",
-    rules: [
-      { icon:"⏳", title:"Час обробки", text:"Зазвичай до 40 хвилин. У рідкісних випадках — до 72 годин (залежить від банків та платіжних систем)." },
-      { icon:"⚠️", title:"Фіксація курсу", text:"Курс оновлюється автоматично. Під час створення заявки курс фіксується." },
-      { icon:"📲", title:"Контакт у Telegram", text:"Вкажіть ваш робочий Telegram для звʼязку. Якщо він невірний або ви не відповідаєте — обробка може бути призупинена." },
-      { icon:"✅", title:"Підтвердження", text:"Після створення заявки оператор підтверджує реквізити та суму." },
-    ],
-
-    faqTitle: "FAQ",
-    faq: [
-      { q:"Коли оновлюється курс?", a:"Курс оновлюється автоматично кожні кілька секунд." },
-      { q:"Скільки триває обмін?", a:"Зазвичай до 40 хвилин після оплати/надходження крипти." },
-    ],
-
-    accountTitle:"Акаунт",
-    accountText:"Тут буде вхід, верифікація та історія заявок (додамо наступним кроком).",
-    login:"Увійти",
-    kyc:"Пройти KYC",
+/* =========================
+   ICONS / DATA
+========================= */
+const ICONS = {
+  crypto: {
+    BTC: "logos/crypto/btc.png",
+    ETH: "logos/crypto/eth.png",
+    LTC: "logos/crypto/ltc.png",
+    SOL: "logos/crypto/sol.png",
+    TON: "logos/crypto/ton.png",
+    TRX: "logos/crypto/trx.png",
+    USDC: "logos/crypto/usdc.png",
+    USDT: "logos/crypto/tether-usdt.png",
+    UAH: "logos/banks/visa-master.png" // fallback
   },
-
-  en: {
-    tabSwap: "Swap",
-    tabRules: "Rules",
-    tabFaq: "FAQ",
-    tabAccount: "Account",
-
-    give: "You send",
-    get: "You get",
-    youGet: "You will receive",
-    rate: "Rate:",
-    rateHint: "Updating rate from WhiteBIT...",
-    create: "Create request",
-
-    chooseAssetGive: "Choose what you send",
-    chooseAssetGet: "Choose what you receive",
-    chooseNetwork: "Choose network",
-    chooseLang: "Language",
-
-    amountHint0: "Enter amount",
-    amountHint1: "Example: 10 000",
-
-    rulesTitle: "Exchange terms",
-    rules: [
-      { icon:"⏳", title:"Processing time", text:"Usually up to 40 minutes. Rare cases — up to 72 hours (depends on banks and payment systems)." },
-      { icon:"⚠️", title:"Rate lock", text:"Rate updates automatically. When you create a request, the rate is locked." },
-      { icon:"📲", title:"Telegram contact", text:"Provide your active Telegram contact. If it’s incorrect or you don’t respond — processing may be paused." },
-      { icon:"✅", title:"Confirmation", text:"After creating a request, an operator confirms the details and amount." },
-    ],
-
-    faqTitle: "FAQ",
-    faq: [
-      { q:"When does the rate update?", a:"The rate updates automatically every few seconds." },
-      { q:"How long does an exchange take?", a:"Usually up to 40 minutes after payment / crypto arrival." },
-    ],
-
-    accountTitle:"Account",
-    accountText:"Login, verification and request history will be added next.",
-    login:"Login",
-    kyc:"Start KYC",
+  networks: {
+    ERC20: "logos/networks/erc20.png",
+    TRC20: "logos/networks/trc20.png",
+    BEP20: "logos/networks/bep20.png",
+    TON:  "logos/networks/ton.png",   // ✅ TON icon
+    SOL:  "logos/networks/sol.png",
+    POL:  "logos/networks/pol.png",
+    ARB:  "logos/networks/arb.png",
+    OP:   "logos/networks/op.png",
+    BTC:  "logos/crypto/btc.png",
+    LTC:  "logos/crypto/ltc.png"
   },
-
-  tr: {
-    tabSwap: "Takas",
-    tabRules: "Kurallar",
-    tabFaq: "SSS",
-    tabAccount: "Hesap",
-
-    give: "Gönderiyorsunuz",
-    get: "Alıyorsunuz",
-    youGet: "Alacağınız tutar",
-    rate: "Kur:",
-    rateHint: "WhiteBIT kur güncelleniyor...",
-    create: "Talep oluştur",
-
-    chooseAssetGive: "Ne gönderiyorsunuz seçin",
-    chooseAssetGet: "Ne alıyorsunuz seçin",
-    chooseNetwork: "Ağ seçin",
-    chooseLang: "Dil",
-
-    amountHint0: "Tutar girin",
-    amountHint1: "Örnek: 10 000",
-
-    rulesTitle: "Değişim şartları",
-    rules: [
-      { icon:"⏳", title:"İşlem süresi", text:"Genellikle 40 dakikaya kadar. Nadir durumlarda — 72 saate kadar (bankalar ve ödeme sistemlerine bağlı)." },
-      { icon:"⚠️", title:"Kur sabitleme", text:"Kur otomatik güncellenir. Talep oluşturulduğunda kur sabitlenir." },
-      { icon:"📲", title:"Telegram iletişimi", text:"Aktif Telegram bilgisi girin. Yanlışsa veya cevap vermezseniz işlem durdurulabilir." },
-      { icon:"✅", title:"Onay", text:"Talep sonrası operatör bilgileri ve tutarı onaylar." },
-    ],
-
-    faqTitle: "SSS",
-    faq: [
-      { q:"Kur ne zaman güncellenir?", a:"Kur birkaç saniyede bir otomatik güncellenir." },
-      { q:"İşlem ne kadar sürer?", a:"Genellikle ödeme / kripto gelişi sonrası 40 dakikaya kadar." },
-    ],
-
-    accountTitle:"Hesap",
-    accountText:"Giriş, doğrulama ve geçmiş sonraki adımda eklenecek.",
-    login:"Giriş",
-    kyc:"KYC Başlat",
+  banks: {
+    PRIVAT: "logos/banks/privat.png",
+    MONO: "logos/banks/mono.png",
+    PUMB: "logos/banks/pumb.png",
+    OSCHAD: "logos/banks/oschad.png",
+    OTP: "logos/banks/otp.png",
+    IZI: "logos/banks/izi.png",
+    SENSE: "logos/banks/sense.png",
+    UKRSIB: "logos/banks/ukr-sib.png",
+    ABANK: "logos/banks/a-bank.png",
+    VISA: "logos/banks/visa-master.png",
+    REYF: "logos/banks/reyf.png"
   }
 };
 
-let lang = "uk";
-
-// --- Data (иконки под твои папки)
-const ASSETS = [
-  // crypto
-  { id:"USDT", type:"crypto", title:"Tether (USDT)", sub:"USDT", icon: ICON.crypto("tether-usdt.png"), networks:["TRC20","ERC20","TON","BEP20"] },
-  { id:"USDC", type:"crypto", title:"USD Coin (USDC)", sub:"USDC", icon: ICON.crypto("usdc.png"), networks:["ERC20","TRC20"] },
-  { id:"BTC",  type:"crypto", title:"Bitcoin (BTC)", sub:"BTC", icon: ICON.crypto("btc.png"), networks:[] },
-  { id:"ETH",  type:"crypto", title:"Ethereum (ETH)", sub:"ETH", icon: ICON.crypto("eth.png"), networks:["ERC20"] },
-  { id:"LTC",  type:"crypto", title:"Litecoin (LTC)", sub:"LTC", icon: ICON.crypto("ltc.png"), networks:[] },
-  { id:"TON",  type:"crypto", title:"Toncoin (TON)", sub:"TON", icon: ICON.crypto("ton.png"), networks:["TON"] },
-
-  // banks (UAH)
-  { id:"MONO", type:"bank", title:"Monobank (UAH)", sub:"UAH", icon: ICON.banks("mono.png"), networks:[] },
-  { id:"PRIVAT", type:"bank", title:"PrivatBank (UAH)", sub:"UAH", icon: ICON.banks("privat.png"), networks:[] },
-  { id:"PUMB", type:"bank", title:"PUMB (UAH)", sub:"UAH", icon: ICON.banks("pumb.png"), networks:[] },
-  { id:"OTP", type:"bank", title:"OTP (UAH)", sub:"UAH", icon: ICON.banks("otp.png"), networks:[] },
-  { id:"IZI", type:"bank", title:"IziBank (UAH)", sub:"UAH", icon: ICON.banks("izi.png"), networks:[] },
-  { id:"SENSE", type:"bank", title:"Sense (UAH)", sub:"UAH", icon: ICON.banks("sense.png"), networks:[] },
-  { id:"OSCHAD", type:"bank", title:"Oschadbank (UAH)", sub:"UAH", icon: ICON.banks("oschad.png"), networks:[] },
-  { id:"UKRSIB", type:"bank", title:"UkrSib (UAH)", sub:"UAH", icon: ICON.banks("ukr-sib.png"), networks:[] },
-  { id:"A_BANK", type:"bank", title:"A-bank (UAH)", sub:"UAH", icon: ICON.banks("a-bank.png"), networks:[] },
-  { id:"VISA", type:"bank", title:"Visa/Master (UAH)", sub:"UAH", icon: ICON.banks("visa-master.png"), networks:[] },
-];
-
-// Networks map -> icon file (есть у тебя в logos/networks)
-const NETWORKS = {
-  TRC20: { title:"TRC20", sub:"USDT/USDC", icon: ICON.networks("trc20.png") },
-  ERC20: { title:"ERC20", sub:"ETH", icon: ICON.networks("erc20.png") },
-  BEP20: { title:"BEP20", sub:"BNB", icon: ICON.networks("bep20.png") },
-  TON:   { title:"TON",   sub:"TON", icon: ICON.networks("sol.png") }, // если TON иконки нет, ставим sol.png как временно
+// Какие сети доступны для монет (чтобы не путать)
+const COIN_NETWORKS = {
+  USDT: ["TRC20","ERC20","BEP20","TON"],
+  USDC: ["ERC20","TRC20","BEP20","POL","ARB","OP"],
+  ETH:  ["ERC20","ARB","OP","POL"],
+  BTC:  ["BTC"],
+  SOL:  ["SOL"],
+  TON:  ["TON"],
+  TRX:  ["TRC20"],
+  LTC:  ["LTC"],
+  UAH:  [] // банки - сети не нужны
 };
 
-// --- State
-let giveAsset = ASSETS.find(x=>x.id==="USDT");
-let getAsset  = ASSETS.find(x=>x.id==="MONO");
-let giveNetwork = "TRC20";
-let getNetwork  = ""; // for banks empty
+// Варианты для выбора (банки + крипта)
+const ASSETS = [
+  // crypto
+  { type:"crypto", code:"BTC",  name:{UA:"Bitcoin", EN:"Bitcoin", TR:"Bitcoin", PL:"Bitcoin"},   sub:"BTC" },
+  { type:"crypto", code:"ETH",  name:{UA:"Ethereum", EN:"Ethereum", TR:"Ethereum", PL:"Ethereum"}, sub:"ETH" },
+  { type:"crypto", code:"LTC",  name:{UA:"Litecoin", EN:"Litecoin", TR:"Litecoin", PL:"Litecoin"}, sub:"LTC" },
+  { type:"crypto", code:"TRX",  name:{UA:"Tron", EN:"Tron", TR:"Tron", PL:"Tron"}, sub:"TRX" },
+  { type:"crypto", code:"SOL",  name:{UA:"Solana", EN:"Solana", TR:"Solana", PL:"Solana"}, sub:"SOL" },
+  { type:"crypto", code:"TON",  name:{UA:"Toncoin", EN:"Toncoin", TR:"Toncoin", PL:"Toncoin"}, sub:"TON" },
+  { type:"crypto", code:"USDT", name:{UA:"Tether", EN:"Tether", TR:"Tether", PL:"Tether"}, sub:"USDT" },
+  { type:"crypto", code:"USDC", name:{UA:"USD Coin", EN:"USD Coin", TR:"USD Coin", PL:"USD Coin"}, sub:"USDC" },
 
-// =========================
-// Helpers
-// =========================
-function t(key){ return I18N[lang][key]; }
+  // banks (UAH)
+  { type:"bank", code:"PRIVAT", name:{UA:"PrivatBank", EN:"PrivatBank", TR:"PrivatBank", PL:"PrivatBank"}, sub:"UAH" },
+  { type:"bank", code:"MONO",   name:{UA:"Monobank", EN:"Monobank", TR:"Monobank", PL:"Monobank"}, sub:"UAH" },
+  { type:"bank", code:"PUMB",   name:{UA:"PUMB", EN:"PUMB", TR:"PUMB", PL:"PUMB"}, sub:"UAH" },
+  { type:"bank", code:"OSCHAD", name:{UA:"Oschadbank", EN:"Oschadbank", TR:"Oschadbank", PL:"Oschadbank"}, sub:"UAH" },
+  { type:"bank", code:"SENSE",  name:{UA:"Sense Bank", EN:"Sense Bank", TR:"Sense Bank", PL:"Sense Bank"}, sub:"UAH" },
+  { type:"bank", code:"VISA",   name:{UA:"Visa/Master", EN:"Visa/Master", TR:"Visa/Master", PL:"Visa/Master"}, sub:"UAH" }
+];
 
-function setImgSafe(imgEl, src, fallbackText){
-  imgEl.onerror = () => {
-    // fallback: SVG буква
-    imgEl.onerror = null;
-    const letter = (fallbackText || "?").slice(0,1).toUpperCase();
-    imgEl.src = `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-        <rect width="64" height="64" rx="16" fill="#f3f3f3"/>
-        <text x="32" y="40" text-anchor="middle" font-family="Arial" font-size="28" font-weight="900" fill="#777">${letter}</text>
-      </svg>
-    `);
+/* =========================
+   I18N
+========================= */
+const I18N = {
+  UA: {
+    tabSwap:"Обмін", tabRules:"Правила", tabFaq:"FAQ", tabAccount:"Акаунт",
+    give:"Віддаєте", get:"Отримуєте",
+    chooseCurrency:"Виберіть валюту",
+    chooseNetwork:"Оберіть мережу",
+    networksHint:"Показуємо тільки мережі, які доступні для цієї валюти — щоб не плутати.",
+    amountExample:"Наприклад: 10 000",
+    youReceive:"Ви отримаєте",
+    createRequest:"Створити заявку",
+    rulesText:"Тут будуть правила сервісу та умови обміну.",
+    faq1q:"Коли оновлюється курс?",
+    faq1a:"Курс оновлюється регулярно. Фінальний курс фіксується під час створення заявки.",
+    faq2q:"Скільки триває обмін?",
+    faq2a:"Зазвичай від 5 до 30 хвилин — залежить від мережі та навантаження.",
+    language:"Мова",
+    accountTitle:"Акаунт",
+    login:"Вхід",
+    register:"Реєстрація",
+    kyc:"Верифікація (KYC)",
+    email:"Email",
+    password:"Пароль",
+    continue:"Продовжити",
+    demoNote:"Поки це UI-частина. Підключимо бекенд — буде реальний вхід.",
+    demoNote2:"Після підключення бекенду тут буде підтвердження пошти.",
+    startKyc:"Почати KYC",
+    kycInfoTitle:"Перевірка особи",
+    kycInfoText:"Тут буде завантаження документів та селфі, статус перевірки та ліміти."
+  },
+  EN: {
+    tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAccount:"Account",
+    give:"You send", get:"You receive",
+    chooseCurrency:"Choose currency",
+    chooseNetwork:"Choose network",
+    networksHint:"We show only networks available for this currency to avoid confusion.",
+    amountExample:"Example: 10 000",
+    youReceive:"You will receive",
+    createRequest:"Create request",
+    rulesText:"Service rules and exchange terms will be here.",
+    faq1q:"When does the rate update?",
+    faq1a:"Rates update regularly. The final rate is fixed when you create a request.",
+    faq2q:"How long does an exchange take?",
+    faq2a:"Usually 5 to 30 minutes depending on the network and load.",
+    language:"Language",
+    accountTitle:"Account",
+    login:"Login",
+    register:"Register",
+    kyc:"Verification (KYC)",
+    email:"Email",
+    password:"Password",
+    continue:"Continue",
+    demoNote:"This is UI only for now. We’ll connect backend for real login.",
+    demoNote2:"After backend connection, email verification will appear here.",
+    startKyc:"Start KYC",
+    kycInfoTitle:"Identity verification",
+    kycInfoText:"Here will be document upload, selfie, verification status, and limits."
+  },
+  TR: {
+    tabSwap:"Takas", tabRules:"Kurallar", tabFaq:"SSS", tabAccount:"Hesap",
+    give:"Gönderiyorsunuz", get:"Alıyorsunuz",
+    chooseCurrency:"Para birimi seçin",
+    chooseNetwork:"Ağ seçin",
+    networksHint:"Karışıklık olmaması için yalnızca bu para birimine uygun ağları gösteriyoruz.",
+    amountExample:"Örnek: 10 000",
+    youReceive:"Alacaksınız",
+    createRequest:"Talep oluştur",
+    rulesText:"Hizmet kuralları ve takas şartları burada olacak.",
+    faq1q:"Kur ne zaman güncellenir?",
+    faq1a:"Kur düzenli olarak güncellenir. Son kur talep oluştururken sabitlenir.",
+    faq2q:"İşlem ne kadar sürer?",
+    faq2a:"Genelde 5–30 dakika, ağ ve yoğunluğa bağlıdır.",
+    language:"Dil",
+    accountTitle:"Hesap",
+    login:"Giriş",
+    register:"Kayıt",
+    kyc:"Doğrulama (KYC)",
+    email:"Email",
+    password:"Şifre",
+    continue:"Devam",
+    demoNote:"Şimdilik sadece UI. Backend bağlayınca gerçek giriş olacak.",
+    demoNote2:"Backend bağlanınca e-posta doğrulama burada olacak.",
+    startKyc:"KYC Başlat",
+    kycInfoTitle:"Kimlik doğrulama",
+    kycInfoText:"Belge yükleme, selfie, durum ve limitler burada olacak."
+  },
+  PL: {
+    tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAccount:"Konto",
+    give:"Wysyłasz", get:"Otrzymujesz",
+    chooseCurrency:"Wybierz walutę",
+    chooseNetwork:"Wybierz sieć",
+    networksHint:"Pokazujemy tylko sieci dostępne dla tej waluty, żeby nie wprowadzać w błąd.",
+    amountExample:"Przykład: 10 000",
+    youReceive:"Otrzymasz",
+    createRequest:"Utwórz zgłoszenie",
+    rulesText:"Tutaj będą zasady serwisu i warunki wymiany.",
+    faq1q:"Kiedy kurs jest aktualizowany?",
+    faq1a:"Kurs aktualizuje się regularnie. Ostateczny kurs jest blokowany przy tworzeniu zgłoszenia.",
+    faq2q:"Ile trwa wymiana?",
+    faq2a:"Zwykle 5–30 minut w zależności od sieci i obciążenia.",
+    language:"Język",
+    accountTitle:"Konto",
+    login:"Zaloguj",
+    register:"Rejestracja",
+    kyc:"Weryfikacja (KYC)",
+    email:"Email",
+    password:"Hasło",
+    continue:"Dalej",
+    demoNote:"Na razie to tylko UI. Po podłączeniu backendu będzie prawdziwe logowanie.",
+    demoNote2:"Po podłączeniu backendu pojawi się potwierdzenie email.",
+    startKyc:"Rozpocznij KYC",
+    kycInfoTitle:"Weryfikacja tożsamości",
+    kycInfoText:"Tutaj będą dokumenty, selfie, status weryfikacji i limity."
+  }
+};
+
+let LANG = "UA";
+
+/* =========================
+   STATE
+========================= */
+let state = {
+  give: { asset: findAsset("USDT","crypto"), network: "TRC20" },
+  get:  { asset: findAsset("USDC","crypto"), network: "ERC20" },
+  currencyTarget: "give", // which side is editing
+  networkTarget: "give"   // which side is editing
+};
+
+function findAsset(code, type){
+  return ASSETS.find(a => a.code === code && a.type === type) || ASSETS[0];
+}
+
+function getAssetIcon(asset){
+  if(asset.type === "bank") return ICONS.banks[asset.code] || ICONS.banks.VISA;
+  return ICONS.crypto[asset.code] || ICONS.crypto.USDT;
+}
+
+function getNetworkIcon(net){
+  return ICONS.networks[net] || ICONS.networks.ERC20;
+}
+
+function assetDisplayName(asset){
+  const n = asset.name?.[LANG] || asset.name?.UA || asset.code;
+  if(asset.type === "bank") return n;
+  // crypto: "Tether (USDT)"
+  return `${n} (${asset.sub})`;
+}
+
+function netSubLine(assetCode, net){
+  // делаем понятную подпись типа "USDC • ETH" / "USDT • TRX"
+  const map = {
+    ERC20: "ETH",
+    TRC20: "TRX",
+    BEP20: "BNB",
+    POL: "POL",
+    ARB: "ARB",
+    OP: "OP",
+    TON: "TON",
+    SOL: "SOL",
+    BTC: "BTC",
+    LTC: "LTC"
   };
-  imgEl.src = src;
+  const base = map[net] || net;
+  return `${assetCode} • ${base}`;
 }
 
-function formatThousands(numStr){
-  // keep digits only
-  const digits = (numStr || "").replace(/[^\d]/g,"");
-  if(!digits) return "";
-  // no leading zeros (but allow single 0)
-  const normalized = digits.replace(/^0+(\d)/, "$1");
-  return normalized.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+/* =========================
+   UI HELPERS
+========================= */
+const $ = (id) => document.getElementById(id);
+
+function showOverlay(id){
+  $(id).classList.add("show");
+  $(id).setAttribute("aria-hidden", "false");
 }
-function parseNumber(formatted){
-  const d = (formatted||"").replace(/[^\d]/g,"");
+function hideOverlay(id){
+  $(id).classList.remove("show");
+  $(id).setAttribute("aria-hidden", "true");
+}
+
+function t(key){
+  return (I18N[LANG] && I18N[LANG][key]) ? I18N[LANG][key] : (I18N.UA[key] || key);
+}
+
+function applyLang(){
+  document.documentElement.lang = (LANG === "UA") ? "uk" : "en";
+  $("langPill").textContent = LANG;
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    el.textContent = t(k);
+  });
+
+  // amount hint
+  $("amountHint").textContent = t("amountExample");
+
+  // re-render asset labels with current language
+  render();
+}
+
+function formatNumberWithSpaces(value){
+  const digits = value.replace(/[^\d]/g,'');
+  if(!digits) return '';
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+function parseDigits(value){
+  const d = value.replace(/[^\d]/g,'');
   return d ? Number(d) : 0;
 }
 
-// =========================
-// Render
-// =========================
-function applyI18n(){
-  $("tabSwap").textContent = t("tabSwap");
-  $("tabRules").textContent = t("tabRules");
-  $("tabFaq").textContent = t("tabFaq");
-  $("tabAccount").textContent = t("tabAccount");
+/* =========================
+   RENDER
+========================= */
+function render(){
+  // GIVE
+  $("giveAssetIcon").src = getAssetIcon(state.give.asset);
+  $("giveAssetTitle").textContent = assetDisplayName(state.give.asset);
+  $("giveAssetSub").textContent = state.give.asset.sub;
 
-  $("giveTitle").textContent = t("give");
-  $("getTitle").textContent = t("get");
-  $("youGetLabel").textContent = t("youGet");
-  $("rateLabel").textContent = t("rate");
-  $("rateHint").textContent = t("rateHint");
-  $("createBtn").textContent = t("create");
+  // Network enable/disable for banks or single-network coins
+  renderNetworkForSide("give");
 
-  $("chooseLangTitle").textContent = t("chooseLang");
+  // GET
+  $("getAssetIcon").src = getAssetIcon(state.get.asset);
+  $("getAssetTitle").textContent = assetDisplayName(state.get.asset);
+  $("getAssetSub").textContent = state.get.asset.sub;
 
-  $("rulesTitle").textContent = t("rulesTitle");
-  renderRules();
-  $("faqTitle").textContent = t("faqTitle");
-  renderFaq();
+  renderNetworkForSide("get");
 
-  $("accountTitle").textContent = t("accountTitle");
-  $("accountText").textContent = t("accountText");
-  $("loginBtn").textContent = t("login");
-  $("kycBtn").textContent = t("kyc");
+  // result calculation demo (простая демо-логика)
+  const amount = parseDigits($("amountInput").value);
+  // демо: если crypto->crypto ~ 0.985, если bank involved ~ 0.97
+  const bankInvolved = (state.give.asset.type === "bank" || state.get.asset.type === "bank");
+  const k = bankInvolved ? 0.97 : 0.985;
+  const res = Math.max(0, Math.floor(amount * k * 100) / 100);
 
-  // hint under amount (animated feel)
-  const v = $("amountInput").value.trim();
-  $("amountHint").textContent = v ? t("amountHint1") : t("amountHint0");
+  $("resultValue").textContent = amount ? String(res) : "0";
 }
 
-function renderAssetButtons(){
-  // give
-  setImgSafe($("giveAssetIcon"), giveAsset.icon, giveAsset.sub);
-  $("giveAssetTitle").textContent = giveAsset.title;
-  $("giveAssetSub").textContent = giveAsset.sub;
+function renderNetworkForSide(side){
+  const asset = state[side].asset;
+  const netBtn = (side === "give") ? $("giveNetBtn") : $("getNetBtn");
+  const netIcon = (side === "give") ? $("giveNetIcon") : $("getNetIcon");
+  const netTitle = (side === "give") ? $("giveNetTitle") : $("getNetTitle");
+  const netSub = (side === "give") ? $("giveNetSub") : $("getNetSub");
 
-  // network for give
-  const giveNeedsNet = giveAsset.type === "crypto" && (giveAsset.networks?.length > 0);
-  $("giveNetworkBtn").style.display = giveNeedsNet ? "flex" : "none";
-  if(giveNeedsNet){
-    if(!giveNetwork || !giveAsset.networks.includes(giveNetwork)){
-      giveNetwork = giveAsset.networks[0];
-    }
-    const n = NETWORKS[giveNetwork] || {title:giveNetwork, sub:"", icon:""};
-    setImgSafe($("giveNetworkIcon"), n.icon, n.title);
-    $("giveNetworkTitle").textContent = n.title;
-    $("giveNetworkSub").textContent = n.sub || giveAsset.sub;
-  }
+  const available = COIN_NETWORKS[asset.sub] || [];
 
-  // get
-  setImgSafe($("getAssetIcon"), getAsset.icon, getAsset.sub);
-  $("getAssetTitle").textContent = getAsset.title;
-  $("getAssetSub").textContent = getAsset.sub;
-
-  const getNeedsNet = getAsset.type === "crypto" && (getAsset.networks?.length > 0);
-  $("getNetworkBtn").style.display = getNeedsNet ? "flex" : "none";
-  if(getNeedsNet){
-    if(!getNetwork || !getAsset.networks.includes(getNetwork)){
-      getNetwork = getAsset.networks[0];
-    }
-    const n2 = NETWORKS[getNetwork] || {title:getNetwork, sub:"", icon:""};
-    setImgSafe($("getNetworkIcon"), n2.icon, n2.title);
-    $("getNetworkTitle").textContent = n2.title;
-    $("getNetworkSub").textContent = n2.sub || getAsset.sub;
-  } else {
-    getNetwork = "";
-  }
-}
-
-function calcPreview(){
-  // заглушка: тут потом подключим WhiteBIT курс
-  const amount = parseNumber($("amountInput").value);
-  if(!amount){
-    $("youGetValue").textContent = "—";
-    $("rateValue").textContent = "—";
+  if(asset.type === "bank" || available.length === 0){
+    // для банков сеть не нужна
+    netBtn.style.visibility = "hidden";
     return;
   }
-  // фейковый расчёт только для UI (пример)
-  const rate = 39.5; // пример
-  $("rateValue").textContent = `${rate}`;
-  if(getAsset.type === "bank"){
-    $("youGetValue").textContent = `${formatThousands(String(Math.round(amount * rate))) } ${getAsset.sub}`;
+  netBtn.style.visibility = "visible";
+
+  // если только 1 сеть — фиксируем
+  if(available.length === 1){
+    state[side].network = available[0];
+    netBtn.disabled = true;
+    netBtn.style.opacity = "0.85";
   } else {
-    $("youGetValue").textContent = `${(amount / rate).toFixed(2)} ${getAsset.sub}`;
+    netBtn.disabled = false;
+    netBtn.style.opacity = "1";
+    // если выбранная сеть стала недоступна — берем первую
+    if(!available.includes(state[side].network)){
+      state[side].network = available[0];
+    }
   }
+
+  const net = state[side].network;
+  netIcon.src = getNetworkIcon(net);
+  netTitle.textContent = net;
+  netSub.textContent = netSubLine(asset.sub, net);
 }
 
-function renderRules(){
-  const box = $("rulesList");
-  box.innerHTML = "";
-  for(const r of I18N[lang].rules){
-    const el = document.createElement("div");
-    el.className = "ruleItem";
-    el.innerHTML = `
-      <div class="ruleIcon">${r.icon}</div>
-      <div class="ruleText">
-        <b>${r.title}</b>
-        <div>${r.text}</div>
-      </div>
-    `;
-    box.appendChild(el);
-  }
-}
-
-function renderFaq(){
-  const box = $("faqList");
-  box.innerHTML = "";
-  for(const f of I18N[lang].faq){
-    const el = document.createElement("div");
-    el.className = "faqItem";
-    el.textContent = `▶ ${f.q}`;
-    box.appendChild(el);
-  }
-}
-
-// =========================
-// Tabs
-// =========================
-function openTab(name){
-  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("is-active", b.dataset.tab === name));
-  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("is-active", p.id === `panel-${name}`));
-}
-document.querySelectorAll(".tab").forEach(btn=>{
-  btn.addEventListener("click", ()=> openTab(btn.dataset.tab));
-});
-
-// =========================
-// Sheets
-// =========================
-function openSheet(id){ $(id).classList.remove("hidden"); }
-function closeSheet(id){ $(id).classList.add("hidden"); }
-
-// lang sheet
-$("langBtn").addEventListener("click", ()=> openSheet("langSheet"));
-$("closeLang").addEventListener("click", ()=> closeSheet("langSheet"));
-document.querySelectorAll("#langSheet .sheetItem").forEach(b=>{
-  b.addEventListener("click", ()=>{
-    lang = b.dataset.lang;
-    $("langLabel").textContent = lang === "uk" ? "UA" : lang.toUpperCase();
-    document.documentElement.lang = lang;
-    applyI18n();
-    closeSheet("langSheet");
-  });
-});
-
-// picker
-let pickerMode = null; // "giveAsset" | "getAsset" | "giveNet" | "getNet"
-function openPicker(title, items, onPick){
-  $("pickerTitle").textContent = title;
-  const list = $("pickerList");
+/* =========================
+   SHEETS BUILDERS
+========================= */
+function buildCurrencyList(){
+  const list = $("currencyList");
   list.innerHTML = "";
 
-  items.forEach(item=>{
-    const row = document.createElement("button");
-    row.className = "pickerRow";
-    row.type = "button";
-    row.innerHTML = `
-      <span class="pickerLeft">
-        <span class="pickerIcon"><img alt="" /></span>
-        <span class="pickerText">
-          <div class="t1">${item.title}</div>
-          <div class="t2">${item.sub || ""}</div>
-        </span>
-      </span>
-      <span class="pickerChev">›</span>
-    `;
-    const img = row.querySelector("img");
-    if(item.icon) setImgSafe(img, item.icon, item.title);
-    else setImgSafe(img, "", item.title);
+  // Разделяем визуально: сначала crypto, потом banks
+  const crypto = ASSETS.filter(a => a.type === "crypto");
+  const banks  = ASSETS.filter(a => a.type === "bank");
 
-    row.addEventListener("click", ()=>{
-      onPick(item);
-      closeSheet("pickerSheet");
-    });
-    list.appendChild(row);
-  });
+  const addGroupTitle = (text) => {
+    const div = document.createElement("div");
+    div.style.margin = "6px 2px -4px";
+    div.style.fontWeight = "1000";
+    div.style.opacity = ".55";
+    div.textContent = text;
+    list.appendChild(div);
+  };
 
-  openSheet("pickerSheet");
+  addGroupTitle("CRYPTO");
+  crypto.forEach(a => list.appendChild(currencyRow(a)));
+
+  addGroupTitle("BANKS (UAH)");
+  banks.forEach(a => list.appendChild(currencyRow(a)));
 }
-$("pickerClose").addEventListener("click", ()=> closeSheet("pickerSheet"));
 
-// =========================
-// Selection buttons
-// =========================
-$("giveAssetBtn").addEventListener("click", ()=>{
-  openPicker(t("chooseAssetGive"), ASSETS, (item)=>{
-    giveAsset = item;
-    // if crypto ensure network
-    if(giveAsset.type === "crypto" && giveAsset.networks.length){
-      giveNetwork = giveAsset.networks[0];
-    } else {
-      giveNetwork = "";
-    }
-    renderAssetButtons();
-    calcPreview();
+function currencyRow(asset){
+  const btn = document.createElement("button");
+  btn.className = "option-row";
+
+  const img = document.createElement("img");
+  img.className = "list-icon";
+  img.src = getAssetIcon(asset);
+  img.alt = asset.sub;
+
+  const text = document.createElement("div");
+  text.className = "option-text";
+
+  const title = document.createElement("div");
+  title.className = "option-title";
+  title.textContent = assetDisplayName(asset);
+
+  const sub = document.createElement("small");
+  sub.textContent = asset.type === "bank" ? "UAH • Bank" : asset.sub;
+
+  text.appendChild(title);
+  text.appendChild(sub);
+
+  const right = document.createElement("div");
+  right.className = "right";
+  right.textContent = "›";
+
+  btn.appendChild(img);
+  btn.appendChild(text);
+  btn.appendChild(right);
+
+  btn.addEventListener("click", () => {
+    state[state.currencyTarget].asset = asset;
+
+    // при смене валюты — сеть обновится автоматически в renderNetworkForSide
+    hideOverlay("overlayCurrency");
+    render();
   });
-});
 
-$("getAssetBtn").addEventListener("click", ()=>{
-  openPicker(t("chooseAssetGet"), ASSETS, (item)=>{
-    getAsset = item;
-    if(getAsset.type === "crypto" && getAsset.networks.length){
-      getNetwork = getAsset.networks[0];
-    } else {
-      getNetwork = "";
-    }
-    renderAssetButtons();
-    calcPreview();
+  return btn;
+}
+
+function buildNetworkList(forSide){
+  const list = $("networkList");
+  list.innerHTML = "";
+
+  const asset = state[forSide].asset;
+  const available = COIN_NETWORKS[asset.sub] || [];
+
+  available.forEach(net => {
+    const btn = document.createElement("button");
+    btn.className = "option-row";
+
+    const img = document.createElement("img");
+    img.className = "list-icon";
+    img.src = getNetworkIcon(net);
+    img.alt = net;
+
+    const text = document.createElement("div");
+    text.className = "option-text";
+
+    const title = document.createElement("div");
+    title.className = "option-title";
+    title.textContent = net;
+
+    const sub = document.createElement("small");
+    sub.textContent = netSubLine(asset.sub, net);
+
+    text.appendChild(title);
+    text.appendChild(sub);
+
+    const right = document.createElement("div");
+    right.className = "right";
+    right.textContent = "›";
+
+    btn.appendChild(img);
+    btn.appendChild(text);
+    btn.appendChild(right);
+
+    btn.addEventListener("click", () => {
+      state[forSide].network = net;
+      hideOverlay("overlayNetwork");
+      render();
+    });
+
+    list.appendChild(btn);
   });
-});
+}
 
-$("giveNetworkBtn").addEventListener("click", ()=>{
-  if(!(giveAsset.type==="crypto" && giveAsset.networks.length)) return;
-  const nets = giveAsset.networks.map(k => ({
-    id:k,
-    title: (NETWORKS[k]?.title || k),
-    sub: (NETWORKS[k]?.sub || giveAsset.sub),
-    icon: (NETWORKS[k]?.icon || "")
-  }));
-  openPicker(t("chooseNetwork"), nets, (item)=>{
-    giveNetwork = item.id;
-    renderAssetButtons();
+/* =========================
+   EVENTS
+========================= */
+function initTabs(){
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+
+      const tab = btn.getAttribute("data-tab");
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(`page-${tab}`).classList.add("active");
+    });
   });
-});
+}
 
-$("getNetworkBtn").addEventListener("click", ()=>{
-  if(!(getAsset.type==="crypto" && getAsset.networks.length)) return;
-  const nets = getAsset.networks.map(k => ({
-    id:k,
-    title: (NETWORKS[k]?.title || k),
-    sub: (NETWORKS[k]?.sub || getAsset.sub),
-    icon: (NETWORKS[k]?.icon || "")
-  }));
-  openPicker(t("chooseNetwork"), nets, (item)=>{
-    getNetwork = item.id;
-    renderAssetButtons();
+function initFAQ(){
+  document.querySelectorAll(".faq-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-faq");
+      const ans = document.getElementById(`faq-${id}`);
+      const isOpen = ans.style.display === "block";
+      document.querySelectorAll(".faq-ans").forEach(x => x.style.display = "none");
+      ans.style.display = isOpen ? "none" : "block";
+    });
   });
-});
+}
 
-// swap
-$("swapBtn").addEventListener("click", ()=>{
-  [giveAsset, getAsset] = [getAsset, giveAsset];
-  [giveNetwork, getNetwork] = [getNetwork, giveNetwork];
-  renderAssetButtons();
-  calcPreview();
-});
+function initAccount(){
+  document.querySelectorAll(".seg-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".seg-btn").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+      const mode = btn.getAttribute("data-mode");
+      document.querySelectorAll(".form").forEach(f => f.classList.remove("active"));
+      document.getElementById(`form-${mode}`).classList.add("active");
+    });
+  });
 
-// amount formatting
-$("amountInput").addEventListener("input", (e)=>{
-  const caret = e.target.selectionStart;
-  const before = e.target.value;
-  const formatted = formatThousands(before);
-  e.target.value = formatted;
-  // мягко возвращаем курсор в конец (на мобиле это стабильнее)
-  setTimeout(()=> {
-    e.target.setSelectionRange(e.target.value.length, e.target.value.length);
-  }, 0);
+  // demo buttons
+  $("loginBtn").addEventListener("click", () => alert("Demo UI: Login (backend later)"));
+  $("regBtn").addEventListener("click", () => alert("Demo UI: Register (backend later)"));
+  $("kycStart").addEventListener("click", () => alert("Demo UI: KYC (backend later)"));
+}
 
-  $("amountHint").textContent = formatted ? t("amountHint1") : t("amountHint0");
-  calcPreview();
-});
+function initSheets(){
+  // open language
+  $("langOpen").addEventListener("click", () => showOverlay("overlayLang"));
 
-// create request (пока заглушка)
-$("createBtn").addEventListener("click", ()=>{
-  alert("Next step: request page + payment timer (30:00). Скажи: 'Дальше — заявка'");
-});
+  // close buttons
+  document.querySelectorAll(".sheet-close").forEach(btn => {
+    btn.addEventListener("click", () => hideOverlay(btn.getAttribute("data-close")));
+  });
 
-// account buttons (заглушки)
-$("loginBtn").addEventListener("click", ()=> alert("Login next (Phone/Google/Telegram)."));
-$("kycBtn").addEventListener("click", ()=> alert("KYC flow next (manual)."));
+  // click outside sheet closes
+  ["overlayCurrency","overlayNetwork","overlayLang"].forEach(id => {
+    const ov = $(id);
+    ov.addEventListener("click", (e) => {
+      if(e.target === ov) hideOverlay(id);
+    });
+  });
 
-// =========================
-// init
-// =========================
-(function init(){
-  $("langLabel").textContent = "UA";
-  applyI18n();
-  renderAssetButtons();
-  calcPreview();
-})();
+  // language select
+  document.querySelectorAll("[data-lang]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      LANG = btn.getAttribute("data-lang");
+      hideOverlay("overlayLang");
+      applyLang();
+    });
+  });
+
+  // currency open
+  $("giveAssetBtn").addEventListener("click", () => {
+    state.currencyTarget = "give";
+    $("currencySheetTitle").textContent = t("chooseCurrency");
+    buildCurrencyList();
+    showOverlay("overlayCurrency");
+  });
+
+  $("getAssetBtn").addEventListener("click", () => {
+    state.currencyTarget = "get";
+    $("currencySheetTitle").textContent = t("chooseCurrency");
+    buildCurrencyList();
+    showOverlay("overlayCurrency");
+  });
+
+  // network open
+  $("giveNetBtn").addEventListener("click", () => {
+    if($("giveNetBtn").disabled) return;
+    state.networkTarget = "give";
+    buildNetworkList("give");
+    showOverlay("overlayNetwork");
+  });
+
+  $("getNetBtn").addEventListener("click", () => {
+    if($("getNetBtn").disabled) return;
+    state.networkTarget = "get";
+    buildNetworkList("get");
+    showOverlay("overlayNetwork");
+  });
+}
+
+function initSwap(){
+  $("swapSides").addEventListener("click", () => {
+    const tmp = state.give;
+    state.give = state.get;
+    state.get = tmp;
+    render();
+  });
+
+  $("createRequest").addEventListener("click", () => {
+    alert("Demo UI: create request (backend later)");
+  });
+
+  $("amountInput").addEventListener("input", () => {
+    const before = $("amountInput").value;
+    $("amountInput").value = formatNumberWithSpaces(before);
+    render();
+  });
+}
+
+/* =========================
+   START
+========================= */
+initTabs();
+initFAQ();
+initAccount();
+initSheets();
+initSwap();
+
+applyLang();
+render();
