@@ -1,176 +1,983 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>KeksSwap</title>
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root{
+      --bg1:#f7e7ff;
+      --bg2:#e9d2ff;
+      --card:#ffffffcc;
+      --card2:#ffffffb5;
+      --text:#141418;
+      --muted:#7b7b86;
+      --border:#ffffff80;
+      --shadow: 0 18px 45px rgba(34, 10, 55, .12);
+      --shadow2: 0 12px 28px rgba(34, 10, 55, .10);
+      --grad: linear-gradient(135deg, #6b5bff 0%, #c84ce6 55%, #ff61b6 100%);
+      --grad2: radial-gradient(120px 120px at 50% 50%, rgba(207,85,255,.35), rgba(207,85,255,0) 70%);
+      --r: 26px;
+      --r2: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(900px 500px at 50% 0%, var(--bg1), transparent 60%),
+                  radial-gradient(900px 500px at 50% 100%, var(--bg2), transparent 60%),
+                  linear-gradient(180deg, #f9f3ff, #f2e8ff);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      width:min(560px, 100%);
+      margin:0 auto;
+      padding: 14px 14px 28px;
+    }
+
+    /* HEADER */
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 6px 8px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .brand img{
+      width:56px;
+      height:56px;
+      object-fit:contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.12));
+    }
+    /* НИКАКОГО текста "KEKS SWAP" рядом — как ты просил */
+    .langBtn{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.55);
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      font-weight: 800;
+      letter-spacing:.2px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chev{ opacity:.75; font-size: 14px; }
+
+    /* NAV */
+    .nav{
+      margin-top: 10px;
+      background: rgba(255,255,255,.45);
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 26px;
+      padding: 10px;
+      box-shadow: var(--shadow2);
+      display:flex;
+      gap:10px;
+    }
+    .tab{
+      flex:1;
+      padding: 12px 10px;
+      border-radius: 18px;
+      text-align:center;
+      font-weight: 800;
+      cursor:pointer;
+      color:#15151b;
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(255,255,255,.52);
+      user-select:none;
+    }
+    .tab.active{
+      background: var(--grad);
+      color:#fff;
+      border: 0;
+      box-shadow: 0 12px 24px rgba(123, 64, 255, .18);
+    }
+
+    /* CARD */
+    .card{
+      margin-top: 14px;
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: var(--r);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .sectionTitle{
+      font-size: 22px;
+      font-weight: 950;
+      margin: 6px 4px 10px;
+      letter-spacing:.2px;
+    }
+    .label{
+      margin: 12px 6px 8px;
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing:.2px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:stretch;
+    }
+
+    /* SELECT PILL */
+    .pill{
+      flex:1;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 18px;
+      padding: 10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
+      cursor:pointer;
+      user-select:none;
+      min-height: 58px;
+    }
+    .pillLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .ico{
+      width:34px;
+      height:34px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(0,0,0,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .ico img{
+      width: 24px;
+      height: 24px;
+      object-fit:contain;
+    }
+    .icoFallback{
+      font-weight: 1000;
+      font-size: 12px;
+      color:#333;
+      opacity:.8;
+    }
+    .txt{
+      min-width:0;
+      line-height: 1.08;
+    }
+    .txt .t1{
+      font-weight: 950;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .txt .t2{
+      margin-top: 3px;
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .down{
+      opacity:.55;
+      font-size: 14px;
+      padding-left: 4px;
+      flex:0 0 auto;
+    }
+
+    /* AMOUNT */
+    .amountWrap{
+      margin-top: 10px;
+      position:relative;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 20px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.07);
+      overflow:hidden;
+    }
+    .amountInput{
+      width:100%;
+      border:0;
+      outline:0;
+      background: transparent;
+      font-size: 34px;
+      font-weight: 1000;
+      letter-spacing: .3px;
+      text-align:center;
+      padding: 18px 16px 12px;
+      color: #17171d;
+    }
+    .hint{
+      text-align:center;
+      padding: 0 12px 14px;
+      color: rgba(20,20,24,.45);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    /* SWAP BTN */
+    .swapCenter{
+      display:flex;
+      justify-content:center;
+      margin: 14px 0 10px;
+      position:relative;
+    }
+    .swapGlow{
+      position:absolute;
+      inset:auto;
+      width:180px;
+      height:180px;
+      background: var(--grad2);
+      filter: blur(2px);
+      z-index:0;
+      transform: translateY(-12px);
+    }
+    .swapBtn{
+      width:86px;
+      height:86px;
+      border-radius: 26px;
+      border: 0;
+      background: var(--grad);
+      box-shadow: 0 18px 40px rgba(163, 61, 255, .28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:1;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .swapBtn:active{ transform: scale(.98); }
+    .swapBtn svg{ opacity:.92; }
+
+    /* RESULT */
+    .resultBox{
+      margin-top: 10px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.62);
+      border-radius: 20px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.07);
+      padding: 14px;
+    }
+    .resultLabel{
+      color: rgba(20,20,24,.45);
+      font-weight: 950;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .resultValue{
+      font-size: 34px;
+      font-weight: 1000;
+    }
+
+    /* MAIN CTA */
+    .cta{
+      margin-top: 16px;
+      width:100%;
+      border:0;
+      border-radius: 24px;
+      padding: 16px 16px;
+      background: var(--grad);
+      color:#fff;
+      font-size: 20px;
+      font-weight: 1000;
+      letter-spacing:.2px;
+      box-shadow: 0 18px 40px rgba(163, 61, 255, .22);
+      cursor:pointer;
+    }
+    .cta:active{ transform: translateY(1px); }
+
+    /* MODAL */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.25);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding: 12px;
+      z-index: 999;
+    }
+    .overlay.show{ display:flex; }
+    .sheet{
+      width:min(560px, 100%);
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 26px;
+      box-shadow: 0 22px 50px rgba(0,0,0,.22);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      animation: up .14s ease;
+    }
+    @keyframes up { from{ transform: translateY(18px); opacity:.7;} to{ transform: translateY(0); opacity:1; } }
+    .sheetHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .sheetTitle{
+      font-weight: 1000;
+      font-size: 18px;
+    }
+    .xbtn{
+      width:44px; height:44px;
+      border-radius: 16px;
+      border:1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.75);
+      cursor:pointer;
+      font-size: 20px;
+      font-weight: 1000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .list{
+      max-height: 60vh;
+      overflow:auto;
+      padding: 10px 10px 14px;
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.06);
+      margin-bottom: 10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .item:active{ transform: scale(.995); }
+    .itemRight{
+      opacity:.35;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .smallNote{
+      padding: 0 14px 12px;
+      color: rgba(20,20,24,.52);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    /* PAGES (simple) */
+    .page{ display:none; }
+    .page.show{ display:block; }
+
+    /* safe areas */
+    .safeBottom{ height: env(safe-area-inset-bottom); }
+  </style>
 </head>
 <body>
-  <div class="app">
-
-    <header class="top">
+  <div class="wrap">
+    <div class="top">
       <div class="brand">
-        <img class="brand__logo" src="logos/keks-logo.png" alt="KeksSwap" />
-        <div class="brand__name">KEKS<br/>SWAP</div>
+        <img src="logos/keks-logo.png" alt="KeksSwap">
       </div>
 
-      <button class="lang" id="langBtn">
-        <span id="langLabel">UA</span>
+      <div class="langBtn" id="langBtn" role="button" aria-label="Language">
+        <span id="langCode">UA</span>
         <span class="chev">▼</span>
-      </button>
-    </header>
+      </div>
+    </div>
 
-    <nav class="tabs" role="tablist">
-      <button class="tab is-active" data-tab="swap" id="tabSwap"></button>
-      <button class="tab" data-tab="rules" id="tabRules"></button>
-      <button class="tab" data-tab="faq" id="tabFaq"></button>
-      <button class="tab" data-tab="account" id="tabAccount"></button>
-    </nav>
+    <div class="nav">
+      <div class="tab active" data-tab="swap" id="tabSwap">Обмін</div>
+      <div class="tab" data-tab="rules" id="tabRules">Правила</div>
+      <div class="tab" data-tab="faq" id="tabFaq">FAQ</div>
+      <div class="tab" data-tab="account" id="tabAcc">Акаунт</div>
+    </div>
 
-    <main class="content">
-
-      <!-- SWAP -->
-      <section class="panel is-active" id="panel-swap">
-        <div class="card">
-          <div class="h2" id="giveTitle"></div>
-
-          <div class="row2">
-            <button class="select" id="giveAssetBtn">
-              <span class="select__left">
-                <span class="iconwrap"><img id="giveAssetIcon" alt="" /></span>
-                <span class="select__text">
-                  <span class="select__title" id="giveAssetTitle"></span>
-                  <span class="select__sub" id="giveAssetSub"></span>
-                </span>
-              </span>
-              <span class="select__chev">▼</span>
-            </button>
-
-            <button class="select" id="giveNetworkBtn">
-              <span class="select__left">
-                <span class="iconwrap"><img id="giveNetworkIcon" alt="" /></span>
-                <span class="select__text">
-                  <span class="select__title" id="giveNetworkTitle"></span>
-                  <span class="select__sub" id="giveNetworkSub"></span>
-                </span>
-              </span>
-              <span class="select__chev">▼</span>
-            </button>
-          </div>
-
-          <div class="amountbox">
-            <input id="amountInput" inputmode="numeric" autocomplete="off" class="amount" placeholder="0" />
-            <div class="amountHint" id="amountHint"></div>
-          </div>
-
-          <div class="swapCenter">
-            <button class="swapBtn" id="swapBtn" aria-label="Swap">
-              <img src="logos/arrows.svg" alt="" />
-            </button>
-          </div>
-
-          <div class="h2 mt" id="getTitle"></div>
-
-          <div class="row2">
-            <button class="select" id="getAssetBtn">
-              <span class="select__left">
-                <span class="iconwrap"><img id="getAssetIcon" alt="" /></span>
-                <span class="select__text">
-                  <span class="select__title" id="getAssetTitle"></span>
-                  <span class="select__sub" id="getAssetSub"></span>
-                </span>
-              </span>
-              <span class="select__chev">▼</span>
-            </button>
-
-            <button class="select" id="getNetworkBtn">
-              <span class="select__left">
-                <span class="iconwrap"><img id="getNetworkIcon" alt="" /></span>
-                <span class="select__text">
-                  <span class="select__title" id="getNetworkTitle"></span>
-                  <span class="select__sub" id="getNetworkSub"></span>
-                </span>
-              </span>
-              <span class="select__chev">▼</span>
-            </button>
-          </div>
-
-          <div class="result">
-            <div class="result__label" id="youGetLabel"></div>
-            <div class="result__value" id="youGetValue">—</div>
-          </div>
-
-          <div class="rate">
-            <div class="rate__line">
-              <span id="rateLabel"></span>
-              <b id="rateValue">—</b>
+    <!-- SWAP PAGE -->
+    <div class="page show" id="page-swap">
+      <div class="card">
+        <div class="label" id="lblGive">Віддаєте</div>
+        <div class="row">
+          <div class="pill" id="giveAssetBtn">
+            <div class="pillLeft">
+              <div class="ico" id="giveAssetIco"></div>
+              <div class="txt">
+                <div class="t1" id="giveAssetName">Tether (USDT)</div>
+                <div class="t2" id="giveAssetSym">USDT</div>
+              </div>
             </div>
-            <div class="rate__hint" id="rateHint"></div>
+            <div class="down">▼</div>
           </div>
 
-          <button class="primary" id="createBtn"></button>
-        </div>
-      </section>
-
-      <!-- RULES -->
-      <section class="panel" id="panel-rules">
-        <div class="card">
-          <h1 id="rulesTitle"></h1>
-          <div class="ruleList" id="rulesList"></div>
-        </div>
-      </section>
-
-      <!-- FAQ -->
-      <section class="panel" id="panel-faq">
-        <div class="card">
-          <h1 id="faqTitle"></h1>
-          <div class="faq" id="faqList"></div>
-        </div>
-      </section>
-
-      <!-- ACCOUNT -->
-      <section class="panel" id="panel-account">
-        <div class="card">
-          <h1 id="accountTitle"></h1>
-          <div class="muted" id="accountText"></div>
-          <div class="accountActions">
-            <button class="ghost" id="loginBtn"></button>
-            <button class="ghost" id="kycBtn"></button>
+          <div class="pill" id="giveNetBtn" title="Network">
+            <div class="pillLeft">
+              <div class="ico" id="giveNetIco"></div>
+              <div class="txt">
+                <div class="t1" id="giveNetName">TRC20</div>
+                <div class="t2" id="giveNetSub">USDT</div>
+              </div>
+            </div>
+            <div class="down">▼</div>
           </div>
         </div>
-      </section>
 
-    </main>
-
-    <!-- LANG SHEET -->
-    <div class="sheet hidden" id="langSheet" role="dialog" aria-modal="true">
-      <div class="sheet__box">
-        <div class="sheet__head">
-          <div class="sheet__title" id="chooseLangTitle"></div>
-          <button class="x" id="closeLang">×</button>
+        <div class="amountWrap">
+          <input class="amountInput" id="amount" inputmode="decimal" autocomplete="off" placeholder="0" />
+          <div class="hint" id="amountHint">Наприклад: 10 000</div>
         </div>
-        <div class="sheet__list">
-          <button class="sheetItem" data-lang="uk">UA</button>
-          <button class="sheetItem" data-lang="en">EN</button>
-          <button class="sheetItem" data-lang="tr">TR</button>
+
+        <div class="swapCenter">
+          <div class="swapGlow"></div>
+          <button class="swapBtn" id="swapBtn" aria-label="Swap direction">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h11m0 0-3-3m3 3-3 3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17 17H6m0 0 3 3m-3-3 3-3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="label" id="lblGet">Отримуєте</div>
+        <div class="row">
+          <div class="pill" id="getAssetBtn">
+            <div class="pillLeft">
+              <div class="ico" id="getAssetIco"></div>
+              <div class="txt">
+                <div class="t1" id="getAssetName">USD Coin (USDC)</div>
+                <div class="t2" id="getAssetSym">USDC</div>
+              </div>
+            </div>
+            <div class="down">▼</div>
+          </div>
+
+          <div class="pill" id="getNetBtn">
+            <div class="pillLeft">
+              <div class="ico" id="getNetIco"></div>
+              <div class="txt">
+                <div class="t1" id="getNetName">ERC20</div>
+                <div class="t2" id="getNetSub">USDC</div>
+              </div>
+            </div>
+            <div class="down">▼</div>
+          </div>
+        </div>
+
+        <div class="resultBox">
+          <div class="resultLabel" id="rateLbl">Ви отримаєте</div>
+          <div class="resultValue" id="result">—</div>
+        </div>
+
+        <button class="cta" id="ctaBtn">Створити заявку</button>
+      </div>
+    </div>
+
+    <!-- RULES PAGE -->
+    <div class="page" id="page-rules">
+      <div class="card">
+        <div class="sectionTitle" id="rulesTitle">Умови обміну</div>
+        <div class="smallNote" id="rulesText">
+          • Час обробки: зазвичай до 40 хвилин (інколи до 72 годин).<br>
+          • Курс фіксується під час створення заявки.<br>
+          • Вкажіть коректний Telegram для звʼязку — інакше обробка може бути призупинена.
         </div>
       </div>
     </div>
 
-    <!-- PICKER SHEET -->
-    <div class="sheet hidden" id="pickerSheet" role="dialog" aria-modal="true">
-      <div class="sheet__box">
-        <div class="sheet__head">
-          <div class="sheet__title" id="pickerTitle"></div>
-          <button class="x" id="pickerClose">×</button>
+    <!-- FAQ PAGE -->
+    <div class="page" id="page-faq">
+      <div class="card">
+        <div class="sectionTitle">FAQ</div>
+        <div class="smallNote">
+          Тут буде FAQ (розкривні питання).
         </div>
-        <div class="sheet__list" id="pickerList"></div>
       </div>
     </div>
 
+    <!-- ACCOUNT PAGE -->
+    <div class="page" id="page-account">
+      <div class="card">
+        <div class="sectionTitle">Акаунт</div>
+        <div class="smallNote">
+          Тут буде вхід/кабінет.
+        </div>
+      </div>
+    </div>
+
+    <div class="safeBottom"></div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- MODAL -->
+  <div class="overlay" id="overlay">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheetHead">
+        <div class="sheetTitle" id="sheetTitle">Виберіть</div>
+        <button class="xbtn" id="closeSheet">×</button>
+      </div>
+      <div class="smallNote" id="sheetNote"></div>
+      <div class="list" id="sheetList"></div>
+    </div>
+  </div>
+
+<script>
+  // ---------- TRANSLATIONS ----------
+  const I18N = {
+    UA: {
+      tabSwap:"Обмін", tabRules:"Правила", tabFaq:"FAQ", tabAcc:"Акаунт",
+      give:"Віддаєте", get:"Отримуєте",
+      amountHint:"Наприклад: 10 000",
+      youGet:"Ви отримаєте",
+      create:"Створити заявку",
+      sheetAssetTitle:"Виберіть валюту",
+      sheetNetTitle:"Оберіть мережу",
+      sheetLangTitle:"Мова",
+      sheetNetNote:"Показуємо тільки мережі, які доступні для цієї валюти — щоб не плутати.",
+      sheetAssetNote:"Оберіть валюту. Мережа оновиться автоматично.",
+      rulesTitle:"Умови обміну",
+      rulesText:"• Час обробки: зазвичай до 40 хвилин (інколи до 72 годин).<br>• Курс фіксується під час створення заявки.<br>• Вкажіть коректний Telegram для звʼязку — інакше обробка може бути призупинена.",
+      networkLabel:"Мережа",
+      assetLabel:"Валюта"
+    },
+    EN: {
+      tabSwap:"Swap", tabRules:"Rules", tabFaq:"FAQ", tabAcc:"Account",
+      give:"You send", get:"You get",
+      amountHint:"Example: 10 000",
+      youGet:"You receive",
+      create:"Create request",
+      sheetAssetTitle:"Choose currency",
+      sheetNetTitle:"Choose network",
+      sheetLangTitle:"Language",
+      sheetNetNote:"We show only networks available for this currency to keep it simple.",
+      sheetAssetNote:"Select a currency. Network updates automatically.",
+      rulesTitle:"Exchange terms",
+      rulesText:"• Processing time: usually up to 40 minutes (rarely up to 72 hours).<br>• Rate is fixed when you create a request.<br>• Provide a valid Telegram contact — otherwise processing may pause.",
+      networkLabel:"Network",
+      assetLabel:"Currency"
+    },
+    TR: {
+      tabSwap:"Takas", tabRules:"Kurallar", tabFaq:"SSS", tabAcc:"Hesap",
+      give:"Gönderirsiniz", get:"Alırsınız",
+      amountHint:"Örnek: 10 000",
+      youGet:"Alacağınız",
+      create:"Talep oluştur",
+      sheetAssetTitle:"Para birimi seçin",
+      sheetNetTitle:"Ağ seçin",
+      sheetLangTitle:"Dil",
+      sheetNetNote:"Karışıklık olmasın diye sadece bu para birimine uygun ağları gösteriyoruz.",
+      sheetAssetNote:"Para birimini seçin. Ağ otomatik güncellenir.",
+      rulesTitle:"Değişim şartları",
+      rulesText:"• İşlem süresi: genelde 40 dakikaya kadar (nadiren 72 saate kadar).<br>• Kur, talep oluştururken sabitlenir.<br>• Geçerli Telegram iletişimi verin — aksi halde işlem durabilir.",
+      networkLabel:"Ağ",
+      assetLabel:"Para"
+    },
+    PL: {
+      tabSwap:"Wymiana", tabRules:"Zasady", tabFaq:"FAQ", tabAcc:"Konto",
+      give:"Wysyłasz", get:"Otrzymujesz",
+      amountHint:"Przykład: 10 000",
+      youGet:"Otrzymasz",
+      create:"Utwórz zlecenie",
+      sheetAssetTitle:"Wybierz walutę",
+      sheetNetTitle:"Wybierz sieć",
+      sheetLangTitle:"Język",
+      sheetNetNote:"Pokazujemy tylko sieci dostępne dla tej waluty, żeby było prościej.",
+      sheetAssetNote:"Wybierz walutę. Sieć zaktualizuje się automatycznie.",
+      rulesTitle:"Warunki wymiany",
+      rulesText:"• Czas realizacji: zwykle do 40 minut (rzadko do 72 godzin).<br>• Kurs jest blokowany przy tworzeniu zlecenia.<br>• Podaj poprawny Telegram — inaczej realizacja może zostać wstrzymana.",
+      networkLabel:"Sieć",
+      assetLabel:"Waluta"
+    }
+  };
+
+  // ---------- ICON HELPERS ----------
+  function iconHTML(path, fallbackLetter){
+    const safe = (fallbackLetter||"?").slice(0,2).toUpperCase();
+    return `
+      <img src="${path}" alt="" onerror="this.remove(); this.parentNode.insertAdjacentHTML('beforeend','<div class=\\'icoFallback\\'>${safe}</div>')" />
+    `;
+  }
+
+  // ---------- DATA ----------
+  // "Сети к криптовалюте добавь возможные все"
+  // Важно: показываем реальный список, но при этом НЕ даём выбрать сеть, которая не подходит монете (чтобы было понятно).
+  // Иконки берем из твоих папок. Если иконки нет — fallback.
+  const NETWORKS = {
+    ERC20: { name:"ERC20", sub:"ETH", icon:"logos/networks/erc20.png" },
+    TRC20: { name:"TRC20", sub:"TRX", icon:"logos/networks/trc20.png" },
+    BEP20: { name:"BEP20", sub:"BNB", icon:"logos/networks/bep20.png" },
+    POLYGON:{ name:"Polygon", sub:"POL", icon:"logos/networks/pol.png" },
+    ARBITRUM:{ name:"Arbitrum", sub:"ARB", icon:"logos/networks/arb.png" },
+    OPTIMISM:{ name:"Optimism", sub:"OP", icon:"logos/networks/op.png" },
+    SOLANA:{ name:"Solana", sub:"SOL", icon:"logos/networks/sol.png" },
+    TON:   { name:"TON", sub:"TON", icon:"logos/crypto/ton.png" } // фикс: TON НЕ солана
+  };
+
+  const ASSETS = {
+    USDT: { name:"Tether (USDT)", sym:"USDT", icon:"logos/crypto/tether-usdt.png", nets:["TRC20","ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOLANA","TON"] },
+    USDC: { name:"USD Coin (USDC)", sym:"USDC", icon:"logos/crypto/usdc.png",        nets:["ERC20","TRC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOLANA","TON"] },
+    BTC:  { name:"Bitcoin (BTC)",   sym:"BTC",  icon:"logos/crypto/btc.png",         nets:["BTC"] },
+    ETH:  { name:"Ethereum (ETH)",  sym:"ETH",  icon:"logos/crypto/eth.png",         nets:["ERC20"] },
+    LTC:  { name:"Litecoin (LTC)",  sym:"LTC",  icon:"logos/crypto/ltc.png",         nets:["LTC"] },
+    TRX:  { name:"Tron (TRX)",      sym:"TRX",  icon:"logos/crypto/trx.png",         nets:["TRC20"] },
+    SOL:  { name:"Solana (SOL)",    sym:"SOL",  icon:"logos/crypto/sol.png",         nets:["SOLANA"] },
+    TON:  { name:"Toncoin (TON)",   sym:"TON",  icon:"logos/crypto/ton.png",         nets:["TON"] }
+  };
+
+  // special single-chain pseudo networks for BTC/LTC
+  function getNetworkMeta(code){
+    if (NETWORKS[code]) return NETWORKS[code];
+    // single networks without icons folder:
+    if (code === "BTC") return { name:"Bitcoin", sub:"BTC", icon:"logos/crypto/btc.png" };
+    if (code === "LTC") return { name:"Litecoin", sub:"LTC", icon:"logos/crypto/ltc.png" };
+    return { name:code, sub:"", icon:"" };
+  }
+
+  // ---------- STATE ----------
+  let lang = "UA";
+  let giveAsset = "USDT";
+  let getAsset  = "USDC";
+  let giveNet   = "TRC20";
+  let getNet    = "ERC20";
+
+  // ---------- UI REFS ----------
+  const $ = (id)=>document.getElementById(id);
+
+  const overlay = $("overlay");
+  const sheetTitle = $("sheetTitle");
+  const sheetNote  = $("sheetNote");
+  const sheetList  = $("sheetList");
+
+  // top/lang
+  const langBtn = $("langBtn");
+  const langCode = $("langCode");
+
+  // tabs
+  const tabs = document.querySelectorAll(".tab");
+  const pages = {
+    swap: $("page-swap"),
+    rules: $("page-rules"),
+    faq: $("page-faq"),
+    account: $("page-account"),
+  };
+
+  // swap selectors
+  const giveAssetBtn = $("giveAssetBtn");
+  const giveNetBtn   = $("giveNetBtn");
+  const getAssetBtn  = $("getAssetBtn");
+  const getNetBtn    = $("getNetBtn");
+
+  // swap display
+  const giveAssetIco = $("giveAssetIco");
+  const giveAssetName= $("giveAssetName");
+  const giveAssetSym = $("giveAssetSym");
+
+  const giveNetIco   = $("giveNetIco");
+  const giveNetName  = $("giveNetName");
+  const giveNetSub   = $("giveNetSub");
+
+  const getAssetIco  = $("getAssetIco");
+  const getAssetName = $("getAssetName");
+  const getAssetSym  = $("getAssetSym");
+
+  const getNetIco    = $("getNetIco");
+  const getNetName   = $("getNetName");
+  const getNetSub    = $("getNetSub");
+
+  const amount = $("amount");
+  const result = $("result");
+
+  const swapBtn = $("swapBtn");
+
+  // labels i18n
+  const lblGive = $("lblGive");
+  const lblGet  = $("lblGet");
+  const amountHint = $("amountHint");
+  const rateLbl = $("rateLbl");
+  const ctaBtn  = $("ctaBtn");
+
+  const rulesTitle = $("rulesTitle");
+  const rulesText  = $("rulesText");
+
+  const tabSwap = $("tabSwap");
+  const tabRules= $("tabRules");
+  const tabFaq  = $("tabFaq");
+  const tabAcc  = $("tabAcc");
+
+  // ---------- RENDER ----------
+  function setLanguage(code){
+    lang = code;
+    langCode.textContent = code;
+
+    const t = I18N[lang];
+    tabSwap.textContent = t.tabSwap;
+    tabRules.textContent= t.tabRules;
+    tabFaq.textContent  = t.tabFaq;
+    tabAcc.textContent  = t.tabAcc;
+
+    lblGive.textContent = t.give;
+    lblGet.textContent  = t.get;
+    amountHint.textContent = t.amountHint;
+    rateLbl.textContent = t.youGet;
+    ctaBtn.textContent = t.create;
+
+    rulesTitle.textContent = t.rulesTitle;
+    rulesText.innerHTML = t.rulesText;
+
+    // если открыта языковая шторка — обновим заголовок
+    if (overlay.classList.contains("show") && overlay.dataset.type === "lang"){
+      sheetTitle.textContent = t.sheetLangTitle;
+      sheetNote.textContent = "";
+    }
+  }
+
+  function formatNumberSpaces(raw){
+    // keep digits and dot/comma
+    const cleaned = (raw||"").toString().replace(/[^\d.,]/g,"").replace(",",".");
+    if (!cleaned) return { display:"", value:0 };
+    const parts = cleaned.split(".");
+    let int = parts[0].replace(/^0+(?=\d)/, "");
+    if (!int) int = "0";
+    const dec = parts[1] ? parts[1].slice(0,8) : "";
+    // group by 3 with spaces
+    const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return { display: dec ? `${grouped}.${dec}` : grouped, value: parseFloat(`${int}${dec?("." + dec):""}`) || 0 };
+  }
+
+  function ensureNetForAsset(assetSym, currentNet){
+    const a = ASSETS[assetSym];
+    if (!a) return currentNet;
+    if (a.nets.includes(currentNet)) return currentNet;
+    // pick first available
+    return a.nets[0];
+  }
+
+  function renderPills(){
+    // ensure correct nets
+    giveNet = ensureNetForAsset(giveAsset, giveNet);
+    getNet  = ensureNetForAsset(getAsset,  getNet);
+
+    const ga = ASSETS[giveAsset];
+    const gn = getNetworkMeta(giveNet);
+
+    giveAssetIco.innerHTML = iconHTML(ga.icon, ga.sym);
+    giveAssetName.textContent = ga.name;
+    giveAssetSym.textContent = ga.sym;
+
+    giveNetIco.innerHTML = gn.icon ? iconHTML(gn.icon, gn.name) : `<div class="icoFallback">${gn.name.slice(0,2)}</div>`;
+    giveNetName.textContent = gn.name;
+    giveNetSub.textContent = `${ga.sym}${gn.sub?(" • "+gn.sub):""}`;
+
+    const ra = ASSETS[getAsset];
+    const rn = getNetworkMeta(getNet);
+
+    getAssetIco.innerHTML = iconHTML(ra.icon, ra.sym);
+    getAssetName.textContent = ra.name;
+    getAssetSym.textContent = ra.sym;
+
+    getNetIco.innerHTML = rn.icon ? iconHTML(rn.icon, rn.name) : `<div class="icoFallback">${rn.name.slice(0,2)}</div>`;
+    getNetName.textContent = rn.name;
+    getNetSub.textContent = `${ra.sym}${rn.sub?(" • "+rn.sub):""}`;
+
+    recalc();
+  }
+
+  function recalc(){
+    // тут у тебя будет реальный курс (WhiteBIT и т.д.)
+    // Сейчас — демонстрация, чтобы UI не выглядел пустым.
+    const { value } = formatNumberSpaces(amount.value);
+    if (!value || value <= 0){
+      result.textContent = "—";
+      return;
+    }
+
+    // простая имитация, чтобы видеть цифры:
+    // если меняются монеты — меняется коэффициент
+    const k = (giveAsset === getAsset) ? 1 : (giveAsset === "USDT" && getAsset === "USDC") ? 1 : 0.985;
+    const out = value * k;
+    const outStr = out.toLocaleString("en-US", { maximumFractionDigits: 8 });
+    result.textContent = outStr + " " + ASSETS[getAsset].sym;
+  }
+
+  // ---------- SHEET ----------
+  function openSheet(type, side){
+    overlay.classList.add("show");
+    overlay.dataset.type = type;
+    overlay.dataset.side = side || "";
+
+    const t = I18N[lang];
+
+    sheetList.innerHTML = "";
+    sheetNote.textContent = "";
+
+    if (type === "lang"){
+      sheetTitle.textContent = t.sheetLangTitle;
+      const langs = ["UA","EN","TR","PL"]; // добавили PL
+      langs.forEach(code=>{
+        const it = document.createElement("div");
+        it.className = "item";
+        it.innerHTML = `
+          <div class="pillLeft">
+            <div class="ico"><div class="icoFallback">${code}</div></div>
+            <div class="txt">
+              <div class="t1">${code}</div>
+              <div class="t2">${code === "UA" ? "Українська" : code === "EN" ? "English" : code === "TR" ? "Türkçe" : "Polski"}</div>
+            </div>
+          </div>
+          <div class="itemRight">›</div>
+        `;
+        it.onclick = ()=>{
+          setLanguage(code);
+          closeSheet();
+        };
+        sheetList.appendChild(it);
+      });
+      return;
+    }
+
+    if (type === "asset"){
+      sheetTitle.textContent = t.sheetAssetTitle;
+      sheetNote.textContent = t.sheetAssetNote;
+
+      const keys = Object.keys(ASSETS);
+      keys.forEach(sym=>{
+        const a = ASSETS[sym];
+        const it = document.createElement("div");
+        it.className = "item";
+        it.innerHTML = `
+          <div class="pillLeft">
+            <div class="ico">${iconHTML(a.icon, a.sym)}</div>
+            <div class="txt">
+              <div class="t1">${a.name}</div>
+              <div class="t2">${a.sym}</div>
+            </div>
+          </div>
+          <div class="itemRight">›</div>
+        `;
+        it.onclick = ()=>{
+          if (side === "give"){
+            giveAsset = sym;
+            giveNet = ensureNetForAsset(giveAsset, giveNet); // сеть обновится автоматически
+          } else {
+            getAsset = sym;
+            getNet = ensureNetForAsset(getAsset, getNet);
+          }
+          renderPills();
+          closeSheet();
+        };
+        sheetList.appendChild(it);
+      });
+      return;
+    }
+
+    if (type === "net"){
+      sheetTitle.textContent = t.sheetNetTitle;
+      sheetNote.textContent = t.sheetNetNote;
+
+      const assetSym = side === "give" ? giveAsset : getAsset;
+      const allowed = (ASSETS[assetSym]?.nets || []);
+      allowed.forEach(netCode=>{
+        const nm = getNetworkMeta(netCode);
+        const it = document.createElement("div");
+        it.className = "item";
+        it.innerHTML = `
+          <div class="pillLeft">
+            <div class="ico">${nm.icon ? iconHTML(nm.icon, nm.name) : `<div class="icoFallback">${nm.name.slice(0,2)}</div>`}</div>
+            <div class="txt">
+              <div class="t1">${nm.name}</div>
+              <div class="t2">${assetSym}${nm.sub?(" • "+nm.sub):""}</div>
+            </div>
+          </div>
+          <div class="itemRight">›</div>
+        `;
+        it.onclick = ()=>{
+          if (side === "give") giveNet = netCode; else getNet = netCode;
+          renderPills();
+          closeSheet();
+        };
+        sheetList.appendChild(it);
+      });
+
+      return;
+    }
+  }
+
+  function closeSheet(){
+    overlay.classList.remove("show");
+    overlay.dataset.type = "";
+    overlay.dataset.side = "";
+  }
+
+  $("closeSheet").onclick = closeSheet;
+  overlay.addEventListener("click", (e)=>{
+    if (e.target === overlay) closeSheet();
+  });
+
+  // ---------- EVENTS ----------
+  // tabs
+  tabs.forEach(tab=>{
+    tab.addEventListener("click", ()=>{
+      tabs.forEach(t=>t.classList.remove("active"));
+      tab.classList.add("active");
+      const key = tab.dataset.tab;
+      Object.values(pages).forEach(p=>p.classList.remove("show"));
+      pages[key].classList.add("show");
+    });
+  });
+
+  // open sheets
+  langBtn.onclick = ()=> openSheet("lang");
+
+  giveAssetBtn.onclick = ()=> openSheet("asset","give");
+  getAssetBtn.onclick  = ()=> openSheet("asset","get");
+  giveNetBtn.onclick   = ()=> openSheet("net","give");
+  getNetBtn.onclick    = ()=> openSheet("net","get");
+
+  // swap direction
+  swapBtn.onclick = ()=>{
+    // swap assets
+    const a = giveAsset; giveAsset = getAsset; getAsset = a;
+    // swap nets (и потом перепроверим допустимость)
+    const n = giveNet; giveNet = getNet; getNet = n;
+    renderPills();
+  };
+
+  // amount formatting
+  let lastDisplay = "";
+  amount.addEventListener("input", ()=>{
+    const { display } = formatNumberSpaces(amount.value);
+    // prevent cursor jumping too much: simplest approach (works ok for mobile)
+    amount.value = display;
+    lastDisplay = display;
+    recalc();
+  });
+
+  // ---------- INIT ----------
+  // default language by html (UA)
+  setLanguage("UA");
+
+  // default icons
+  renderPills();
+
+  // preset amount demo
+  amount.value = "100";
+  amount.dispatchEvent(new Event("input"));
+</script>
 </body>
 </html>
