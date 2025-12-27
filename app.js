@@ -1,337 +1,387 @@
-(() => {
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
+:root{
+  --bg:#eaf4ff;
+  --card:#ffffff;
+  --text:#0b1220;
+  --muted:#6b7280;
+  --blue:#11a6dc;
+  --blue2:#0b86c7;
+  --stroke:rgba(12, 31, 54, .08);
+  --shadow: 0 10px 30px rgba(11,18,32,.10);
+  --radius:22px;
+  --safeTop: env(safe-area-inset-top, 0px);
+  --safeBottom: env(safe-area-inset-bottom, 0px);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
 
-  // --------- DATA ----------
-  const coins = [
-    { id:"btc", name:"Bitcoin", code:"BTC", icon:"logos/crypto/btc.png", nets:["btc"] },
-    { id:"eth", name:"Ethereum", code:"ETH", icon:"logos/crypto/eth.png", nets:["erc20"] },
-    { id:"ltc", name:"Litecoin", code:"LTC", icon:"logos/crypto/ltc.png", nets:["ltc"] },
-    { id:"sol", name:"Solana", code:"SOL", icon:"logos/crypto/sol.png", nets:["sol"] },
-    { id:"ton", name:"Toncoin", code:"TON", icon:"logos/crypto/ton.png", nets:["ton"] },
-    { id:"trx", name:"Tron", code:"TRX", icon:"logos/crypto/trx.png", nets:["trc20"] },
-    { id:"usdt", name:"Tether", code:"USDT", icon:"logos/crypto/tether-usdt.png", nets:["trc20","erc20","bep20"] },
-    { id:"usdc", name:"USD Coin", code:"USDC", icon:"logos/crypto/usdc.png", nets:["trc20","erc20","bep20"] },
-  ];
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: linear-gradient(180deg, #d7efff 0%, #edf7ff 45%, #f6fbff 100%);
+  color:var(--text);
+}
 
-  const nets = {
-    btc:  { id:"btc",  name:"BTC",  sub:"BTC · BTC",   icon:"logos/networks/btc.png" },
-    ltc:  { id:"ltc",  name:"LTC",  sub:"LTC · LTC",   icon:"logos/networks/ltc.png" },
-    sol:  { id:"sol",  name:"SOL",  sub:"SOL · SOL",   icon:"logos/networks/sol.png" },
-    ton:  { id:"ton",  name:"TON",  sub:"TON · TON",   icon:"logos/networks/ton.png" },
-    erc20:{ id:"erc20",name:"ERC20",sub:"· ETH",        icon:"logos/networks/erc20.png" },
-    trc20:{ id:"trc20",name:"TRC20",sub:"· TRX",        icon:"logos/networks/trc20.png" },
-    bep20:{ id:"bep20",name:"BEP20",sub:"· BNB",        icon:"logos/networks/bep20.png" },
-  };
+.app{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  padding-top: calc(10px + var(--safeTop));
+  padding-bottom: calc(72px + var(--safeBottom));
+}
 
-  const banks = [
-    { id:"mono",  name:"Monobank", icon:"logos/banks/mono.png" },
-    { id:"privat",name:"PrivatBank", icon:"logos/banks/privat.png" },
-    { id:"a-bank",name:"A-Банк", icon:"logos/banks/a-bank.png" },
-    { id:"pumb",  name:"PUMB", icon:"logos/banks/pumb.png" },
-    { id:"oschad",name:"Ощадбанк", icon:"logos/banks/oschad.png" },
-    { id:"otp",   name:"OTP", icon:"logos/banks/otp.png" },
-    { id:"sense", name:"Sense", icon:"logos/banks/sense.png" },
-    { id:"revolut", name:"Revolut", icon:"logos/wallets/revolut.png" },
-    { id:"paypal", name:"PayPal", icon:"logos/wallets/paypal.png" },
-    { id:"payoneer", name:"Payoneer", icon:"logos/wallets/payoneer.png" },
-  ];
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 8px 14px;
+}
 
-  // --------- STATE ----------
-  let state = {
-    lang: "UA",
-    giveCoin: "usdt",
-    giveNet: "trc20",
-    getCoin: "usdc",
-    getNet: "erc20",
-    bank: "mono"
-  };
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-  // --------- UI refs ----------
-  const $ = (id) => document.getElementById(id);
+.brandLogo{
+  height:52px; /* bigger logo */
+  width:auto;
+  border-radius:14px;
+}
 
-  const screens = {
-    home: $("screen-home"),
-    history: $("screen-history"),
-    profile: $("screen-profile"),
-  };
+.brandText{display:flex;flex-direction:column;line-height:1.05}
+.brandName{font-size:20px;font-weight:900;letter-spacing:.2px}
+.brandSub{font-size:12px;color:var(--muted);font-weight:600}
 
-  // give
-  const giveCoinIcon = $("giveCoinIcon");
-  const giveCoinName = $("giveCoinName");
-  const giveCoinCode = $("giveCoinCode");
-  const giveNetIcon  = $("giveNetIcon");
-  const giveNetName  = $("giveNetName");
-  const giveNetCode  = $("giveNetCode");
-  const giveChip     = $("giveChip");
-  const giveAmount   = $("giveAmount");
+.topActions{display:flex;align-items:center;gap:8px}
 
-  // get
-  const getCoinIcon = $("getCoinIcon");
-  const getCoinName = $("getCoinName");
-  const getCoinCode = $("getCoinCode");
-  const getNetIcon  = $("getNetIcon");
-  const getNetName  = $("getNetName");
-  const getNetCode  = $("getNetCode");
-  const getAmount   = $("getAmount");
+.langBtn{
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(10px);
+  border-radius:14px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+.langIcon{width:18px;height:18px;border-radius:6px}
+.chev{opacity:.7}
 
-  // bank
-  const bankIcon = $("bankIcon");
-  const bankName = $("bankName");
+.content{
+  padding: 0 14px;
+  flex:1;
+}
 
-  // sheet
-  const sheet = $("sheet");
-  const sheetTitle = $("sheetTitle");
-  const sheetDesc  = $("sheetDesc");
-  const sheetList  = $("sheetList");
+.card{
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(10px);
+  border:1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
 
-  // --------- helpers ----------
-  function coinById(id){ return coins.find(c => c.id === id); }
-  function netById(id){ return nets[id]; }
-  function bankById(id){ return banks.find(b => b.id === id); }
+.hero{padding:16px}
 
-  function safeNetForCoin(coinId, wantedNetId){
-    const c = coinById(coinId);
-    if (!c) return wantedNetId;
-    if (c.nets.includes(wantedNetId)) return wantedNetId;
-    return c.nets[0];
-  }
+.heroTitle{font-size:22px;font-weight:900;margin-bottom:4px}
+.heroSub{color:var(--muted);font-weight:600;font-size:13px;margin-bottom:14px}
 
-  function render(){
-    // ensure nets valid
-    state.giveNet = safeNetForCoin(state.giveCoin, state.giveNet);
-    state.getNet  = safeNetForCoin(state.getCoin, state.getNet);
+.exchangeBox{display:grid;gap:14px}
 
-    const gc = coinById(state.giveCoin);
-    const gn = netById(state.giveNet);
-    const rc = coinById(state.getCoin);
-    const rn = netById(state.getNet);
-    const bk = bankById(state.bank);
+.panel{
+  background: rgba(255,255,255,.85);
+  border:1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 14px;
+}
 
-    // give coin
-    giveCoinIcon.src = gc.icon;
-    giveCoinName.textContent = gc.name;
-    giveCoinCode.textContent = gc.code;
-    giveChip.textContent = gc.code;
+.panelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.panelTitle{font-size:18px;font-weight:900;color:#3b3f46}
 
-    // give net
-    giveNetIcon.src = gn.icon;
-    giveNetName.textContent = gn.name;
-    giveNetCode.textContent = `${gc.code} ${gn.sub}`.trim();
+.selectors{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
 
-    // get coin
-    getCoinIcon.src = rc.icon;
-    getCoinName.textContent = rc.name;
-    getCoinCode.textContent = rc.code;
+.select{
+  width:100%;
+  border:1px solid var(--stroke);
+  background:#fff;
+  border-radius:18px;
+  padding:10px 10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  text-align:left;
+}
 
-    // get net
-    getNetIcon.src = rn.icon;
-    getNetName.textContent = rn.name;
-    getNetCode.textContent = `${rc.code} ${rn.sub}`.trim();
+.select.small{border-radius:16px;padding:10px}
 
-    // bank
-    bankIcon.src = bk.icon;
-    bankName.textContent = bk.name;
+.selIcon{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  background:#f2f5f9;
+  border:1px solid rgba(0,0,0,.04);
+  object-fit:cover;
+  flex:0 0 auto;
+}
+.selText{flex:1;min-width:0}
+.selTitle{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selSub{color:var(--muted);font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    // calc (пока простой демо)
-    const v = parseFloat((giveAmount.value || "0").replace(",", "."));
-    if (!isFinite(v) || v <= 0) {
-      getAmount.textContent = "0";
-    } else {
-      // демо: 1:1
-      getAmount.textContent = String(Math.round(v * 100) / 100);
-    }
+.amountBox{
+  border:1px dashed rgba(11,18,32,.12);
+  border-radius:18px;
+  padding:12px;
+  background: rgba(245,250,255,.6);
+}
 
-    // lang ui
-    $("langValue").textContent = state.lang;
-    $("langSub").textContent = state.lang === "UA" ? "Українська" : "Русский";
-  }
+.amountLabel{color:var(--muted);font-weight:800;margin-bottom:8px}
+.amountRow{display:flex;align-items:center;gap:10px}
+.amountInput{
+  border:none;
+  outline:none;
+  background:transparent;
+  font-size:44px;
+  font-weight:900;
+  width:100%;
+  color:#1a2333;
+}
+.amountBadge{
+  border:1px solid var(--stroke);
+  background:#fff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:900;
+  font-size:12px;
+}
 
-  function openSheet({title, desc, items, onPick}){
-    sheetTitle.textContent = title;
-    sheetDesc.textContent = desc || "";
-    sheetList.innerHTML = "";
+.amountHint{margin-top:6px;color:rgba(107,114,128,.9);font-weight:700;font-size:12px}
 
-    items.forEach(it => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "sheetItem";
-      btn.innerHTML = `
-        <img src="${it.icon}" alt="">
-        <div class="t">
-          <div class="a">${it.title}</div>
-          ${it.sub ? `<div class="b">${it.sub}</div>` : ``}
-        </div>
-        <div class="r">›</div>
-      `;
-      btn.addEventListener("click", () => {
-        closeSheet();
-        onPick(it.value);
-      });
-      sheetList.appendChild(btn);
-    });
+.resultBox{
+  border:1px solid rgba(11,18,32,.12);
+  border-radius:18px;
+  padding:12px;
+  background:#fff;
+  margin-bottom:12px;
+}
+.resultLabel{color:var(--muted);font-weight:900;margin-bottom:8px}
+.resultValue{font-size:46px;font-weight:950;color:#0b1220}
 
-    sheet.classList.remove("hidden");
-  }
+.primary{
+  width:100%;
+  border:none;
+  border-radius: 18px;
+  padding:16px 14px;
+  background: linear-gradient(180deg, var(--blue) 0%, var(--blue2) 100%);
+  color:#fff;
+  font-weight:950;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow: 0 12px 26px rgba(17,166,220,.28);
+}
 
-  function closeSheet(){
-    sheet.classList.add("hidden");
-  }
+.swapWrap{display:flex;justify-content:center}
+.swapBtn{
+  width:76px;height:76px;
+  border-radius:22px;
+  border:none;
+  background: linear-gradient(180deg, #1fb7e8 0%, #0d84c8 100%);
+  box-shadow: 0 18px 30px rgba(13,132,200,.28);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.swapBtn img{width:26px;height:26px;filter:brightness(0) invert(1)}
+.swapFallback{position:absolute;opacity:0;color:#fff;font-size:28px;font-weight:900}
+.swapBtn img[style*="display: none"] ~ .swapFallback{opacity:1}
 
-  // --------- events ----------
-  $("sheetClose").addEventListener("click", closeSheet);
-  $("sheetBackdrop").addEventListener("click", closeSheet);
+.cardPay{
+  margin-top:12px;
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  background:#fff;
+  padding:12px;
+}
 
-  // tabbar
-  document.querySelectorAll(".tabbar .tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tabbar .tab").forEach(x => x.classList.remove("active"));
-      btn.classList.add("active");
+.cardPayTitle{font-weight:950;margin-bottom:10px}
 
-      const tab = btn.dataset.tab;
-      Object.values(screens).forEach(s => s.classList.add("hidden"));
-      screens[tab].classList.remove("hidden");
-      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
-    });
-  });
+.field{display:grid;gap:6px;margin-bottom:10px}
+.field label{font-size:12px;font-weight:900;color:rgba(11,18,32,.72)}
+.textInput{
+  width:100%;
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:12px 12px;
+  font-size:14px;
+  font-weight:800;
+  outline:none;
+  background:#fff;
+}
 
-  // swap
-  $("swapBtn").addEventListener("click", () => {
-    [state.giveCoin, state.getCoin] = [state.getCoin, state.giveCoin];
-    [state.giveNet, state.getNet]   = [state.getNet, state.giveNet];
-    render();
-    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
-  });
+.page{display:none}
+.page.active{display:block}
 
-  // coin pickers
-  $("giveCoinBtn").addEventListener("click", () => {
-    openSheet({
-      title:"Виберіть валюту",
-      desc:"",
-      items: coins.map(c => ({
-        value:c.id,
-        icon:c.icon,
-        title:`${c.name} (${c.code})`,
-        sub:c.code
-      })),
-      onPick:(id) => { state.giveCoin = id; render(); }
-    });
-  });
+.pageTitle{font-size:20px;font-weight:950;margin-bottom:10px}
+.muted{color:var(--muted);font-weight:700}
 
-  $("getCoinBtn").addEventListener("click", () => {
-    openSheet({
-      title:"Виберіть валюту",
-      desc:"",
-      items: coins.map(c => ({
-        value:c.id,
-        icon:c.icon,
-        title:`${c.name} (${c.code})`,
-        sub:c.code
-      })),
-      onPick:(id) => { state.getCoin = id; render(); }
-    });
-  });
+.historyList{margin-top:12px;display:grid;gap:10px}
+.hItem{
+  border:1px solid var(--stroke);
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.hLeft{display:grid;gap:2px}
+.hTitle{font-weight:950}
+.hSub{color:var(--muted);font-weight:750;font-size:12px}
+.hRight{font-weight:950}
 
-  // network pickers (фильтр по монете)
-  $("giveNetBtn").addEventListener("click", () => {
-    const c = coinById(state.giveCoin);
-    openSheet({
-      title:"Оберіть мережу",
-      desc:"Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.",
-      items: c.nets.map(nid => {
-        const n = netById(nid);
-        return {
-          value:nid,
-          icon:n.icon,
-          title:n.name,
-          sub:`${c.code} ${n.sub}`.trim()
-        };
-      }),
-      onPick:(nid) => { state.giveNet = nid; render(); }
-    });
-  });
+.profileCard{padding:14px}
+.profileHead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar{
+  width:44px;height:44px;
+  border-radius:16px;
+  background:#eef2ff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:950;color:#3b82f6;
+}
+.profileName{font-size:16px;font-weight:950}
+.profileRank{color:var(--muted);font-weight:800;font-size:12px}
 
-  $("getNetBtn").addEventListener("click", () => {
-    const c = coinById(state.getCoin);
-    openSheet({
-      title:"Оберіть мережу",
-      desc:"Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.",
-      items: c.nets.map(nid => {
-        const n = netById(nid);
-        return {
-          value:nid,
-          icon:n.icon,
-          title:n.name,
-          sub:`${c.code} ${n.sub}`.trim()
-        };
-      }),
-      onPick:(nid) => { state.getNet = nid; render(); }
-    });
-  });
+.list{display:grid;gap:8px}
+.listItem{
+  width:100%;
+  border:1px solid var(--stroke);
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+}
+.liIcon{width:26px;display:flex;justify-content:center}
+.liText{flex:1;font-weight:900}
+.liRight{color:var(--muted);font-weight:900}
+.liChev{opacity:.6;font-size:18px}
 
-  // bank picker
-  $("bankBtn").addEventListener("click", () => {
-    openSheet({
-      title:"Оберіть банк",
-      desc:"",
-      items: banks.map(b => ({
-        value:b.id,
-        icon:b.icon,
-        title:b.name,
-        sub:""
-      })),
-      onPick:(id) => { state.bank = id; render(); }
-    });
-  });
+.sectionLabel{
+  margin-top:8px;
+  color:rgba(107,114,128,.7);
+  font-weight:950;
+  font-size:12px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  padding: 6px 4px 0;
+}
 
-  // lang
-  function openLang(){
-    openSheet({
-      title:"Мова",
-      desc:"",
-      items:[
-        {value:"UA", icon:"logos/networks/ton.png", title:"Українська", sub:"UA"},
-        {value:"RU", icon:"logos/networks/ton.png", title:"Русский", sub:"RU"},
-      ],
-      onPick:(v)=>{ state.lang=v; render(); }
-    });
-  }
-  $("langBtn").addEventListener("click", openLang);
-  $("lang2Btn").addEventListener("click", openLang);
+/* Bottom nav */
+.bottomNav{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  padding-bottom: var(--safeBottom);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(10px);
+  border-top:1px solid var(--stroke);
+  display:flex;
+  justify-content:space-around;
+  height:64px;
+}
 
-  // calc update
-  giveAmount.addEventListener("input", render);
+.navBtn{
+  border:none;
+  background:transparent;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  cursor:pointer;
+  color:rgba(11,18,32,.55);
+  font-weight:900;
+}
+.navBtn.active{color:#0d84c8}
+.navIcon svg{width:22px;height:22px;fill:currentColor} /* ровно */
 
-  // avatar + name from Telegram
-  function initTelegramProfile(){
-    const photoEl = $("tgAvatar");
-    const nameEl  = $("tgName");
-    const userEl  = $("tgUser");
+.navText{font-size:11px}
 
-    const u = tg?.initDataUnsafe?.user;
-    if (!u){
-      photoEl.style.display = "none";
-      nameEl.textContent = "Користувач";
-      userEl.textContent = "@user";
-      return;
-    }
+/* Modal - NO BACKDROP */
+.modal{
+  position:fixed;
+  left:0;right:0;top:0;bottom:0;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding: 0 12px calc(12px + var(--safeBottom));
+  background:transparent; /* important */
+}
+.modal.show{display:flex}
 
-    const full = [u.first_name, u.last_name].filter(Boolean).join(" ");
-    nameEl.textContent = full || "Користувач";
-    userEl.textContent = u.username ? `@${u.username}` : " ";
+.modalSheet{
+  width:100%;
+  max-width:520px;
+  background:#fff;
+  border-radius: 22px;
+  border:1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
 
-    // Telegram не всегда даёт фото url. Если нет — покажем заглушку.
-    if (u.photo_url){
-      photoEl.src = u.photo_url;
-    } else {
-      photoEl.style.display = "none";
-    }
-  }
+.modalHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 14px 10px;
+}
+.modalTitle{font-weight:950;font-size:18px}
+.iconBtn{
+  border:none;background:#f3f6fb;
+  width:36px;height:36px;border-radius:14px;
+  cursor:pointer;font-weight:950;
+}
 
-  // init
-  initTelegramProfile();
-  render();
-})();
+.modalBody{
+  padding: 0 12px 14px;
+  max-height: 56vh;
+  overflow:auto;
+}
+
+.modalItem{
+  width:100%;
+  border:1px solid var(--stroke);
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  margin-bottom:10px;
+}
+.modalItem img{width:36px;height:36px;border-radius:14px;background:#f2f5f9;border:1px solid rgba(0,0,0,.04)}
+.miText{flex:1;min-width:0}
+.miTitle{font-weight:950}
+.miSub{color:var(--muted);font-weight:800;font-size:12px}
+.miChev{opacity:.6;font-size:18px}
+
+/* show card fields only when JS turns it on */
+#cardFields{display:none}
+
+@media (max-width:420px){
+  .selectors{grid-template-columns:1fr}
+  .amountInput{font-size:40px}
+  .resultValue{font-size:40px}
+  .swapBtn{width:70px;height:70px}
+  .brandLogo{height:48px}
+}
