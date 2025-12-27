@@ -4,72 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KeksSwap</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="topbar">
-  <img src="logos/keks-logo.png" class="logo" />
-  <div class="lang-switch" id="langSwitch">UA ▾</div>
+<header class="top">
+  <div class="logo">
+    <img src="logos/keks-logo.png" alt="KeksSwap">
+  </div>
+
+  <div class="lang" id="langBtn">
+    <img id="langFlag" src="flags/ua.png">
+    <span id="langCode">UA</span>
+  </div>
 </header>
 
-<main class="container">
+<main id="app">
 
+  <!-- EXCHANGE -->
   <section class="card">
-    <h2>Обмін</h2>
+    <h1 data-i18n="exchange">Обмін</h1>
 
-    <!-- ВІДДАЄТЕ -->
     <div class="field">
-      <label>Віддаєте</label>
-      <div class="select" onclick="openAsset('send')">
-        <span id="sendAsset">Оберіть актив</span>
-      </div>
+      <label data-i18n="send">Віддаєте</label>
+      <select id="sendAsset"></select>
     </div>
 
-    <div id="sendNetwork" class="field hidden">
-      <label>Мережа</label>
-      <div class="select" onclick="openNetwork('send')">
-        <span id="sendNet">Оберіть мережу</span>
-      </div>
+    <div class="field hidden" id="sendNetworkWrap">
+      <label data-i18n="network">Мережа</label>
+      <select id="sendNetwork"></select>
     </div>
 
     <div class="field">
-      <label>Сума</label>
-      <input type="number" placeholder="0"/>
+      <label data-i18n="amount">Сума</label>
+      <input id="amount" type="number" placeholder="0">
     </div>
 
-    <button class="swap-btn" onclick="swap()">⇅</button>
+    <button id="swapBtn">⇅</button>
 
-    <!-- ОТРИМУЄТЕ -->
     <div class="field">
-      <label>Отримуєте</label>
-      <div class="select" onclick="openAsset('receive')">
-        <span id="receiveAsset">Оберіть актив</span>
-      </div>
+      <label data-i18n="receive">Отримуєте</label>
+      <select id="receiveAsset"></select>
     </div>
 
-    <div id="receiveNetwork" class="field hidden">
-      <label>Мережа</label>
-      <div class="select" onclick="openNetwork('receive')">
-        <span id="receiveNet">Оберіть мережу</span>
-      </div>
+    <div class="field hidden" id="receiveNetworkWrap">
+      <label data-i18n="network">Мережа</label>
+      <select id="receiveNetwork"></select>
     </div>
 
-    <div id="cardFields" class="hidden">
-      <div class="field">
-        <label>Номер картки</label>
-        <input placeholder="0000 0000 0000 0000"/>
-      </div>
-      <div class="field">
-        <label>ПІБ отримувача</label>
-        <input placeholder="Ім'я Прізвище"/>
-      </div>
+    <div class="field hidden" id="cardWrap">
+      <label data-i18n="card">Номер картки</label>
+      <input placeholder="0000 0000 0000 0000">
     </div>
 
-    <button class="primary">Створити заявку</button>
+    <div class="field hidden" id="fioWrap">
+      <label data-i18n="fio">ПІБ</label>
+      <input placeholder="Імʼя Прізвище">
+    </div>
+
+    <button class="primary" data-i18n="create">Створити заявку</button>
   </section>
 
 </main>
+
+<nav class="bottom">
+  <button class="active">🏠</button>
+  <button>🕓</button>
+  <button>👤</button>
+</nav>
 
 <script src="app.js"></script>
 </body>
