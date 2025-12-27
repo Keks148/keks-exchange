@@ -10,11 +10,13 @@
 <body>
   <div class="page">
 
+    <!-- Header card -->
     <header class="headerCard">
       <div class="topRow">
         <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
         <div class="spacer"></div>
 
+        <!-- Compact language selector -->
         <button id="langBtn" class="langBtn" type="button" aria-label="Language">
           <span id="langLabel">UA</span>
           <span class="chev">▾</span>
@@ -29,12 +31,15 @@
       </nav>
     </header>
 
+    <!-- Content -->
     <main class="content">
+      <!-- Swap -->
       <section id="viewSwap" class="view active">
         <div class="card">
 
           <div class="label" id="lblGive">Віддаєте</div>
 
+          <!-- Give row: asset (60%) + network (40%) -->
           <div class="row2Top">
             <button id="giveAssetBtn" class="selectBtn" type="button">
               <span class="left">
@@ -56,10 +61,12 @@
             </button>
           </div>
 
+          <!-- Amount centered -->
           <div class="amountRow">
             <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
           </div>
 
+          <!-- Swap button -->
           <div class="swapCenter">
             <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
               <img class="swapIcon" src="logos/arrows.svg" alt="swap" />
@@ -68,7 +75,8 @@
 
           <div class="label" id="lblGet">Отримуєте</div>
 
-          <div class="row2">
+          <!-- Get row: asset (60%) + (network if crypto, otherwise hidden) -->
+          <div class="row2Top">
             <button id="getAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="getIcon" class="icon" alt="" />
@@ -80,7 +88,18 @@
               <span class="right">▾</span>
             </button>
 
-            <div class="resultBox">
+            <button id="getNetBtn" class="netBtn hidden" type="button">
+              <span class="netLeft">
+                <img id="getNetIcon" class="netIcon" alt="" />
+                <span id="getNetLabel" class="netText">TRC20</span>
+              </span>
+              <span class="right">▾</span>
+            </button>
+          </div>
+
+          <!-- Result box full width (keeps look clean) -->
+          <div class="resultRow">
+            <div class="resultBox full">
               <div class="resultLabel" id="lblResult">Ви отримаєте</div>
               <div id="resultValue" class="resultValue">—</div>
             </div>
@@ -97,6 +116,7 @@
         </div>
       </section>
 
+      <!-- Rules -->
       <section id="viewRules" class="view">
         <div class="card rulesCard">
           <h2 id="rulesTitle">Умови обміну</h2>
@@ -113,8 +133,8 @@
           <div class="rulesItem">
             <div class="rulesIcon">⚠️</div>
             <div>
-              <div class="rulesHead" id="rulesT2">Курс</div>
-              <div class="rulesText" id="rulesB2">Курс оновлюється автоматично з біржі <b>WhiteBIT</b>.</div>
+              <div class="rulesHead" id="rulesT2">Фіксація курсу</div>
+              <div class="rulesText" id="rulesB2">Курс оновлюється автоматично. Під час створення заявки курс фіксується.</div>
             </div>
           </div>
 
@@ -136,13 +156,14 @@
         </div>
       </section>
 
+      <!-- FAQ -->
       <section id="viewFaq" class="view">
         <div class="card">
           <h2 id="faqTitle">FAQ</h2>
           <div class="faq">
             <details>
-              <summary id="faqQ1">Як часто оновлюється курс?</summary>
-              <p id="faqA1">Раз на хвилину з WhiteBIT.</p>
+              <summary id="faqQ1">Коли оновлюється курс?</summary>
+              <p id="faqA1">Курс оновлюється автоматично (приблизно раз на хвилину).</p>
             </details>
             <details>
               <summary id="faqQ2">Скільки триває обмін?</summary>
@@ -152,6 +173,7 @@
         </div>
       </section>
 
+      <!-- Account -->
       <section id="viewAccount" class="view">
         <div class="card">
           <h2 id="accTitle">Акаунт</h2>
@@ -165,14 +187,17 @@
     </main>
   </div>
 
-  <div id="langMenu" class="dropdown hidden" aria-hidden="true">
+  <!-- Language dropdown -->
+  <div id="langMenu" class="dropdown hidden" role="dialog" aria-modal="false">
     <div class="dropdownCard">
-      <button class="pill" data-lang="uk" type="button">UA</button>
-      <button class="pill" data-lang="en" type="button">EN</button>
-      <button class="pill" data-lang="pl" type="button">PL</button>
+      <button class="pill" data-lang="uk">UA</button>
+      <button class="pill" data-lang="en">EN</button>
+      <button class="pill" data-lang="pl">PL</button>
+      <button class="pill" data-lang="tr">TR</button>
     </div>
   </div>
 
+  <!-- Asset picker -->
   <div id="assetModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modalSheet">
       <div class="modalHead">
@@ -183,6 +208,7 @@
     </div>
   </div>
 
+  <!-- Network picker -->
   <div id="netModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modalSheet">
       <div class="modalHead">
