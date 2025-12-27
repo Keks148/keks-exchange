@@ -8,205 +8,307 @@
 </head>
 <body>
   <div class="app">
-    <!-- Header -->
-    <header class="header">
-      <div class="brand">
-        <img class="brand-logo" src="logos/keks-logo.png" alt="KeksSwap" />
-      </div>
 
-      <button class="lang-pill" id="langOpen" aria-label="Language">
+    <!-- Top Header -->
+    <header class="topbar">
+      <button class="top-icon" type="button" aria-label="Back">✕</button>
+
+      <div class="top-title">KeksSwap</div>
+
+      <button class="lang-pill" id="langOpen" type="button" aria-label="Language">
         <span id="langPill">UA</span>
         <span class="chev">▼</span>
       </button>
     </header>
 
-    <!-- Tabs -->
-    <nav class="tabs card">
-      <button class="tab active" data-tab="swap" data-i18n="tabSwap">Обмін</button>
-      <button class="tab" data-tab="rules" data-i18n="tabRules">Правила</button>
-      <button class="tab" data-tab="faq" data-i18n="tabFaq">FAQ</button>
-      <button class="tab" data-tab="account" data-i18n="tabAccount">Акаунт</button>
-    </nav>
+    <!-- Content -->
+    <main class="content">
+      <!-- HOME/SWAP -->
+      <section class="page active" id="page-home">
+        <div class="hero card">
+          <div class="brandline">
+            <img class="brand-logo" src="logos/keks-logo.png" alt="KeksSwap" />
+          </div>
 
-    <!-- Pages -->
-    <main class="pages">
+          <div class="swapcard card">
+            <div class="label" data-i18n="give">Віддаєте</div>
 
-      <!-- SWAP -->
-      <section class="page active" id="page-swap">
+            <div class="row2">
+              <button class="select" id="giveAssetBtn" type="button">
+                <img class="select-icon" id="giveAssetIcon" src="logos/crypto/tether-usdt.png" alt="" />
+                <div class="select-text">
+                  <div class="select-title" id="giveAssetTitle">Tether (USDT)</div>
+                  <div class="select-sub" id="giveAssetSub">USDT</div>
+                </div>
+                <div class="select-chev">▼</div>
+              </button>
+
+              <button class="select" id="giveNetBtn" type="button">
+                <img class="select-icon" id="giveNetIcon" src="logos/networks/trc20.png" alt="" />
+                <div class="select-text">
+                  <div class="select-title" id="giveNetTitle">TRC20</div>
+                  <div class="select-sub" id="giveNetSub">USDT • TRX</div>
+                </div>
+                <div class="select-chev">▼</div>
+              </button>
+            </div>
+
+            <div class="amount card-soft">
+              <div class="amount-top">
+                <span class="amount-caption" data-i18n="enterAmount">Введіть суму</span>
+                <span class="amount-unit" id="amountUnit">USDT</span>
+              </div>
+              <input class="amount-input" id="amountInput" inputmode="decimal" placeholder="0" />
+              <div class="amount-hint" id="amountHint">Наприклад: 10 000</div>
+            </div>
+
+            <button class="swap-btn" id="swapSides" type="button" aria-label="Swap">⇄</button>
+
+            <div class="label mt16" data-i18n="get">Отримуєте</div>
+
+            <div class="row2">
+              <button class="select" id="getAssetBtn" type="button">
+                <img class="select-icon" id="getAssetIcon" src="logos/crypto/usdc.png" alt="" />
+                <div class="select-text">
+                  <div class="select-title" id="getAssetTitle">USD Coin (USDC)</div>
+                  <div class="select-sub" id="getAssetSub">USDC</div>
+                </div>
+                <div class="select-chev">▼</div>
+              </button>
+
+              <button class="select" id="getNetBtn" type="button">
+                <img class="select-icon" id="getNetIcon" src="logos/networks/erc20.png" alt="" />
+                <div class="select-text">
+                  <div class="select-title" id="getNetTitle">ERC20</div>
+                  <div class="select-sub" id="getNetSub">USDC • ETH</div>
+                </div>
+                <div class="select-chev">▼</div>
+              </button>
+            </div>
+
+            <div class="result card-soft">
+              <div class="result-label" data-i18n="youReceive">Ви отримаєте</div>
+              <div class="result-value" id="resultValue">0</div>
+            </div>
+
+            <button class="btn-primary" id="createRequest" type="button" data-i18n="createRequest">
+              Створити заявку
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="page" id="page-history">
         <div class="panel card">
+          <h2 class="h2" data-i18n="history">Історія</h2>
+          <div class="muted" data-i18n="historyText">Тут буде історія операцій та заявок.</div>
+        </div>
+      </section>
 
-          <div class="label" data-i18n="give">Віддаєте</div>
+      <!-- QR / SERVICES -->
+      <section class="page" id="page-services">
+        <div class="panel card">
+          <h2 class="h2" data-i18n="services">Сервіси</h2>
+          <div class="muted" data-i18n="servicesText">Тут будуть додаткові сервіси (реферали, промо, тощо).</div>
 
-          <div class="row2">
-            <button class="select" id="giveAssetBtn">
-              <img class="select-icon" id="giveAssetIcon" src="logos/crypto/tether-usdt.png" alt="" />
-              <div class="select-text">
-                <div class="select-title" id="giveAssetTitle">Tether (USDT)</div>
-                <div class="select-sub" id="giveAssetSub">USDT</div>
-              </div>
-              <div class="select-chev">▼</div>
+          <div class="service-grid">
+            <button class="service-btn card-soft" type="button">Referral</button>
+            <button class="service-btn card-soft" type="button">Promo</button>
+            <button class="service-btn card-soft" type="button">Support</button>
+            <button class="service-btn card-soft" type="button">Info</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE (LIKE ANTARCTIC WALLET) -->
+      <section class="page" id="page-profile">
+        <div class="panel">
+          <div class="profile-head card">
+            <div class="avatar"></div>
+            <div class="ph-text">
+              <div class="ph-name">@keks_swap</div>
+              <div class="ph-sub" data-i18n="newbie">Новичок</div>
+            </div>
+            <div class="ph-right">›</div>
+          </div>
+
+          <div class="block-title" data-i18n="prefs">ПРЕДПОЧТЕНИЯ</div>
+          <div class="menu card">
+            <button class="menu-row" type="button">
+              <span class="mi">📌</span>
+              <span data-i18n="savedRequisites">Збережені реквізити</span>
+              <span class="mr">›</span>
             </button>
 
-            <button class="select" id="giveNetBtn">
-              <img class="select-icon" id="giveNetIcon" src="logos/networks/trc20.png" alt="" />
-              <div class="select-text">
-                <div class="select-title" id="giveNetTitle">TRC20</div>
-                <div class="select-sub" id="giveNetSub">USDT • TRX</div>
-              </div>
-              <div class="select-chev">▼</div>
+            <button class="menu-row" type="button">
+              <span class="mi">💱</span>
+              <span data-i18n="accountCurrency">Валюта акаунта</span>
+              <span class="mr">RUB ›</span>
+            </button>
+
+            <button class="menu-row" type="button" id="openLangFromProfile">
+              <span class="mi">🌐</span>
+              <span data-i18n="language">Мова</span>
+              <span class="mr" id="langRowRight">UA ›</span>
             </button>
           </div>
 
-          <div class="amount-wrap">
-            <input class="amount-input" id="amountInput" inputmode="numeric" placeholder="0" />
-            <div class="amount-hint" id="amountHint">Наприклад: 10 000</div>
+          <div class="block-title" data-i18n="params">ПАРАМЕТРЫ</div>
+          <div class="menu card">
+            <button class="menu-row" type="button">
+              <span class="mi">🔒</span>
+              <span data-i18n="security">Безопасность</span>
+              <span class="mr">›</span>
+            </button>
+            <button class="menu-row" type="button">
+              <span class="mi">📱</span>
+              <span data-i18n="devices">Устройства</span>
+              <span class="mr">1 ›</span>
+            </button>
           </div>
 
-          <button class="swap-btn pulse" id="swapSides" aria-label="Swap">
-            ⇄
+          <div class="block-title" data-i18n="about">О НАС</div>
+          <div class="menu card">
+            <button class="menu-row" type="button">
+              <span class="mi">✈️</span>
+              <span data-i18n="officialAccounts">Офіційні акаунти</span>
+              <span class="mr">›</span>
+            </button>
+            <button class="menu-row" type="button">
+              <span class="mi">❓</span>
+              <span data-i18n="faq">Часто задаваемые вопросы</span>
+              <span class="mr">›</span>
+            </button>
+            <button class="menu-row" type="button">
+              <span class="mi">ℹ️</span>
+              <span data-i18n="info">Інформація</span>
+              <span class="mr">›</span>
+            </button>
+            <button class="menu-row" type="button">
+              <span class="mi">💬</span>
+              <span data-i18n="support">Обратиться в поддержку</span>
+              <span class="mr">›</span>
+            </button>
+          </div>
+
+          <button class="logout card" type="button">
+            <span class="mi">↩️</span>
+            <span data-i18n="logout">Вийти з акаунта</span>
           </button>
 
-          <div class="label mt16" data-i18n="get">Отримуєте</div>
+          <div class="version">v0.1 beta</div>
+        </div>
+      </section>
 
-          <div class="row2">
-            <button class="select" id="getAssetBtn">
-              <img class="select-icon" id="getAssetIcon" src="logos/crypto/usdc.png" alt="" />
-              <div class="select-text">
-                <div class="select-title" id="getAssetTitle">USD Coin (USDC)</div>
-                <div class="select-sub" id="getAssetSub">USDC</div>
-              </div>
-              <div class="select-chev">▼</div>
-            </button>
+      <!-- PROFILE DETAILS (KYC like screenshot) -->
+      <section class="page" id="page-profile-details">
+        <div class="panel card">
+          <button class="backbtn" id="profileBack" type="button">‹</button>
+          <div class="details-title" data-i18n="profile">Профіль</div>
 
-            <button class="select" id="getNetBtn">
-              <img class="select-icon" id="getNetIcon" src="logos/networks/erc20.png" alt="" />
-              <div class="select-text">
-                <div class="select-title" id="getNetTitle">ERC20</div>
-                <div class="select-sub" id="getNetSub">USDC • ETH</div>
-              </div>
-              <div class="select-chev">▼</div>
+          <div class="block-title" data-i18n="kycTitle">KYC ВЕРИФИКАЦИЯ</div>
+          <div class="menu">
+            <button class="menu-row" type="button">
+              <span class="mi">✅</span>
+              <span data-i18n="level0">Уровень 0</span>
+              <span class="mr link" data-i18n="upgrade">Повысить ›</span>
             </button>
           </div>
 
-          <div class="result card-soft">
-            <div class="result-label" data-i18n="youReceive">Ви отримаєте</div>
-            <div class="result-value" id="resultValue">0</div>
-          </div>
-
-          <button class="btn-primary" id="createRequest" data-i18n="createRequest">Створити заявку</button>
-
-        </div>
-      </section>
-
-      <!-- RULES -->
-      <section class="page" id="page-rules">
-        <div class="panel card">
-          <h2 class="h2" data-i18n="tabRules">Правила</h2>
-          <div class="muted" data-i18n="rulesText">
-            Тут будуть правила сервісу та умови обміну.
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ -->
-      <section class="page" id="page-faq">
-        <div class="panel card">
-          <h2 class="h2" data-i18n="tabFaq">FAQ</h2>
-
-          <button class="faq-item" data-faq="0">
-            <span class="faq-arrow">▶</span>
-            <span data-i18n="faq1q">Коли оновлюється курс?</span>
-          </button>
-          <div class="faq-ans" id="faq-0" data-i18n="faq1a">
-            Курс оновлюється регулярно. Фінальний курс фіксується під час створення заявки.
-          </div>
-
-          <button class="faq-item" data-faq="1">
-            <span class="faq-arrow">▶</span>
-            <span data-i18n="faq2q">Скільки триває обмін?</span>
-          </button>
-          <div class="faq-ans" id="faq-1" data-i18n="faq2a">
-            Зазвичай від 5 до 30 хвилин — залежить від мережі та навантаження.
-          </div>
-        </div>
-      </section>
-
-      <!-- ACCOUNT -->
-      <section class="page" id="page-account">
-        <div class="panel card">
-          <h2 class="h2" data-i18n="accountTitle">Акаунт</h2>
-
-          <div class="seg">
-            <button class="seg-btn active" data-mode="login" data-i18n="login">Вхід</button>
-            <button class="seg-btn" data-mode="register" data-i18n="register">Реєстрація</button>
-            <button class="seg-btn" data-mode="kyc" data-i18n="kyc">Верифікація (KYC)</button>
-          </div>
-
-          <!-- LOGIN -->
-          <div class="form active" id="form-login">
-            <label class="field">
-              <span data-i18n="email">Email</span>
-              <input type="email" id="loginEmail" placeholder="name@mail.com" />
-            </label>
-            <label class="field">
-              <span data-i18n="password">Пароль</span>
-              <input type="password" id="loginPass" placeholder="••••••••" />
-            </label>
-            <button class="btn-primary" id="loginBtn" data-i18n="continue">Продовжити</button>
-            <div class="muted small" data-i18n="demoNote">
-              Поки це UI-частина. Підключимо бекенд — буде реальний вхід.
+          <div class="block-title" data-i18n="myData">МОИ ДАННЫЕ</div>
+          <div class="menu">
+            <div class="menu-row">
+              <span class="mi">✈️</span>
+              <span data-i18n="tgAccount">Telegram-аккаунт</span>
+              <span class="mr">@keks_swap</span>
             </div>
+            <button class="menu-row" type="button">
+              <span class="mi">📧</span>
+              <span data-i18n="emailAddress">Email-адрес</span>
+              <span class="mr link" data-i18n="add">+ Добавить</span>
+            </button>
+            <button class="menu-row" type="button">
+              <span class="mi">📞</span>
+              <span data-i18n="phone">Номер телефона</span>
+              <span class="mr link" data-i18n="add">+ Добавить</span>
+            </button>
           </div>
 
-          <!-- REGISTER -->
-          <div class="form" id="form-register">
-            <label class="field">
-              <span data-i18n="email">Email</span>
-              <input type="email" id="regEmail" placeholder="name@mail.com" />
-            </label>
-            <label class="field">
-              <span data-i18n="password">Пароль</span>
-              <input type="password" id="regPass" placeholder="••••••••" />
-            </label>
-            <button class="btn-primary" id="regBtn" data-i18n="continue">Продовжити</button>
-            <div class="muted small" data-i18n="demoNote2">
-              Після підключення бекенду тут буде підтвердження пошти.
-            </div>
-          </div>
-
-          <!-- KYC -->
-          <div class="form" id="form-kyc">
-            <div class="kyc-box card-soft">
-              <div class="kyc-title" data-i18n="kycInfoTitle">Перевірка особи</div>
-              <div class="muted" data-i18n="kycInfoText">
-                Тут буде завантаження документів та селфі, статус перевірки та ліміти.
-              </div>
-            </div>
-            <button class="btn-primary" id="kycStart" data-i18n="startKyc">Почати KYC</button>
+          <div class="block-title" data-i18n="actions">ДЕЙСТВИЯ</div>
+          <div class="menu">
+            <button class="menu-row danger" type="button">
+              <span class="mi">🗑️</span>
+              <span data-i18n="deleteAcc">Удалить аккаунт</span>
+              <span class="mr">›</span>
+            </button>
           </div>
         </div>
       </section>
-
     </main>
+
+    <!-- Bottom Tabbar (like Antarctic Wallet) -->
+    <nav class="tabbar" role="navigation" aria-label="Bottom navigation">
+      <button class="tb-item active" data-go="home" type="button">
+        <span class="tb-ic">
+          <!-- home -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/></svg>
+        </span>
+        <span class="tb-txt" data-i18n="home">Головна</span>
+      </button>
+
+      <button class="tb-item" data-go="history" type="button">
+        <span class="tb-ic">
+          <!-- history -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5l4 2M3 12a9 9 0 1 0 3-6.7M3 5v4h4"/></svg>
+        </span>
+        <span class="tb-txt" data-i18n="history">Історія</span>
+      </button>
+
+      <button class="tb-item center" data-go="services" type="button" aria-label="Services">
+        <span class="tb-center">
+          <!-- qr like -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 4h6v6H4V4zm2 2v2h2V6H6zm8-2h6v6h-6V4zm2 2v2h2V6h-2zM4 14h6v6H4v-6zm2 2v2h2v-2H6zm10 0h2v2h-2v-2zm0-2h4v6h-6v-4h2v2h2v-4zM12 12h2v2h-2v-2zm-2 0h2v2H10v-2zm4 4h2v2h-2v-2z"/>
+          </svg>
+        </span>
+      </button>
+
+      <button class="tb-item" data-go="services" type="button">
+        <span class="tb-ic">
+          <!-- grid -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>
+        </span>
+        <span class="tb-txt" data-i18n="services">Сервіси</span>
+      </button>
+
+      <button class="tb-item" data-go="profile" type="button">
+        <span class="tb-ic">
+          <!-- user -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-9 9a9 9 0 0 1 18 0"/></svg>
+        </span>
+        <span class="tb-txt" data-i18n="profileTab">Профіль</span>
+      </button>
+    </nav>
   </div>
 
-  <!-- SHEETS: Currency -->
+  <!-- Currency sheet -->
   <div class="overlay" id="overlayCurrency" aria-hidden="true">
-    <div class="sheet">
+    <div class="sheet" role="dialog" aria-modal="true">
       <div class="sheet-header">
-        <div class="sheet-title" id="currencySheetTitle" data-i18n="chooseCurrency">Виберіть валюту</div>
-        <button class="sheet-close" data-close="overlayCurrency">×</button>
+        <div class="sheet-title" data-i18n="chooseCurrency">Виберіть валюту</div>
+        <button class="sheet-close" type="button" data-close="overlayCurrency">×</button>
       </div>
       <div class="sheet-body" id="currencyList"></div>
     </div>
   </div>
 
-  <!-- SHEETS: Networks -->
+  <!-- Network sheet -->
   <div class="overlay" id="overlayNetwork" aria-hidden="true">
-    <div class="sheet">
+    <div class="sheet" role="dialog" aria-modal="true">
       <div class="sheet-header">
         <div class="sheet-title" data-i18n="chooseNetwork">Оберіть мережу</div>
-        <button class="sheet-close" data-close="overlayNetwork">×</button>
+        <button class="sheet-close" type="button" data-close="overlayNetwork">×</button>
       </div>
       <div class="sheet-sub" data-i18n="networksHint">
         Показуємо тільки мережі, які доступні для цієї валюти — щоб не плутати.
@@ -215,46 +317,18 @@
     </div>
   </div>
 
-  <!-- SHEETS: Language -->
+  <!-- Language sheet -->
   <div class="overlay" id="overlayLang" aria-hidden="true">
-    <div class="sheet">
+    <div class="sheet" role="dialog" aria-modal="true">
       <div class="sheet-header">
         <div class="sheet-title" data-i18n="language">Мова</div>
-        <button class="sheet-close" data-close="overlayLang">×</button>
+        <button class="sheet-close" type="button" data-close="overlayLang">×</button>
       </div>
       <div class="sheet-body">
-        <button class="option-row" data-lang="UA">
-          <div class="lang-badge">UA</div>
-          <div class="option-text">
-            <div class="option-title">UA</div>
-            <small>Українська</small>
-          </div>
-          <div class="right">›</div>
-        </button>
-        <button class="option-row" data-lang="EN">
-          <div class="lang-badge">EN</div>
-          <div class="option-text">
-            <div class="option-title">EN</div>
-            <small>English</small>
-          </div>
-          <div class="right">›</div>
-        </button>
-        <button class="option-row" data-lang="TR">
-          <div class="lang-badge">TR</div>
-          <div class="option-text">
-            <div class="option-title">TR</div>
-            <small>Türkçe</small>
-          </div>
-          <div class="right">›</div>
-        </button>
-        <button class="option-row" data-lang="PL">
-          <div class="lang-badge">PL</div>
-          <div class="option-text">
-            <div class="option-title">PL</div>
-            <small>Polski</small>
-          </div>
-          <div class="right">›</div>
-        </button>
+        <button class="option-row" type="button" data-lang="UA"><div class="lang-badge">UA</div><div class="option-text"><div class="option-title">UA</div><small>Українська</small></div><div class="right">›</div></button>
+        <button class="option-row" type="button" data-lang="EN"><div class="lang-badge">EN</div><div class="option-text"><div class="option-title">EN</div><small>English</small></div><div class="right">›</div></button>
+        <button class="option-row" type="button" data-lang="TR"><div class="lang-badge">TR</div><div class="option-text"><div class="option-title">TR</div><small>Türkçe</small></div><div class="right">›</div></button>
+        <button class="option-row" type="button" data-lang="PL"><div class="lang-badge">PL</div><div class="option-text"><div class="option-title">PL</div><small>Polski</small></div><div class="right">›</div></button>
       </div>
     </div>
   </div>
