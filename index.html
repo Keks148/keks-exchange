@@ -10,14 +10,12 @@
 <body>
   <div class="page">
 
-    <!-- Header card -->
     <header class="headerCard">
       <div class="topRow">
         <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" />
         <div class="spacer"></div>
 
-        <!-- Compact language selector -->
-        <button id="langBtn" class="langBtn" type="button" aria-label="Language">
+        <button id="langBtn" class="langBtn" type="button">
           <span id="langLabel">UA</span>
           <span class="chev">▾</span>
         </button>
@@ -31,16 +29,15 @@
       </nav>
     </header>
 
-    <!-- Content -->
     <main class="content">
-      <!-- Swap -->
+
+      <!-- SWAP -->
       <section id="viewSwap" class="view active">
         <div class="card">
 
           <div class="label" id="lblGive">Віддаєте</div>
 
-          <!-- Give row: asset (60%) + network (40%) -->
-          <div class="row2Top">
+          <div class="row2">
             <button id="giveAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="giveIcon" class="icon" alt="" />
@@ -49,7 +46,7 @@
                   <span id="giveSub" class="sub">USDT</span>
                 </span>
               </span>
-              <span class="right">▾</span>
+              <span class="chev2">▾</span>
             </button>
 
             <button id="giveNetBtn" class="netBtn" type="button">
@@ -57,16 +54,14 @@
                 <img id="giveNetIcon" class="netIcon" alt="" />
                 <span id="giveNetLabel" class="netText">TRC20</span>
               </span>
-              <span class="right">▾</span>
+              <span class="chev2">▾</span>
             </button>
           </div>
 
-          <!-- Amount centered -->
-          <div class="amountRow">
+          <div class="amountWrap">
             <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" value="1000" />
           </div>
 
-          <!-- Swap button -->
           <div class="swapCenter">
             <button id="swapBtn" class="swapBtn" type="button" aria-label="Swap">
               <img class="swapIcon" src="logos/arrows.svg" alt="swap" />
@@ -75,8 +70,7 @@
 
           <div class="label" id="lblGet">Отримуєте</div>
 
-          <!-- Get row: asset (60%) + (network if crypto, otherwise hidden) -->
-          <div class="row2Top">
+          <div class="row2">
             <button id="getAssetBtn" class="selectBtn" type="button">
               <span class="left">
                 <img id="getIcon" class="icon" alt="" />
@@ -85,24 +79,22 @@
                   <span id="getSub" class="sub">UAH</span>
                 </span>
               </span>
-              <span class="right">▾</span>
+              <span class="chev2">▾</span>
             </button>
 
+            <!-- ВАЖНО: сеть для "Отримуєте" -->
             <button id="getNetBtn" class="netBtn hidden" type="button">
               <span class="netLeft">
                 <img id="getNetIcon" class="netIcon" alt="" />
                 <span id="getNetLabel" class="netText">TRC20</span>
               </span>
-              <span class="right">▾</span>
+              <span class="chev2">▾</span>
             </button>
           </div>
 
-          <!-- Result box full width (keeps look clean) -->
-          <div class="resultRow">
-            <div class="resultBox full">
-              <div class="resultLabel" id="lblResult">Ви отримаєте</div>
-              <div id="resultValue" class="resultValue">—</div>
-            </div>
+          <div class="resultBox">
+            <div class="resultLabel" id="lblResult">Ви отримаєте</div>
+            <div id="resultValue" class="resultValue">—</div>
           </div>
 
           <div class="rateLine">
@@ -116,41 +108,36 @@
         </div>
       </section>
 
-      <!-- Rules -->
+      <!-- RULES -->
       <section id="viewRules" class="view">
-        <div class="card rulesCard">
+        <div class="card">
           <h2 id="rulesTitle">Умови обміну</h2>
-
           <div class="rulesItem">
             <div class="rulesIcon">⏳</div>
             <div>
               <div class="rulesHead" id="rulesT1">Час обробки</div>
-              <div class="rulesText" id="rulesB1">Зазвичай до <b>40 хвилин</b>.</div>
-              <div class="rulesText" id="rulesB1b">У рідкісних випадках — до <b>72 годин</b> (залежить від банків та платіжних систем).</div>
+              <div class="rulesText" id="rulesB1">Зазвичай до 40 хвилин. У рідкісних випадках — до 72 годин.</div>
             </div>
           </div>
-
           <div class="rulesItem">
             <div class="rulesIcon">⚠️</div>
             <div>
               <div class="rulesHead" id="rulesT2">Фіксація курсу</div>
-              <div class="rulesText" id="rulesB2">Курс оновлюється автоматично. Під час створення заявки курс фіксується.</div>
+              <div class="rulesText" id="rulesB2">Курс оновлюється автоматично. При створенні заявки курс фіксується.</div>
             </div>
           </div>
-
           <div class="rulesItem">
             <div class="rulesIcon">📲</div>
             <div>
               <div class="rulesHead" id="rulesT3">Контакт у Telegram</div>
-              <div class="rulesText" id="rulesB3">Вкажіть ваш робочий Telegram для звʼязку. Якщо він невірний або ви не відповідаєте — обробка може бути призупинена.</div>
+              <div class="rulesText" id="rulesB3">Вкажіть ваш Telegram для звʼязку.</div>
             </div>
           </div>
-
           <div class="rulesItem">
             <div class="rulesIcon">✅</div>
             <div>
               <div class="rulesHead" id="rulesT4">Підтвердження</div>
-              <div class="rulesText" id="rulesB4">Після створення заявки оператор підтвердить реквізити та суму.</div>
+              <div class="rulesText" id="rulesB4">Оператор підтвердить реквізити та суму.</div>
             </div>
           </div>
         </div>
@@ -163,32 +150,33 @@
           <div class="faq">
             <details>
               <summary id="faqQ1">Коли оновлюється курс?</summary>
-              <p id="faqA1">Курс оновлюється автоматично (приблизно раз на хвилину).</p>
+              <p id="faqA1">Курс оновлюється автоматично (раз на хвилину).</p>
             </details>
             <details>
               <summary id="faqQ2">Скільки триває обмін?</summary>
-              <p id="faqA2">Зазвичай до 40 хвилин, у рідкісних випадках до 72 годин.</p>
+              <p id="faqA2">Зазвичай до 40 хвилин, інколи до 72 годин.</p>
             </details>
           </div>
         </div>
       </section>
 
-      <!-- Account -->
+      <!-- ACCOUNT -->
       <section id="viewAccount" class="view">
         <div class="card">
           <h2 id="accTitle">Акаунт</h2>
           <p id="accText">Тут буде вхід/реєстрація та KYC (поки без підключення).</p>
           <div class="accBtns">
-            <button class="cta soft" type="button" id="btnLogin">Увійти</button>
-            <button class="cta white" type="button" id="btnReg">Реєстрація</button>
+            <button class="btnSoft" type="button" id="btnLogin">Увійти</button>
+            <button class="btnWhite" type="button" id="btnReg">Реєстрація</button>
           </div>
         </div>
       </section>
+
     </main>
   </div>
 
-  <!-- Language dropdown -->
-  <div id="langMenu" class="dropdown hidden" role="dialog" aria-modal="false">
+  <!-- Language menu -->
+  <div id="langMenu" class="dropdown hidden">
     <div class="dropdownCard">
       <button class="pill" data-lang="uk">UA</button>
       <button class="pill" data-lang="en">EN</button>
@@ -197,22 +185,22 @@
     </div>
   </div>
 
-  <!-- Asset picker -->
-  <div id="assetModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modalSheet">
-      <div class="modalHead">
-        <div id="assetTitle" class="modalTitle">Виберіть</div>
+  <!-- Asset modal -->
+  <div id="assetModal" class="modal hidden">
+    <div class="sheet">
+      <div class="sheetHead">
+        <div id="assetTitle" class="sheetTitle">Виберіть</div>
         <button id="assetClose" class="closeX" type="button">✕</button>
       </div>
       <div id="assetList" class="list"></div>
     </div>
   </div>
 
-  <!-- Network picker -->
-  <div id="netModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modalSheet">
-      <div class="modalHead">
-        <div class="modalTitle" id="netTitle">Оберіть мережу</div>
+  <!-- Network modal -->
+  <div id="netModal" class="modal hidden">
+    <div class="sheet">
+      <div class="sheetHead">
+        <div id="netTitle" class="sheetTitle">Оберіть мережу</div>
         <button id="netClose" class="closeX" type="button">✕</button>
       </div>
       <div id="netList" class="list"></div>
