@@ -1,603 +1,337 @@
-alert("NEW APP.JS LOADED");
-/* KeksSwap Mini App (no frameworks) */
-
-const $ = (s, r=document) => r.querySelector(s);
-const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-
-const state = {
-  lang: localStorage.getItem('ks_lang') || 'ua',
-  accCurrency: localStorage.getItem('ks_accCurrency') || 'UAH',
-  email: localStorage.getItem('ks_email') || '',
-  phone: localStorage.getItem('ks_phone') || '',
-  give: { asset: 'USDT', net: 'TRC20' },
-  get:  { asset: 'USDC', net: 'ERC20' },
-  bank: 'MONO',
-};
-
-const assets = [
-  { code:'BTC', name:'Bitcoin (BTC)', icon:'logos/crypto/btc.png', nets:['BTC'] },
-  { code:'ETH', name:'Ethereum (ETH)', icon:'logos/crypto/eth.png', nets:['ERC20','ARB','OP','POL','BEP20'] },
-  { code:'LTC', name:'Litecoin (LTC)', icon:'logos/crypto/ltc.png', nets:['LTC'] },
-  { code:'SOL', name:'Solana (SOL)', icon:'logos/crypto/sol.png', nets:['SOL'] },
-  { code:'TON', name:'Toncoin (TON)', icon:'logos/crypto/ton.png', nets:['TON'] },
-  { code:'TRX', name:'Tron (TRX)', icon:'logos/crypto/trx.png', nets:['TRC20'] },
-  { code:'USDT', name:'Tether (USDT)', icon:'logos/crypto/tether-usdt.png', nets:['TRC20','ERC20','BEP20'] },
-  { code:'USDC', name:'USD Coin (USDC)', icon:'logos/crypto/usdc.png', nets:['ERC20','ARB','OP','POL'] },
-];
-
-const networks = {
-  BTC:  { code:'BTC',  name:'BTC',  sub:'BTC • BTC',  icon:'' },
-  LTC:  { code:'LTC',  name:'LTC',  sub:'LTC • LTC',  icon:'' },
-  SOL:  { code:'SOL',  name:'SOL',  sub:'SOL • SOL',  icon:'logos/networks/sol.png' },
-  TON:  { code:'TON',  name:'TON',  sub:'TON • TON',  icon:'logos/networks/ton.png' },
-  TRC20:{ code:'TRC20',name:'TRC20',sub:'USDT • TRX', icon:'logos/networks/trc20.png' },
-  ERC20:{ code:'ERC20',name:'ERC20',sub:'USDC • ETH', icon:'logos/networks/erc20.png' },
-  BEP20:{ code:'BEP20',name:'BEP20',sub:'BSC • BNB',  icon:'logos/networks/bep20.png' },
-  ARB:  { code:'ARB',  name:'ARB',  sub:'Arbitrum',   icon:'logos/networks/arb.png' },
-  OP:   { code:'OP',   name:'OP',   sub:'Optimism',   icon:'logos/networks/op.png' },
-  POL:  { code:'POL',  name:'POL',  sub:'Polygon',    icon:'logos/networks/pol.png' },
-};
-
-const banks = [
-  { code:'A_BANK', name:'A-Bank', icon:'logos/banks/a-bank.png' },
-  { code:'IZI', name:'izibank', icon:'logos/banks/izi.png' },
-  { code:'MONO', name:'Monobank', icon:'logos/banks/mono.png' },
-  { code:'OSCHAD', name:'Ощадбанк', icon:'logos/banks/oschad.png' },
-  { code:'OTP', name:'OTP Bank', icon:'logos/banks/otp.png' },
-  { code:'PRIVAT', name:'ПриватБанк', icon:'logos/banks/privat.png' },
-  { code:'PUMB', name:'ПУМБ', icon:'logos/banks/pumb.png' },
-  { code:'REYF', name:'Raiffeisen', icon:'logos/banks/reyf.png' },
-  { code:'SENSE', name:'Sense Bank', icon:'logos/banks/sense.png' },
-  // { code:'UKRSIB', name:'UKRSIBBANK', icon:'logos/banks/ukr-sib.png' }, // если надо — раскомментируй
-  { code:'VISA', name:'Visa / MasterCard', icon:'logos/banks/visa-master.png' },
-];
-
-const i18n = {
-  ua:{
-    tabHome:'Головна', tabHistory:'Історія', tabProfile:'Профіль',
-    give:'Віддаєте', get:'Отримуєте',
-    enterAmount:'Введіть суму', example:'Наприклад: 10 000',
-    youGet:'Ви отримаєте', createOrder:'Створити заявку',
-    history:'Історія', historyEmpty:'Тут буде історія заявок.',
-    newbie:'Новичок',
-    refProgram:'Реферальна програма',
-    promoCodes:'Акції і промокоди',
-    prefs:'ПРЕФЕРЕНЦІЇ', params:'ПАРАМЕТРИ', about:'О НАС',
-    savedReq:'Збережені реквізити',
-    accCurrency:'Валюта аккаунта',
-    language:'Мова',
-    security:'Безпека',
-    devices:'Пристрої',
-    officialAcc:'Офіційні акаунти',
-    faq:'Часті питання',
-    info:'Інформація',
-    support:'Звернутися в підтримку',
-    logout:'Вийти з аккаунта',
-    apply:'Застосувати',
-    savedHint:'Збереження реквізитів буде доступне в історії заявок.',
-    goHistory:'Перейти в історію',
-    cards:'Карти', wallets:'Гаманці', phones:'Телефони',
-    auth:'АВТОРИЗАЦІЯ',
-    add:'Додати',
-    phone:'Номер телефона',
-    loginApp:'ВХІД В ДОДАТОК',
-    pin:'Код-пароль',
-    hideBalance:'Сховати баланс',
-    current:'ТЕКУЩЕЕ',
-    deviceHint:'При відсутності активності 5 днів сесія буде завершена для безпеки.',
-    refText:'Запросіть друзів і отримуйте бонуси.',
-    link:'Посилання', qr:'QR-код',
-    promoHint:'Тут будуть акції та бонуси.',
-    supportHint:'Опиши проблему — ми допоможемо.',
-    send:'Надіслати',
-    cancel:'Скасувати', save:'Зберегти',
-    payToBank:'Оплата на карту',
-    chooseBank:'Оберіть банк',
-    cardNumber:'Номер картки',
-    cardHolder:'ПІБ отримувача',
-  },
-  ru:{
-    tabHome:'Главная', tabHistory:'История', tabProfile:'Профиль',
-    give:'Отдаёте', get:'Получаете',
-    enterAmount:'Введите сумму', example:'Например: 10 000',
-    youGet:'Вы получите', createOrder:'Создать заявку',
-    history:'История', historyEmpty:'Здесь будет история заявок.',
-    newbie:'Новичок',
-    refProgram:'Реферальная программа',
-    promoCodes:'Акции и промокоды',
-    prefs:'ПРЕДПОЧТЕНИЯ', params:'ПАРАМЕТРЫ', about:'О НАС',
-    savedReq:'Сохранённые реквизиты',
-    accCurrency:'Валюта аккаунта',
-    language:'Язык',
-    security:'Безопасность',
-    devices:'Устройства',
-    officialAcc:'Официальные аккаунты',
-    faq:'Часто задаваемые вопросы',
-    info:'Информация',
-    support:'Обратиться в поддержку',
-    logout:'Выйти из аккаунта',
-    apply:'Применить',
-    savedHint:'Сохранение реквизитов будет доступно в истории заявок.',
-    goHistory:'Перейти в историю',
-    cards:'Карты', wallets:'Кошельки', phones:'Телефоны',
-    auth:'АВТОРИЗАЦИЯ',
-    add:'Добавить',
-    phone:'Номер телефона',
-    loginApp:'ВХОД В ПРИЛОЖЕНИЕ',
-    pin:'Код-пароль',
-    hideBalance:'Скрывать баланс',
-    current:'ТЕКУЩЕЕ',
-    deviceHint:'При отсутствии активности 5 дней сессия будет завершена для безопасности.',
-    refText:'Пригласите друзей и получайте бонусы.',
-    link:'Ссылка', qr:'QR-код',
-    promoHint:'Здесь будут акции и бонусы.',
-    supportHint:'Опишите проблему — мы поможем.',
-    send:'Отправить',
-    cancel:'Отмена', save:'Сохранить',
-    payToBank:'Оплата на карту',
-    chooseBank:'Выберите банк',
-    cardNumber:'Номер карты',
-    cardHolder:'ФИО получателя',
+(() => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
   }
-};
 
-/* ---------- helpers ---------- */
-function t(key){
-  const dict = i18n[state.lang] || i18n.ua;
-  return dict[key] ?? key;
-}
+  // --------- DATA ----------
+  const coins = [
+    { id:"btc", name:"Bitcoin", code:"BTC", icon:"logos/crypto/btc.png", nets:["btc"] },
+    { id:"eth", name:"Ethereum", code:"ETH", icon:"logos/crypto/eth.png", nets:["erc20"] },
+    { id:"ltc", name:"Litecoin", code:"LTC", icon:"logos/crypto/ltc.png", nets:["ltc"] },
+    { id:"sol", name:"Solana", code:"SOL", icon:"logos/crypto/sol.png", nets:["sol"] },
+    { id:"ton", name:"Toncoin", code:"TON", icon:"logos/crypto/ton.png", nets:["ton"] },
+    { id:"trx", name:"Tron", code:"TRX", icon:"logos/crypto/trx.png", nets:["trc20"] },
+    { id:"usdt", name:"Tether", code:"USDT", icon:"logos/crypto/tether-usdt.png", nets:["trc20","erc20","bep20"] },
+    { id:"usdc", name:"USD Coin", code:"USDC", icon:"logos/crypto/usdc.png", nets:["trc20","erc20","bep20"] },
+  ];
 
-function applyI18n(){
-  $$('[data-i18n]').forEach(el=>{
-    const k = el.getAttribute('data-i18n');
-    el.textContent = t(k);
-  });
-  $('#langCode').textContent = state.lang.toUpperCase();
-  $('#accCurrencyVal').textContent = state.accCurrency;
-  $('#languageVal').textContent = (state.lang === 'ua') ? 'Українська' : 'Русский';
-}
+  const nets = {
+    btc:  { id:"btc",  name:"BTC",  sub:"BTC · BTC",   icon:"logos/networks/btc.png" },
+    ltc:  { id:"ltc",  name:"LTC",  sub:"LTC · LTC",   icon:"logos/networks/ltc.png" },
+    sol:  { id:"sol",  name:"SOL",  sub:"SOL · SOL",   icon:"logos/networks/sol.png" },
+    ton:  { id:"ton",  name:"TON",  sub:"TON · TON",   icon:"logos/networks/ton.png" },
+    erc20:{ id:"erc20",name:"ERC20",sub:"· ETH",        icon:"logos/networks/erc20.png" },
+    trc20:{ id:"trc20",name:"TRC20",sub:"· TRX",        icon:"logos/networks/trc20.png" },
+    bep20:{ id:"bep20",name:"BEP20",sub:"· BNB",        icon:"logos/networks/bep20.png" },
+  };
 
-function formatNum(n){
-  if (!isFinite(n)) return '0';
-  const s = Math.floor(n*100)/100;
-  return String(s).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
-}
+  const banks = [
+    { id:"mono",  name:"Monobank", icon:"logos/banks/mono.png" },
+    { id:"privat",name:"PrivatBank", icon:"logos/banks/privat.png" },
+    { id:"a-bank",name:"A-Банк", icon:"logos/banks/a-bank.png" },
+    { id:"pumb",  name:"PUMB", icon:"logos/banks/pumb.png" },
+    { id:"oschad",name:"Ощадбанк", icon:"logos/banks/oschad.png" },
+    { id:"otp",   name:"OTP", icon:"logos/banks/otp.png" },
+    { id:"sense", name:"Sense", icon:"logos/banks/sense.png" },
+    { id:"revolut", name:"Revolut", icon:"logos/wallets/revolut.png" },
+    { id:"paypal", name:"PayPal", icon:"logos/wallets/paypal.png" },
+    { id:"payoneer", name:"Payoneer", icon:"logos/wallets/payoneer.png" },
+  ];
 
-function getAsset(code){ return assets.find(a=>a.code===code) || assets[0]; }
-function getNet(code){ return networks[code] || {code, name:code, sub:'', icon:''}; }
-function getBank(code){ return banks.find(b=>b.code===code) || banks[2]; }
+  // --------- STATE ----------
+  let state = {
+    lang: "UA",
+    giveCoin: "usdt",
+    giveNet: "trc20",
+    getCoin: "usdc",
+    getNet: "erc20",
+    bank: "mono"
+  };
 
-function safeImg(imgEl, src){
-  imgEl.src = src;
-  imgEl.onerror = ()=>{ imgEl.src = ''; };
-}
+  // --------- UI refs ----------
+  const $ = (id) => document.getElementById(id);
 
-/* ---------- UI render ---------- */
-function renderExchange(){
-  const giveA = getAsset(state.give.asset);
-  const getA  = getAsset(state.get.asset);
+  const screens = {
+    home: $("screen-home"),
+    history: $("screen-history"),
+    profile: $("screen-profile"),
+  };
 
-  safeImg($('#giveAssetIcon'), giveA.icon);
-  $('#giveAssetName').textContent = giveA.name;
-  $('#giveAssetCode').textContent = giveA.code;
-  $('#giveAssetChip').textContent = giveA.code;
+  // give
+  const giveCoinIcon = $("giveCoinIcon");
+  const giveCoinName = $("giveCoinName");
+  const giveCoinCode = $("giveCoinCode");
+  const giveNetIcon  = $("giveNetIcon");
+  const giveNetName  = $("giveNetName");
+  const giveNetCode  = $("giveNetCode");
+  const giveChip     = $("giveChip");
+  const giveAmount   = $("giveAmount");
 
-  safeImg($('#getAssetIcon'), getA.icon);
-  $('#getAssetName').textContent = getA.name;
-  $('#getAssetCode').textContent = getA.code;
-
-  const giveN = getNet(state.give.net);
-  const getN  = getNet(state.get.net);
-
-  safeImg($('#giveNetIcon'), giveN.icon || '');
-  $('#giveNetName').textContent = giveN.name;
-  $('#giveNetSub').textContent = giveN.sub || `${giveA.code} • ${giveN.code}`;
-
-  safeImg($('#getNetIcon'), getN.icon || '');
-  $('#getNetName').textContent = getN.name;
-  $('#getNetSub').textContent = getN.sub || `${getA.code} • ${getN.code}`;
+  // get
+  const getCoinIcon = $("getCoinIcon");
+  const getCoinName = $("getCoinName");
+  const getCoinCode = $("getCoinCode");
+  const getNetIcon  = $("getNetIcon");
+  const getNetName  = $("getNetName");
+  const getNetCode  = $("getNetCode");
+  const getAmount   = $("getAmount");
 
   // bank
-  const b = getBank(state.bank);
-  safeImg($('#bankIcon'), b.icon);
-  $('#bankName').textContent = b.name;
+  const bankIcon = $("bankIcon");
+  const bankName = $("bankName");
 
-  recalc();
-}
+  // sheet
+  const sheet = $("sheet");
+  const sheetTitle = $("sheetTitle");
+  const sheetDesc  = $("sheetDesc");
+  const sheetList  = $("sheetList");
 
-function recalc(){
-  const val = ($('#giveAmount').value || '').replace(/\s+/g,'').replace(',','.');
-  const num = parseFloat(val);
-  if (!isFinite(num) || num <= 0){
-    $('#resultAmount').textContent = '0';
-    return;
+  // --------- helpers ----------
+  function coinById(id){ return coins.find(c => c.id === id); }
+  function netById(id){ return nets[id]; }
+  function bankById(id){ return banks.find(b => b.id === id); }
+
+  function safeNetForCoin(coinId, wantedNetId){
+    const c = coinById(coinId);
+    if (!c) return wantedNetId;
+    if (c.nets.includes(wantedNetId)) return wantedNetId;
+    return c.nets[0];
   }
 
-  // простой пример курса (без “комиссии” в UI)
-  // можно потом поменять на реальные расчёты
-  let rate = 1.0;
+  function render(){
+    // ensure nets valid
+    state.giveNet = safeNetForCoin(state.giveCoin, state.giveNet);
+    state.getNet  = safeNetForCoin(state.getCoin, state.getNet);
 
-  if (state.give.asset === 'USDT' && state.get.asset === 'USDC') rate = 0.985;
-  else if (state.give.asset === 'USDC' && state.get.asset === 'USDT') rate = 1.012;
-  else if (state.give.asset === state.get.asset) rate = 1.0;
-  else rate = 0.9;
+    const gc = coinById(state.giveCoin);
+    const gn = netById(state.giveNet);
+    const rc = coinById(state.getCoin);
+    const rn = netById(state.getNet);
+    const bk = bankById(state.bank);
 
-  const out = num * rate;
-  $('#resultAmount').textContent = formatNum(out);
-}
+    // give coin
+    giveCoinIcon.src = gc.icon;
+    giveCoinName.textContent = gc.name;
+    giveCoinCode.textContent = gc.code;
+    giveChip.textContent = gc.code;
 
-/* ---------- bottom sheet ---------- */
-const overlay = $('#sheetOverlay');
-const sheet = $('#sheet');
-const sheetTitle = $('#sheetTitle');
-const sheetBody = $('#sheetBody');
+    // give net
+    giveNetIcon.src = gn.icon;
+    giveNetName.textContent = gn.name;
+    giveNetCode.textContent = `${gc.code} ${gn.sub}`.trim();
 
-let sheetCtx = null; // {type:'asset'|'net'|'bank', target:'give'|'get'}
+    // get coin
+    getCoinIcon.src = rc.icon;
+    getCoinName.textContent = rc.name;
+    getCoinCode.textContent = rc.code;
 
-function openSheet(title, html, ctx){
-  sheetCtx = ctx;
-  sheetTitle.textContent = title;
-  sheetBody.innerHTML = html;
-  overlay.classList.remove('hidden');
-  sheet.classList.remove('hidden');
-  overlay.setAttribute('aria-hidden','false');
-  sheet.setAttribute('aria-hidden','false');
-}
+    // get net
+    getNetIcon.src = rn.icon;
+    getNetName.textContent = rn.name;
+    getNetCode.textContent = `${rc.code} ${rn.sub}`.trim();
 
-function closeSheet(){
-  overlay.classList.add('hidden');
-  sheet.classList.add('hidden');
-  overlay.setAttribute('aria-hidden','true');
-  sheet.setAttribute('aria-hidden','true');
-  sheetBody.innerHTML = '';
-  sheetCtx = null;
-}
+    // bank
+    bankIcon.src = bk.icon;
+    bankName.textContent = bk.name;
 
-function buildAssetList(){
-  return `
-    <div class="sheet-list">
-      ${assets.map(a=>`
-        <button class="sheet-item" type="button" data-asset="${a.code}">
-          <span class="ic"><img src="${a.icon}" alt=""></span>
-          <span>
-            <div class="name">${a.name}</div>
-            <div class="sub">${a.code}</div>
-          </span>
-          <span class="right">›</span>
-        </button>
-      `).join('')}
-    </div>
-  `;
-}
-
-function buildNetList(forAssetCode){
-  const a = getAsset(forAssetCode);
-  const list = (a.nets || []).map(n=>{
-    const net = getNet(n);
-    const icon = net.icon || '';
-    const sub = net.sub || `${a.code} • ${n}`;
-    return `
-      <button class="sheet-item" type="button" data-net="${n}">
-        <span class="ic">${icon ? `<img src="${icon}" alt="">` : `<div style="font-weight:900">${n}</div>`}</span>
-        <span>
-          <div class="name">${net.name}</div>
-          <div class="sub">${sub}</div>
-        </span>
-        <span class="right">›</span>
-      </button>
-    `;
-  }).join('');
-
-  return `
-    <div class="muted" style="margin:0 6px 10px">${state.lang==='ua' ? 'Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.' : 'Показываем только сети, доступные для этой валюты — чтобы не путать.'}</div>
-    <div class="sheet-list">${list}</div>
-  `;
-}
-
-function buildBankList(){
-  return `
-    <div class="sheet-list">
-      ${banks.map(b=>`
-        <button class="sheet-item" type="button" data-bank="${b.code}">
-          <span class="ic"><img src="${b.icon}" alt=""></span>
-          <span>
-            <div class="name">${b.name}</div>
-            <div class="sub">${b.code}</div>
-          </span>
-          <span class="right">›</span>
-        </button>
-      `).join('')}
-    </div>
-  `;
-}
-
-/* ---------- input modal (email/phone) ---------- */
-const inputModal = $('#inputModal');
-const inputTitle = $('#inputTitle');
-const inputValue = $('#inputValue');
-
-let inputCtx = null; // 'email'|'phone'
-
-function openInput(title, placeholder, value, ctx){
-  inputCtx = ctx;
-  inputTitle.textContent = title;
-  inputValue.placeholder = placeholder;
-  inputValue.value = value || '';
-  inputModal.classList.remove('hidden');
-  inputModal.setAttribute('aria-hidden','false');
-  setTimeout(()=>inputValue.focus(), 50);
-}
-
-function closeInput(){
-  inputModal.classList.add('hidden');
-  inputModal.setAttribute('aria-hidden','true');
-  inputCtx = null;
-}
-
-/* ---------- tabs ---------- */
-function showTab(tab){
-  $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
-  $$('.screen').forEach(s=>s.classList.toggle('active', s.id === `screen-${tab}`));
-}
-
-function showProfilePage(page){
-  $$('#profileRouter .profile-page').forEach(p=>{
-    const key = p.getAttribute('data-page');
-    const isRoot = p.id === 'profileRoot';
-    if (page === 'root') p.classList.toggle('active', isRoot);
-    else p.classList.toggle('active', key === page);
-  });
-}
-
-/* ---------- Telegram user ---------- */
-function initTelegramUser(){
-  try{
-    const tg = window.Telegram?.WebApp;
-    if (!tg) return;
-
-    tg.ready();
-    tg.expand?.();
-
-    const u = tg.initDataUnsafe?.user;
-    if (!u) return;
-
-    const username = u.username ? '@'+u.username : (u.first_name || 'User');
-    $('#tgName').textContent = username;
-
-    // avatar
-    const photo = u.photo_url;
-    if (photo){
-      $('#tgAvatar').src = photo;
-      $('#tgAvatar').classList.remove('hidden');
-      $('#avatarFallback').classList.add('hidden');
+    // calc (пока простой демо)
+    const v = parseFloat((giveAmount.value || "0").replace(",", "."));
+    if (!isFinite(v) || v <= 0) {
+      getAmount.textContent = "0";
     } else {
-      const initials = ((u.first_name||'K')[0] + (u.last_name||'S')[0]).toUpperCase();
-      $('#avatarFallback').textContent = initials;
+      // демо: 1:1
+      getAmount.textContent = String(Math.round(v * 100) / 100);
     }
-  }catch(e){}
-}
 
-/* ---------- profile render ---------- */
-function renderProfileSecurity(){
-  const e = state.email;
-  const p = state.phone;
-
-  if (e){
-    $('#emailRight').textContent = e;
-    $('#emailRight').classList.remove('plus');
-  } else {
-    $('#emailRight').innerHTML = `+ <span data-i18n="add">${t('add')}</span>`;
-    $('#emailRight').classList.add('plus');
+    // lang ui
+    $("langValue").textContent = state.lang;
+    $("langSub").textContent = state.lang === "UA" ? "Українська" : "Русский";
   }
 
-  if (p){
-    $('#phoneRight').textContent = p;
-    $('#phoneRight').classList.remove('plus');
-  } else {
-    $('#phoneRight').innerHTML = `+ <span data-i18n="add">${t('add')}</span>`;
-    $('#phoneRight').classList.add('plus');
-  }
-}
+  function openSheet({title, desc, items, onPick}){
+    sheetTitle.textContent = title;
+    sheetDesc.textContent = desc || "";
+    sheetList.innerHTML = "";
 
-/* ---------- events ---------- */
-function bindEvents(){
-  // language dropdown
-  $('#langBtn').addEventListener('click', ()=>{
-    $('#langMenu').classList.toggle('hidden');
-  });
-  document.addEventListener('click', (e)=>{
-    if (!e.target.closest('.topbar-right')){
-      $('#langMenu').classList.add('hidden');
-    }
-  });
-  $$('.lang-item').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.lang = btn.dataset.lang;
-      localStorage.setItem('ks_lang', state.lang);
-      $('#langMenu').classList.add('hidden');
-      applyI18n();
-      renderExchange();
-      renderProfileSecurity();
+    items.forEach(it => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sheetItem";
+      btn.innerHTML = `
+        <img src="${it.icon}" alt="">
+        <div class="t">
+          <div class="a">${it.title}</div>
+          ${it.sub ? `<div class="b">${it.sub}</div>` : ``}
+        </div>
+        <div class="r">›</div>
+      `;
+      btn.addEventListener("click", () => {
+        closeSheet();
+        onPick(it.value);
+      });
+      sheetList.appendChild(btn);
+    });
+
+    sheet.classList.remove("hidden");
+  }
+
+  function closeSheet(){
+    sheet.classList.add("hidden");
+  }
+
+  // --------- events ----------
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("sheetBackdrop").addEventListener("click", closeSheet);
+
+  // tabbar
+  document.querySelectorAll(".tabbar .tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tabbar .tab").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+
+      const tab = btn.dataset.tab;
+      Object.values(screens).forEach(s => s.classList.add("hidden"));
+      screens[tab].classList.remove("hidden");
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
     });
   });
-
-  // tabs
-  $$('.tab').forEach(b=>{
-    b.addEventListener('click', ()=> showTab(b.dataset.tab));
-  });
-
-  // exchange amount
-  $('#giveAmount').addEventListener('input', recalc);
 
   // swap
-  $('#swapBtn').addEventListener('click', ()=>{
-    const tmpA = state.give.asset; state.give.asset = state.get.asset; state.get.asset = tmpA;
-    const tmpN = state.give.net;   state.give.net   = state.get.net;   state.get.net   = tmpN;
-    renderExchange();
+  $("swapBtn").addEventListener("click", () => {
+    [state.giveCoin, state.getCoin] = [state.getCoin, state.giveCoin];
+    [state.giveNet, state.getNet]   = [state.getNet, state.giveNet];
+    render();
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
   });
 
-  // pickers
-  $('#giveAssetBtn').addEventListener('click', ()=>{
-    openSheet(state.lang==='ua' ? 'Виберіть валюту' : 'Выберите валюту', buildAssetList(), {type:'asset', target:'give'});
-  });
-  $('#getAssetBtn').addEventListener('click', ()=>{
-    openSheet(state.lang==='ua' ? 'Виберіть валюту' : 'Выберите валюту', buildAssetList(), {type:'asset', target:'get'});
-  });
-
-  $('#giveNetBtn').addEventListener('click', ()=>{
-    openSheet(state.lang==='ua' ? 'Оберіть мережу' : 'Выберите сеть', buildNetList(state.give.asset), {type:'net', target:'give'});
-  });
-  $('#getNetBtn').addEventListener('click', ()=>{
-    openSheet(state.lang==='ua' ? 'Оберіть мережу' : 'Выберите сеть', buildNetList(state.get.asset), {type:'net', target:'get'});
-  });
-
-  $('#bankBtn').addEventListener('click', ()=>{
-    openSheet(state.lang==='ua' ? 'Оберіть банк' : 'Выберите банк', buildBankList(), {type:'bank'});
+  // coin pickers
+  $("giveCoinBtn").addEventListener("click", () => {
+    openSheet({
+      title:"Виберіть валюту",
+      desc:"",
+      items: coins.map(c => ({
+        value:c.id,
+        icon:c.icon,
+        title:`${c.name} (${c.code})`,
+        sub:c.code
+      })),
+      onPick:(id) => { state.giveCoin = id; render(); }
+    });
   });
 
-  // sheet close
-  $('#sheetClose').addEventListener('click', closeSheet);
-  overlay.addEventListener('click', closeSheet);
+  $("getCoinBtn").addEventListener("click", () => {
+    openSheet({
+      title:"Виберіть валюту",
+      desc:"",
+      items: coins.map(c => ({
+        value:c.id,
+        icon:c.icon,
+        title:`${c.name} (${c.code})`,
+        sub:c.code
+      })),
+      onPick:(id) => { state.getCoin = id; render(); }
+    });
+  });
 
-  // sheet clicks
-  sheetBody.addEventListener('click', (e)=>{
-    const assetBtn = e.target.closest('[data-asset]');
-    const netBtn = e.target.closest('[data-net]');
-    const bankBtn = e.target.closest('[data-bank]');
+  // network pickers (фильтр по монете)
+  $("giveNetBtn").addEventListener("click", () => {
+    const c = coinById(state.giveCoin);
+    openSheet({
+      title:"Оберіть мережу",
+      desc:"Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.",
+      items: c.nets.map(nid => {
+        const n = netById(nid);
+        return {
+          value:nid,
+          icon:n.icon,
+          title:n.name,
+          sub:`${c.code} ${n.sub}`.trim()
+        };
+      }),
+      onPick:(nid) => { state.giveNet = nid; render(); }
+    });
+  });
 
-    if (assetBtn && sheetCtx?.type === 'asset'){
-      const code = assetBtn.dataset.asset;
-      if (sheetCtx.target === 'give'){
-        state.give.asset = code;
-        const a = getAsset(code);
-        if (!a.nets.includes(state.give.net)) state.give.net = a.nets[0];
-      } else {
-        state.get.asset = code;
-        const a = getAsset(code);
-        if (!a.nets.includes(state.get.net)) state.get.net = a.nets[0];
-      }
-      closeSheet();
-      renderExchange();
+  $("getNetBtn").addEventListener("click", () => {
+    const c = coinById(state.getCoin);
+    openSheet({
+      title:"Оберіть мережу",
+      desc:"Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.",
+      items: c.nets.map(nid => {
+        const n = netById(nid);
+        return {
+          value:nid,
+          icon:n.icon,
+          title:n.name,
+          sub:`${c.code} ${n.sub}`.trim()
+        };
+      }),
+      onPick:(nid) => { state.getNet = nid; render(); }
+    });
+  });
+
+  // bank picker
+  $("bankBtn").addEventListener("click", () => {
+    openSheet({
+      title:"Оберіть банк",
+      desc:"",
+      items: banks.map(b => ({
+        value:b.id,
+        icon:b.icon,
+        title:b.name,
+        sub:""
+      })),
+      onPick:(id) => { state.bank = id; render(); }
+    });
+  });
+
+  // lang
+  function openLang(){
+    openSheet({
+      title:"Мова",
+      desc:"",
+      items:[
+        {value:"UA", icon:"logos/networks/ton.png", title:"Українська", sub:"UA"},
+        {value:"RU", icon:"logos/networks/ton.png", title:"Русский", sub:"RU"},
+      ],
+      onPick:(v)=>{ state.lang=v; render(); }
+    });
+  }
+  $("langBtn").addEventListener("click", openLang);
+  $("lang2Btn").addEventListener("click", openLang);
+
+  // calc update
+  giveAmount.addEventListener("input", render);
+
+  // avatar + name from Telegram
+  function initTelegramProfile(){
+    const photoEl = $("tgAvatar");
+    const nameEl  = $("tgName");
+    const userEl  = $("tgUser");
+
+    const u = tg?.initDataUnsafe?.user;
+    if (!u){
+      photoEl.style.display = "none";
+      nameEl.textContent = "Користувач";
+      userEl.textContent = "@user";
       return;
     }
 
-    if (netBtn && sheetCtx?.type === 'net'){
-      const code = netBtn.dataset.net;
-      if (sheetCtx.target === 'give') state.give.net = code;
-      else state.get.net = code;
-      closeSheet();
-      renderExchange();
-      return;
+    const full = [u.first_name, u.last_name].filter(Boolean).join(" ");
+    nameEl.textContent = full || "Користувач";
+    userEl.textContent = u.username ? `@${u.username}` : " ";
+
+    // Telegram не всегда даёт фото url. Если нет — покажем заглушку.
+    if (u.photo_url){
+      photoEl.src = u.photo_url;
+    } else {
+      photoEl.style.display = "none";
     }
+  }
 
-    if (bankBtn && sheetCtx?.type === 'bank'){
-      state.bank = bankBtn.dataset.bank;
-      closeSheet();
-      renderExchange();
-      return;
-    }
-  });
-
-  // profile routing
-  $('#openProfileRoot').addEventListener('click', ()=> showProfilePage('root'));
-
-  $$('#profileRoot .item[data-route]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      showProfilePage(btn.dataset.route);
-      renderProfileSecurity();
-      applyI18n();
-    });
-  });
-
-  $$('#profileRouter [data-back]').forEach(btn=>{
-    btn.addEventListener('click', ()=> showProfilePage('root'));
-  });
-
-  // saved tabs
-  $$('.chip[data-savedtab]').forEach(ch=>{
-    ch.addEventListener('click', ()=>{
-      $$('.chip[data-savedtab]').forEach(x=>x.classList.remove('active'));
-      ch.classList.add('active');
-    });
-  });
-
-  // currency pick
-  $$('[data-currency]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.accCurrency = btn.dataset.currency;
-      localStorage.setItem('ks_accCurrency', state.accCurrency);
-      $('#accCurrencyVal').textContent = state.accCurrency;
-      showProfilePage('root');
-    });
-  });
-
-  // language pick in profile
-  $$('[data-langpick]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.lang = btn.dataset.langpick;
-      localStorage.setItem('ks_lang', state.lang);
-      applyI18n();
-      renderExchange();
-      renderProfileSecurity();
-      showProfilePage('root');
-    });
-  });
-
-  // security add email/phone
-  $('#emailItem').addEventListener('click', ()=>{
-    openInput('Email', 'name@mail.com', state.email, 'email');
-  });
-  $('#phoneItem').addEventListener('click', ()=>{
-    openInput(t('phone'), '+380...', state.phone, 'phone');
-  });
-
-  $('#inputCancel').addEventListener('click', closeInput);
-  $('#inputModal').addEventListener('click', (e)=>{
-    if (e.target === $('#inputModal')) closeInput();
-  });
-
-  $('#inputSave').addEventListener('click', ()=>{
-    const v = inputValue.value.trim();
-    if (inputCtx === 'email'){
-      state.email = v;
-      localStorage.setItem('ks_email', v);
-    }
-    if (inputCtx === 'phone'){
-      state.phone = v;
-      localStorage.setItem('ks_phone', v);
-    }
-    closeInput();
-    renderProfileSecurity();
-  });
-
-  // order button
-  $('#createOrderBtn').addEventListener('click', ()=>{
-    // здесь позже сделаем создание заявки/отправку
-    alert(state.lang==='ua' ? 'Заявку створено (демо).' : 'Заявка создана (демо).');
-  });
-
-  // logout
-  $('#logoutBtn').addEventListener('click', ()=>{
-    alert(state.lang==='ua' ? 'Вихід (демо).' : 'Выход (демо).');
-  });
-}
-
-/* ---------- init ---------- */
-function init(){
-  // init values
-  $('#langCode').textContent = state.lang.toUpperCase();
-  $('#accCurrencyVal').textContent = state.accCurrency;
-
-  applyI18n();
-  initTelegramUser();
-
-  // set bank default
-  const b = getBank(state.bank);
-  if (!b) state.bank = banks[0]?.code || 'MONO';
-
-  renderExchange();
-  renderProfileSecurity();
-  bindEvents();
-}
-
-init();
+  // init
+  initTelegramProfile();
+  render();
+})();
