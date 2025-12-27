@@ -1,258 +1,257 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>KeksSwap</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="app">
-    <!-- Topbar (как у нормальных обменников) -->
+  <div class="app" id="app">
+    <!-- Top bar -->
     <header class="topbar">
-      <div class="topbar__left">
-        <img class="logo" src="logos/keks-logo.png" alt="KeksSwap" />
+      <div class="brand">
+        <img class="brandLogo" src="logos/keks-logo.png" alt="KeksSwap" onerror="this.style.display='none'"/>
+        <div class="brandText">
+          <div class="brandName">KeksSwap</div>
+          <div class="brandSub" id="brandSub">Exchange</div>
+        </div>
       </div>
 
-      <button class="langBtn" id="langBtn" type="button">
-        <span id="langValue">UA</span>
-        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <div class="topActions">
+        <button class="langBtn" id="langBtn" type="button">
+          <img class="langIcon" src="logos/crypto/ton.png" alt="lang" onerror="this.style.display='none'"/>
+          <span id="langLabel">EN</span>
+          <span class="chev">▾</span>
+        </button>
+      </div>
     </header>
 
-    <!-- HOME -->
-    <main class="screen" id="screen-home">
-      <section class="panel">
-        <div class="panelHead">
-          <div class="panelTitle">Обмін</div>
-          <div class="panelSub">Виберіть валюту та введіть суму</div>
-        </div>
+    <!-- Pages -->
+    <main class="content">
+      <!-- HOME -->
+      <section class="page active" id="page-home">
+        <div class="card hero">
+          <div class="heroTitle" id="tExchange">Обмін</div>
+          <div class="heroSub" id="tHint">Виберіть активи та введіть суму</div>
 
-        <!-- GIVE -->
-        <div class="block">
-          <div class="blockLabel">Віддаєте</div>
+          <div class="exchangeBox">
+            <!-- GIVE -->
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle" id="tGive">Віддаєте</div>
+              </div>
 
-          <div class="pickRow">
-            <button class="pick" id="giveCoinBtn" type="button">
-              <img class="pickIcon" id="giveCoinIcon" src="logos/crypto/tether-usdt.png" alt="">
-              <div class="pickText">
-                <div class="pickTop" id="giveCoinName">Tether</div>
-                <div class="pickSub" id="giveCoinCode">USDT</div>
-              </div>
-              <div class="pickRight">
-                <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-            </button>
+              <div class="selectors">
+                <button class="select" id="giveAssetBtn" type="button">
+                  <img class="selIcon" id="giveAssetIcon" alt="" />
+                  <div class="selText">
+                    <div class="selTitle" id="giveAssetTitle">Tether (USDT)</div>
+                    <div class="selSub" id="giveAssetSub">USDT</div>
+                  </div>
+                  <span class="chev">▾</span>
+                </button>
 
-            <button class="pick" id="giveNetBtn" type="button">
-              <img class="pickIcon" id="giveNetIcon" src="logos/networks/trc20.png" alt="">
-              <div class="pickText">
-                <div class="pickTop" id="giveNetName">TRC20</div>
-                <div class="pickSub" id="giveNetCode">USDT · TRX</div>
+                <button class="select" id="giveNetBtn" type="button">
+                  <img class="selIcon" id="giveNetIcon" alt="" />
+                  <div class="selText">
+                    <div class="selTitle" id="giveNetTitle">TRC20</div>
+                    <div class="selSub" id="giveNetSub">USDT • TRX</div>
+                  </div>
+                  <span class="chev">▾</span>
+                </button>
               </div>
-              <div class="pickRight">
-                <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-            </button>
-          </div>
 
-          <div class="amountBox">
-            <div class="amountHead">
-              <div class="amountLabel">Сума</div>
-              <div class="chip" id="giveChip">USDT</div>
+              <div class="amountBox">
+                <div class="amountLabel" id="tEnterSum">Введіть суму</div>
+                <div class="amountRow">
+                  <input id="giveAmount" class="amountInput" inputmode="decimal" placeholder="0" />
+                  <div class="amountBadge" id="giveBadge">USDT</div>
+                </div>
+                <div class="amountHint" id="tExample">Наприклад: 10 000</div>
+              </div>
             </div>
-            <input class="amountInput" id="giveAmount" inputmode="decimal" placeholder="0" />
-            <div class="amountHint">Наприклад: 10 000</div>
+
+            <!-- SWAP -->
+            <div class="swapWrap">
+              <button class="swapBtn" id="swapBtn" type="button" aria-label="swap">
+                <img src="arrows.svg" alt="swap" onerror="this.style.display='none'"/>
+                <span class="swapFallback">⇅</span>
+              </button>
+            </div>
+
+            <!-- GET -->
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle" id="tGet">Отримуєте</div>
+              </div>
+
+              <div class="selectors">
+                <button class="select" id="getAssetBtn" type="button">
+                  <img class="selIcon" id="getAssetIcon" alt="" />
+                  <div class="selText">
+                    <div class="selTitle" id="getAssetTitle">USD Coin (USDC)</div>
+                    <div class="selSub" id="getAssetSub">USDC</div>
+                  </div>
+                  <span class="chev">▾</span>
+                </button>
+
+                <button class="select" id="getNetBtn" type="button">
+                  <img class="selIcon" id="getNetIcon" alt="" />
+                  <div class="selText">
+                    <div class="selTitle" id="getNetTitle">ERC20</div>
+                    <div class="selSub" id="getNetSub">USDC • ETH</div>
+                  </div>
+                  <span class="chev">▾</span>
+                </button>
+              </div>
+
+              <div class="resultBox">
+                <div class="resultLabel" id="tYouGet">Ви отримаєте</div>
+                <div class="resultValue" id="getAmount">0</div>
+              </div>
+
+              <button class="primary" id="createBtn" type="button">
+                <span id="tCreate">Створити заявку</span>
+              </button>
+
+              <!-- RECEIVE ON BANK CARD (shows only when Get Asset is bank) -->
+              <div class="cardPay" id="cardFields">
+                <div class="cardPayTitle" id="tPayToCard">Отримання на карту</div>
+
+                <div class="field">
+                  <label id="tBank">Банк</label>
+                  <button class="select small" id="getBankBtn" type="button">
+                    <img class="selIcon" id="getBankIcon" alt="bank"/>
+                    <div class="selText">
+                      <div class="selTitle" id="getBankTitle">Monobank</div>
+                      <div class="selSub" id="tChooseBank">Оберіть банк</div>
+                    </div>
+                    <span class="chev">▾</span>
+                  </button>
+                </div>
+
+                <div class="field">
+                  <label id="tCardNumber">Номер картки</label>
+                  <input id="cardNumber" class="textInput" inputmode="numeric" placeholder="0000 0000 0000 0000"/>
+                </div>
+
+                <div class="field">
+                  <label id="tFullName">ПІБ отримувача</label>
+                  <input id="fullName" class="textInput" placeholder="Ім'я Прізвище"/>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- SWAP -->
-        <div class="swapWrap">
-          <button class="swapBtn" id="swapBtn" type="button" aria-label="Swap">
-            <img src="arrows.svg" alt="swap" class="swapImg">
-          </button>
+      <!-- HISTORY -->
+      <section class="page" id="page-history">
+        <div class="card">
+          <div class="pageTitle" id="tHistory">Історія</div>
+          <div class="muted" id="tHistoryEmpty">Поки що немає заявок. Створіть першу на головній.</div>
+          <div id="historyList" class="historyList"></div>
         </div>
+      </section>
 
-        <!-- GET -->
-        <div class="block">
-          <div class="blockLabel">Отримуєте</div>
+      <!-- PROFILE -->
+      <section class="page" id="page-profile">
+        <div class="card profileCard">
+          <div class="profileHead">
+            <div class="avatar">KS</div>
+            <div class="profileMeta">
+              <div class="profileName" id="profileName">@user</div>
+              <div class="profileRank" id="tNewbie">Новичок</div>
+            </div>
+          </div>
 
-          <div class="pickRow">
-            <button class="pick" id="getCoinBtn" type="button">
-              <img class="pickIcon" id="getCoinIcon" src="logos/crypto/usdc.png" alt="">
-              <div class="pickText">
-                <div class="pickTop" id="getCoinName">USD Coin</div>
-                <div class="pickSub" id="getCoinCode">USDC</div>
-              </div>
-              <div class="pickRight">
-                <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
+          <div class="list">
+            <button class="listItem" type="button">
+              <span class="liIcon">👥</span>
+              <span class="liText" id="tReferral">Реферальна програма</span>
+              <span class="liChev">›</span>
             </button>
 
-            <button class="pick" id="getNetBtn" type="button">
-              <img class="pickIcon" id="getNetIcon" src="logos/networks/erc20.png" alt="">
-              <div class="pickText">
-                <div class="pickTop" id="getNetName">ERC20</div>
-                <div class="pickSub" id="getNetCode">USDC · ETH</div>
-              </div>
-              <div class="pickRight">
-                <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
+            <button class="listItem" type="button">
+              <span class="liIcon">🎁</span>
+              <span class="liText" id="tPromo">Акції і промокоди</span>
+              <span class="liChev">›</span>
+            </button>
+
+            <div class="sectionLabel" id="tPrefs">Преференції</div>
+
+            <button class="listItem" type="button">
+              <span class="liIcon">🏷️</span>
+              <span class="liText" id="tSaved">Збережені реквізити</span>
+              <span class="liChev">›</span>
+            </button>
+
+            <button class="listItem" type="button">
+              <span class="liIcon">💱</span>
+              <span class="liText" id="tAccCurrency">Валюта аккаунта</span>
+              <span class="liRight">UAH</span>
+              <span class="liChev">›</span>
+            </button>
+
+            <button class="listItem" type="button" id="openLangFromProfile">
+              <span class="liIcon">🌐</span>
+              <span class="liText" id="tLanguage">Мова</span>
+              <span class="liRight" id="langRight">English</span>
+              <span class="liChev">›</span>
+            </button>
+
+            <div class="sectionLabel" id="tSettings">Параметри</div>
+
+            <button class="listItem" type="button">
+              <span class="liIcon">🔒</span>
+              <span class="liText" id="tSecurity">Безпека</span>
+              <span class="liChev">›</span>
+            </button>
+
+            <button class="listItem" type="button">
+              <span class="liIcon">📱</span>
+              <span class="liText" id="tDevices">Пристрої</span>
+              <span class="liRight">1</span>
+              <span class="liChev">›</span>
             </button>
           </div>
-
-          <div class="resultBox">
-            <div class="resultLabel">Ви отримаєте</div>
-            <div class="resultValue" id="getAmount">0</div>
-          </div>
-        </div>
-
-        <button class="primaryBtn" id="createBtn" type="button">Створити заявку</button>
-      </section>
-
-      <section class="panel mt12">
-        <div class="panelHeadMini">
-          <div class="panelTitleMini">Оплата на карту</div>
-        </div>
-
-        <button class="pick wide" id="bankBtn" type="button">
-          <img class="pickIcon" id="bankIcon" src="logos/banks/mono.png" alt="">
-          <div class="pickText">
-            <div class="pickTop" id="bankName">Monobank</div>
-            <div class="pickSub">Оберіть банк</div>
-          </div>
-          <div class="pickRight">
-            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-        </button>
-
-        <div class="field">
-          <div class="fieldLabel">Номер картки</div>
-          <input class="fieldInput" id="cardNumber" inputmode="numeric" placeholder="0000 0000 0000 0000" />
-        </div>
-
-        <div class="field">
-          <div class="fieldLabel">ПІБ отримувача</div>
-          <input class="fieldInput" id="cardName" placeholder="Ім’я Прізвище" />
         </div>
       </section>
     </main>
 
-    <!-- HISTORY -->
-    <main class="screen hidden" id="screen-history">
-      <section class="panel">
-        <div class="panelHead">
-          <div class="panelTitle">Історія</div>
-          <div class="panelSub">Ваші заявки з’являться тут</div>
-        </div>
-        <div class="empty">Поки що немає операцій</div>
-      </section>
-    </main>
-
-    <!-- PROFILE -->
-    <main class="screen hidden" id="screen-profile">
-      <section class="panel">
-        <div class="profileHeader">
-          <img id="tgAvatar" class="avatar" alt="avatar" />
-          <div class="pText">
-            <div class="pName" id="tgName">Користувач</div>
-            <div class="pUser" id="tgUser">@username</div>
-          </div>
-          <div class="pArrow">›</div>
-        </div>
-      </section>
-
-      <section class="panel mt12">
-        <button class="item" id="refBtn" type="button">
-          <span class="iIcon">👥</span><span class="iTitle">Реферальна програма</span><span class="iRight">›</span>
-        </button>
-        <button class="item" id="promoBtn" type="button">
-          <span class="iIcon">🎁</span><span class="iTitle">Акції і промокоди</span><span class="iRight">›</span>
-        </button>
-      </section>
-
-      <div class="sectionLabel">Преференції</div>
-      <section class="panel">
-        <button class="item" id="savedBtn" type="button">
-          <span class="iIcon">🔖</span><span class="iTitle">Збережені реквізити</span><span class="iRight">›</span>
-        </button>
-        <button class="item" id="accCurBtn" type="button">
-          <span class="iIcon">💱</span><span class="iTitle">Валюта акаунта</span><span class="iMeta">UAH</span><span class="iRight">›</span>
-        </button>
-        <button class="item" id="lang2Btn" type="button">
-          <span class="iIcon">🌐</span><span class="iTitle">Мова</span><span class="iMeta" id="langSub">Українська</span><span class="iRight">›</span>
-        </button>
-      </section>
-
-      <div class="sectionLabel">Параметри</div>
-      <section class="panel">
-        <button class="item" id="securityBtn" type="button">
-          <span class="iIcon">🔒</span><span class="iTitle">Безпека</span><span class="iRight">›</span>
-        </button>
-        <button class="item" id="devicesBtn" type="button">
-          <span class="iIcon">📱</span><span class="iTitle">Пристрої</span><span class="iMeta">1</span><span class="iRight">›</span>
-        </button>
-      </section>
-
-      <section class="panel mt12">
-        <button class="dangerBtn" id="logoutBtn" type="button">Вийти з акаунта</button>
-      </section>
-    </main>
-
-    <!-- Bottom Tabbar -->
-    <nav class="tabbar">
-      <button class="tab active" data-tab="home" type="button">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-        <span>Головна</span>
+    <!-- Bottom nav -->
+    <nav class="bottomNav">
+      <button class="navBtn active" data-go="home" type="button">
+        <span class="navIcon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 8h-3v10h-5v-6H11v6H6V11H3l9-8z"/></svg>
+        </span>
+        <span class="navText" id="tHome">Головна</span>
       </button>
-
-      <button class="tab" data-tab="history" type="button">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 2v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M21 12a9 9 0 1 1-9-9" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 7v6l4 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span>Історія</span>
+      <button class="navBtn" data-go="history" type="button">
+        <span class="navIcon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3a9 9 0 109 9h-2a7 7 0 11-7-7V3zm-1 4h2v6l5 3-1 2-6-4V7z"/></svg>
+        </span>
+        <span class="navText" id="tNavHistory">Історія</span>
       </button>
-
-      <button class="tab" data-tab="profile" type="button">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 21a8 8 0 0 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M12 13a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" fill="none" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <span>Профіль</span>
+      <button class="navBtn" data-go="profile" type="button">
+        <span class="navIcon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 10-5-5 5 5 0 005 5zm0 2c-5 0-9 3-9 7h2c0-3 3-5 7-5s7 2 7 5h2c0-4-4-7-9-7z"/></svg>
+        </span>
+        <span class="navText" id="tProfile">Профіль</span>
       </button>
     </nav>
+  </div>
 
-    <!-- Bottom Sheet -->
-    <div class="sheet hidden" id="sheet">
-      <div class="sheetBackdrop" id="sheetBackdrop"></div>
-      <div class="sheetBody">
-        <div class="sheetTop">
-          <div class="sheetTitle" id="sheetTitle">Виберіть</div>
-          <button class="sheetClose" id="sheetClose" type="button">✕</button>
-        </div>
-        <div class="sheetDesc" id="sheetDesc"></div>
-        <div class="sheetList" id="sheetList"></div>
+  <!-- Modal (no backdrop) -->
+  <div class="modal" id="modal">
+    <div class="modalSheet">
+      <div class="modalHead">
+        <div class="modalTitle" id="modalTitle">Вибір</div>
+        <button class="iconBtn" id="modalClose" type="button">✕</button>
       </div>
+      <div class="modalBody" id="modalBody"></div>
     </div>
-
   </div>
 
   <script src="app.js"></script>
