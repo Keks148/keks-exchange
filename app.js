@@ -1,3 +1,4 @@
+alert("NEW APP.JS LOADED");
 /* KeksSwap Mini App (no frameworks) */
 
 const $ = (s, r=document) => r.querySelector(s);
