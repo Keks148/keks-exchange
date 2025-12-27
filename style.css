@@ -1,72 +1,68 @@
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, sans-serif;
-}
+* { box-sizing: border-box; font-family: system-ui, sans-serif; }
 
 body {
   margin: 0;
-  background: linear-gradient(180deg,#dff2ff,#f7fbff);
+  background: linear-gradient(180deg,#dff1ff,#f6fbff);
 }
 
-.topbar {
+.top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  align-items: center;
+  padding: 12px 16px;
 }
 
-.logo {
-  height: 54px;
+.logo img {
+  height: 64px;
 }
 
-.lang-switch {
-  font-weight: 600;
+.lang {
+  display: flex;
+  gap: 6px;
+  align-items: center;
   cursor: pointer;
 }
 
-.container {
-  padding: 16px;
-}
+.lang img { width: 22px; }
+
+main { padding: 16px; }
 
 .card {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,.05);
 }
 
-h2 {
-  margin-top: 0;
-}
+h1 { margin: 0 0 12px; }
 
 .field {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 label {
-  display: block;
   font-size: 13px;
-  margin-bottom: 6px;
-  color: #555;
+  opacity: .7;
 }
 
-.select, input {
+select, input {
   width: 100%;
   padding: 14px;
   border-radius: 14px;
   border: 1px solid #e4e4e4;
-  background: #f9fbfd;
-  font-size: 15px;
+  font-size: 16px;
 }
 
-.swap-btn {
-  display: block;
-  margin: 18px auto;
+.hidden { display: none; }
+
+#swapBtn {
   width: 56px;
   height: 56px;
   border-radius: 16px;
+  margin: 10px auto;
+  display: block;
   border: none;
-  background: linear-gradient(135deg,#2aa9ff,#1e7ed8);
+  background: linear-gradient(180deg,#1aa3ff,#0d7edc);
   color: #fff;
   font-size: 22px;
 }
@@ -76,12 +72,26 @@ label {
   padding: 16px;
   border-radius: 16px;
   border: none;
-  background: linear-gradient(135deg,#2aa9ff,#1e7ed8);
+  background: linear-gradient(180deg,#1aa3ff,#0d7edc);
   color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
 }
 
-.hidden {
-  display: none;
+.bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  padding: 10px 0;
 }
+
+.bottom button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  opacity: .5;
+}
+
+.bottom .active { opacity: 1; }
