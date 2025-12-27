@@ -1,1007 +1,957 @@
-/* KeksSwap Mini App (UI-only demo)
-   - Works offline / on GitHub Pages
-   - Stores profile + history in localStorage
-   - Adapts for Telegram WebApp if available
+/* KeksSwap Mini App (3 files)
+   - Order fix: "Віддаєте" => crypto first, then banks; "Отримуєте" => banks first, then crypto
+   - Remove search in Language + Network sheets
+   - Network icons support (logos/networks/*.png) with fallback
+   - Works in Telegram WebApp, stores state in localStorage
 */
-(function () {
-  const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-
-  // -----------------------------
-  // Assets (auto from folder list is not possible without build step)
-  // Keep this list in sync with your /logos folders.
-  // -----------------------------
-  const BANKS = [
-    { id: "mono", name: "Monobank", icon: "logos/banks/mono.png", currency: "UAH", kind: "bank" },
-    { id: "privat", name: "PrivatBank", icon: "logos/banks/privat.png", currency: "UAH", kind: "bank" },
-    { id: "oschad", name: "Oschadbank", icon: "logos/banks/oschad.png", currency: "UAH", kind: "bank" },
-    { id: "pumb", name: "PUMB", icon: "logos/banks/pumb.png", currency: "UAH", kind: "bank" },
-    { id: "abank", name: "A-Bank", icon: "logos/banks/a-bank.png", currency: "UAH", kind: "bank" },
-    { id: "otp", name: "OTP Bank", icon: "logos/banks/otp.png", currency: "UAH", kind: "bank" },
-    { id: "raif", name: "Raiffeisen", icon: "logos/banks/raif.png", currency: "UAH", kind: "bank" },
-    { id: "sense", name: "Sense Bank", icon: "logos/banks/sense.png", currency: "UAH", kind: "bank" },
-    { id: "ukrsib", name: "Ukrsibbank", icon: "logos/banks/u-sib.png", currency: "UAH", kind: "bank" },
-  ].filter(x => x.icon);
-
-  const CRYPTO = [
-    { id: "usdt", name: "Tether", symbol: "USDT", icon: "logos/crypto/usdt.png", kind: "crypto" },
-    { id: "usdc", name: "USD Coin", symbol: "USDC", icon: "logos/crypto/usdc.png", kind: "crypto" },
-    { id: "btc", name: "Bitcoin", symbol: "BTC", icon: "logos/crypto/btc.png", kind: "crypto" },
-    { id: "eth", name: "Ethereum", symbol: "ETH", icon: "logos/crypto/eth.png", kind: "crypto" },
-    { id: "ltc", name: "Litecoin", symbol: "LTC", icon: "logos/crypto/ltc.png", kind: "crypto" },
-    { id: "sol", name: "Solana", symbol: "SOL", icon: "logos/crypto/sol.png", kind: "crypto" },
-    { id: "ton", name: "Toncoin", symbol: "TON", icon: "logos/crypto/ton.png", kind: "crypto" },
-    { id: "trx", name: "Tron", symbol: "TRX", icon: "logos/crypto/trx.png", kind: "crypto" },
-    { id: "bnb", name: "BNB", symbol: "BNB", icon: "logos/crypto/bnb.png", kind: "crypto" },
-    { id: "xrp", name: "XRP", symbol: "XRP", icon: "logos/crypto/xrp.png", kind: "crypto" },
-    { id: "doge", name: "Dogecoin", symbol: "DOGE", icon: "logos/crypto/doge.png", kind: "crypto" },
-    { id: "ada", name: "Cardano", symbol: "ADA", icon: "logos/crypto/ada.png", kind: "crypto" },
-    { id: "pol", name: "Polygon", symbol: "POL", icon: "logos/crypto/pol.png", kind: "crypto" },
-    { id: "dot", name: "Polkadot", symbol: "DOT", icon: "logos/crypto/dot.png", kind: "crypto" },
-    { id: "shib", name: "Shiba Inu", symbol: "SHIB", icon: "logos/crypto/shib.png", kind: "crypto" },
-  ].filter(x => x.icon);
-
-  const NETWORKS = {
-    USDT: [
-      { id: "TRC20", title: "TRC20", sub: "USDT • TRX" },
-      { id: "ERC20", title: "ERC20", sub: "USDT • ETH" },
-      { id: "BEP20", title: "BEP20", sub: "USDT • BSC" },
-      { id: "TON", title: "TON", sub: "USDT • TON" },
-    ],
-    USDC: [
-      { id: "ERC20", title: "ERC20", sub: "USDC • ETH" },
-      { id: "BEP20", title: "BEP20", sub: "USDC • BSC" },
-      { id: "SOL", title: "SOL", sub: "USDC • SOL" },
-      { id: "TRC20", title: "TRC20", sub: "USDC • TRX" },
-    ],
-    BTC: [{ id: "BTC", title: "BTC", sub: "Bitcoin Network" }],
-    ETH: [{ id: "ERC20", title: "ERC20", sub: "Ethereum" }],
-    LTC: [{ id: "LTC", title: "LTC", sub: "Litecoin Network" }],
-    SOL: [{ id: "SOL", title: "SOL", sub: "Solana" }],
-    TON: [{ id: "TON", title: "TON", sub: "TON" }],
-    TRX: [{ id: "TRC20", title: "TRC20", sub: "Tron" }],
-    BNB: [{ id: "BEP20", title: "BEP20", sub: "BNB Smart Chain" }],
-    XRP: [{ id: "XRP", title: "XRP", sub: "XRP Ledger" }],
-    DOGE: [{ id: "DOGE", title: "DOGE", sub: "Dogecoin" }],
-    ADA: [{ id: "ADA", title: "ADA", sub: "Cardano" }],
-    POL: [{ id: "POL", title: "POL", sub: "Polygon" }],
-    DOT: [{ id: "DOT", title: "DOT", sub: "Polkadot" }],
-    SHIB: [{ id: "ERC20", title: "ERC20", sub: "Ethereum" }],
-  };
-
-  const ALL_ASSETS = [
-    // Banks first (UAH on-ramp)
-    ...BANKS.map(b => ({ ...b, title: b.name, sub: `${b.currency} • Card` })),
-    ...CRYPTO.map(c => ({ ...c, title: `${c.name} (${c.symbol})`, sub: c.symbol })),
-  ];
-
-  // -----------------------------
-  // i18n
-  // -----------------------------
-  const I18N = {
-    ua: {
-      exchange_title: "Обмін",
-      exchange_sub: "Виберіть валюту та введіть суму",
-      send: "Віддаєте",
-      receive: "Отримуєте",
-      amount: "Сума",
-      network: "Мережа",
-      you_get: "Ви отримаєте",
-      create: "Створити заявку",
-      history_title: "Історія",
-      history_sub: "Ваші заявки на обмін",
-      history_empty_title: "Поки що заявок немає",
-      history_empty_sub: "Створіть першу на вкладці «Головна».",
-      nav_home: "Головна",
-      nav_history: "Історія",
-      nav_profile: "Профіль",
-      card_number: "Номер картки",
-      fullname: "ПІБ",
-      wallet: "Адреса гаманця",
-      change_avatar: "Змінити",
-      contacts: "Контакти",
-      email: "Email",
-      phone: "Телефон",
-      profile_settings: "Налаштування",
-      account_currency: "Валюта акаунта",
-      saved_details: "Збережені реквізити",
-      security: "Безпека",
-      support: "Підтримка",
-      save: "Зберегти",
-      pick_asset: "Виберіть валюту",
-      pick_network: "Оберіть мережу",
-      search: "Пошук",
-      hint_ready: "Підказка: введіть суму та створіть заявку — вона з’явиться в історії.",
-      toast_saved: "Збережено ✅",
-      toast_need_amount: "Введіть суму",
-      toast_pick: "Оберіть «Віддаєте» та «Отримуєте»",
-      toast_need_card: "Заповніть номер картки та ПІБ",
-      toast_need_wallet: "Вкажіть адресу гаманця",
-    },
-    en: {
-      exchange_title: "Exchange",
-      exchange_sub: "Choose assets and enter amount",
-      send: "You send",
-      receive: "You receive",
-      amount: "Amount",
-      network: "Network",
-      you_get: "You will get",
-      create: "Create request",
-      history_title: "History",
-      history_sub: "Your exchange requests",
-      history_empty_title: "No requests yet",
-      history_empty_sub: "Create the first one on Home.",
-      nav_home: "Home",
-      nav_history: "History",
-      nav_profile: "Profile",
-      card_number: "Card number",
-      fullname: "Full name",
-      wallet: "Wallet address",
-      change_avatar: "Change",
-      contacts: "Contacts",
-      email: "Email",
-      phone: "Phone",
-      profile_settings: "Settings",
-      account_currency: "Account currency",
-      saved_details: "Saved details",
-      security: "Security",
-      support: "Support",
-      save: "Save",
-      pick_asset: "Choose asset",
-      pick_network: "Choose network",
-      search: "Search",
-      hint_ready: "Tip: enter amount and create a request — it will appear in History.",
-      toast_saved: "Saved ✅",
-      toast_need_amount: "Enter amount",
-      toast_pick: "Pick send & receive assets",
-      toast_need_card: "Fill card number & full name",
-      toast_need_wallet: "Provide wallet address",
-    },
-    tr: {
-      exchange_title: "Değişim",
-      exchange_sub: "Varlıkları seçin ve tutarı girin",
-      send: "Gönderiyorsunuz",
-      receive: "Alıyorsunuz",
-      amount: "Tutar",
-      network: "Ağ",
-      you_get: "Alacağınız",
-      create: "Talep oluştur",
-      history_title: "Geçmiş",
-      history_sub: "Değişim talepleriniz",
-      history_empty_title: "Henüz talep yok",
-      history_empty_sub: "İlkini Ana Sayfa'da oluşturun.",
-      nav_home: "Ana",
-      nav_history: "Geçmiş",
-      nav_profile: "Profil",
-      card_number: "Kart numarası",
-      fullname: "Ad Soyad",
-      wallet: "Cüzdan adresi",
-      change_avatar: "Değiştir",
-      contacts: "İletişim",
-      email: "Email",
-      phone: "Telefon",
-      profile_settings: "Ayarlar",
-      account_currency: "Hesap para birimi",
-      saved_details: "Kayıtlı bilgiler",
-      security: "Güvenlik",
-      support: "Destek",
-      save: "Kaydet",
-      pick_asset: "Varlık seçin",
-      pick_network: "Ağ seçin",
-      search: "Ara",
-      hint_ready: "İpucu: tutarı girin ve talep oluşturun — Geçmiş'te görünür.",
-      toast_saved: "Kaydedildi ✅",
-      toast_need_amount: "Tutar girin",
-      toast_pick: "Gönder/al varlıklarını seçin",
-      toast_need_card: "Kart numarası ve ad soyadı doldurun",
-      toast_need_wallet: "Cüzdan adresi girin",
-    },
-    pl: {
-      exchange_title: "Wymiana",
-      exchange_sub: "Wybierz aktywa i wpisz kwotę",
-      send: "Wysyłasz",
-      receive: "Otrzymujesz",
-      amount: "Kwota",
-      network: "Sieć",
-      you_get: "Otrzymasz",
-      create: "Utwórz zlecenie",
-      history_title: "Historia",
-      history_sub: "Twoje zlecenia wymiany",
-      history_empty_title: "Brak zleceń",
-      history_empty_sub: "Utwórz pierwsze na stronie Głównej.",
-      nav_home: "Główna",
-      nav_history: "Historia",
-      nav_profile: "Profil",
-      card_number: "Numer karty",
-      fullname: "Imię i nazwisko",
-      wallet: "Adres portfela",
-      change_avatar: "Zmień",
-      contacts: "Kontakt",
-      email: "Email",
-      phone: "Telefon",
-      profile_settings: "Ustawienia",
-      account_currency: "Waluta konta",
-      saved_details: "Zapisane dane",
-      security: "Bezpieczeństwo",
-      support: "Wsparcie",
-      save: "Zapisz",
-      pick_asset: "Wybierz aktywo",
-      pick_network: "Wybierz sieć",
-      search: "Szukaj",
-      hint_ready: "Wskazówka: wpisz kwotę i utwórz zlecenie — pojawi się w Historii.",
-      toast_saved: "Zapisano ✅",
-      toast_need_amount: "Wpisz kwotę",
-      toast_pick: "Wybierz aktywa wysyłasz/otrzymujesz",
-      toast_need_card: "Uzupełnij numer karty i dane",
-      toast_need_wallet: "Podaj adres portfela",
-    },
-  };
-
-  const LANGS = [
-    { id: "ua", code: "UA", flag: "🇺🇦" },
-    { id: "en", code: "EN", flag: "🇬🇧" },
-    { id: "tr", code: "TR", flag: "🇹🇷" },
-    { id: "pl", code: "PL", flag: "🇵🇱" },
-  ];
-
-  // -----------------------------
-  // State
-  // -----------------------------
-  const storage = {
-    get(key, fallback) {
-      try {
-        const v = localStorage.getItem(key);
-        return v ? JSON.parse(v) : fallback;
-      } catch { return fallback; }
-    },
-    set(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  };
-
-  const state = {
-    lang: storage.get("ks.lang", "ua"),
-    sendAsset: storage.get("ks.sendAsset", null),
-    recvAsset: storage.get("ks.recvAsset", null),
-    sendNet: storage.get("ks.sendNet", null),
-    recvNet: storage.get("ks.recvNet", null),
-    amount: "",
-    profile: storage.get("ks.profile", { email: "", phone: "", avatarData: null, currency: "UAH" }),
-    history: storage.get("ks.history", []),
-  };
-
-  // -----------------------------
-  // DOM
-  // -----------------------------
+(() => {
   const $ = (id) => document.getElementById(id);
 
-  const el = {
-    langBtn: $("langBtn"),
-    langFlag: $("langFlag"),
-    langCode: $("langCode"),
-
-    sendAssetBtn: $("sendAssetBtn"),
-    recvAssetBtn: $("recvAssetBtn"),
-
-    sendIcon: $("sendIcon"),
-    sendTitle: $("sendTitle"),
-    sendSub: $("sendSub"),
-
-    recvIcon: $("recvIcon"),
-    recvTitle: $("recvTitle"),
-    recvSub: $("recvSub"),
-
-    sendNetWrap: $("sendNetWrap"),
-    recvNetWrap: $("recvNetWrap"),
-    sendNetBtn: $("sendNetBtn"),
-    recvNetBtn: $("recvNetBtn"),
-    sendNetBadge: $("sendNetBadge"),
-    sendNetTitle: $("sendNetTitle"),
-    sendNetSub: $("sendNetSub"),
-    recvNetBadge: $("recvNetBadge"),
-    recvNetTitle: $("recvNetTitle"),
-    recvNetSub: $("recvNetSub"),
-
-    recvCardWrap: $("recvCardWrap"),
-    cardNumber: $("cardNumber"),
-    fullName: $("fullName"),
-
-    recvWalletWrap: $("recvWalletWrap"),
-    walletAddress: $("walletAddress"),
-
-    amountInput: $("amountInput"),
-    amountUnit: $("amountUnit"),
-
-    swapBtn: $("swapBtn"),
-    createBtn: $("createBtn"),
-    youGet: $("youGet"),
-    hintText: $("hintText"),
-
-    historyList: $("historyList"),
-    historyEmpty: $("historyEmpty"),
-
-    avatar: $("avatar"),
-    avatarInput: $("avatarInput"),
-    emailInput: $("emailInput"),
-    phoneInput: $("phoneInput"),
-    saveProfileBtn: $("saveProfileBtn"),
-    currencyValue: $("currencyValue"),
-
-    // sheet
-    sheet: $("sheet"),
-    sheetTitle: $("sheetTitle"),
-    sheetClose: $("sheetClose"),
-    sheetX: $("sheetX"),
-    sheetSearch: $("sheetSearch"),
-    sheetList: $("sheetList"),
+  // ---------- Storage helpers ----------
+  const load = (k) => {
+    try { return JSON.parse(localStorage.getItem('keksswap:'+k)); } catch(e) { return null; }
+  };
+  const save = (k, v) => {
+    try { localStorage.setItem('keksswap:'+k, JSON.stringify(v)); } catch(e) {}
   };
 
-  // i18n targets
-  const txt = {
-    exchange_title: $("t_exchange_title"),
-    exchange_sub: $("t_exchange_sub"),
-    send: $("t_send"),
-    receive: $("t_receive"),
-    amount: $("t_amount"),
-    network: $("t_network"),
-    network2: $("t_network2"),
-    you_get: $("t_you_get"),
-    create: $("t_create"),
-    history_title: $("t_history_title"),
-    history_sub: $("t_history_sub"),
-    history_empty_title: $("t_history_empty_title"),
-    history_empty_sub: $("t_history_empty_sub"),
-    nav_home: $("t_nav_home"),
-    nav_history: $("t_nav_history"),
-    nav_profile: $("t_nav_profile"),
-    card_number: $("t_card_number"),
-    fullname: $("t_fullname"),
-    wallet: $("t_wallet"),
-    change_avatar: $("t_change_avatar"),
-    contacts: $("t_profile_contacts"),
-    email: $("t_email"),
-    phone: $("t_phone"),
-    profile_settings: $("t_profile_settings"),
-    account_currency: $("t_account_currency"),
-    saved_details: $("t_saved_details"),
-    security: $("t_security"),
-    support: $("t_support"),
-    save: $("t_save"),
+  // ---------- Data ----------
+  const CRYPTO = [
+    { id:'usdt', code:'USDT', title:{uk:'Tether (USDT)', en:'Tether (USDT)', pl:'Tether (USDT)', tr:'Tether (USDT)'}, subtitle:{uk:'USDT', en:'USDT', pl:'USDT', tr:'USDT'} },
+    { id:'usdc', code:'USDC', title:{uk:'USD Coin (USDC)', en:'USD Coin (USDC)', pl:'USD Coin (USDC)', tr:'USD Coin (USDC)'}, subtitle:{uk:'USDC', en:'USDC', pl:'USDC', tr:'USDC'} },
+    { id:'btc',  code:'BTC',  title:{uk:'Bitcoin (BTC)', en:'Bitcoin (BTC)', pl:'Bitcoin (BTC)', tr:'Bitcoin (BTC)'}, subtitle:{uk:'BTC', en:'BTC', pl:'BTC', tr:'BTC'} },
+    { id:'eth',  code:'ETH',  title:{uk:'Ethereum (ETH)', en:'Ethereum (ETH)', pl:'Ethereum (ETH)', tr:'Ethereum (ETH)'}, subtitle:{uk:'ETH', en:'ETH', pl:'ETH', tr:'ETH'} },
+    { id:'trx',  code:'TRX',  title:{uk:'TRON (TRX)', en:'TRON (TRX)', pl:'TRON (TRX)', tr:'TRON (TRX)'}, subtitle:{uk:'TRX', en:'TRX', pl:'TRX', tr:'TRX'} },
+    { id:'ton',  code:'TON',  title:{uk:'Toncoin (TON)', en:'Toncoin (TON)', pl:'Toncoin (TON)', tr:'Toncoin (TON)'}, subtitle:{uk:'TON', en:'TON', pl:'TON', tr:'TON'} },
+    { id:'sol',  code:'SOL',  title:{uk:'Solana (SOL)', en:'Solana (SOL)', pl:'Solana (SOL)', tr:'Solana (SOL)'}, subtitle:{uk:'SOL', en:'SOL', pl:'SOL', tr:'SOL'} },
+    { id:'ltc',  code:'LTC',  title:{uk:'Litecoin (LTC)', en:'Litecoin (LTC)', pl:'Litecoin (LTC)', tr:'Litecoin (LTC)'}, subtitle:{uk:'LTC', en:'LTC', pl:'LTC', tr:'LTC'} },
+    { id:'bnb',  code:'BNB',  title:{uk:'BNB (BNB)', en:'BNB (BNB)', pl:'BNB (BNB)', tr:'BNB (BNB)'}, subtitle:{uk:'BNB', en:'BNB', pl:'BNB', tr:'BNB'} },
+    { id:'xrp',  code:'XRP',  title:{uk:'XRP (XRP)', en:'XRP (XRP)', pl:'XRP (XRP)', tr:'XRP (XRP)'}, subtitle:{uk:'XRP', en:'XRP', pl:'XRP', tr:'XRP'} },
+    { id:'ada',  code:'ADA',  title:{uk:'Cardano (ADA)', en:'Cardano (ADA)', pl:'Cardano (ADA)', tr:'Cardano (ADA)'}, subtitle:{uk:'ADA', en:'ADA', pl:'ADA', tr:'ADA'} },
+    { id:'doge', code:'DOGE', title:{uk:'Dogecoin (DOGE)', en:'Dogecoin (DOGE)', pl:'Dogecoin (DOGE)', tr:'Dogecoin (DOGE)'}, subtitle:{uk:'DOGE', en:'DOGE', pl:'DOGE', tr:'DOGE'} },
+    { id:'shib', code:'SHIB', title:{uk:'Shiba Inu (SHIB)', en:'Shiba Inu (SHIB)', pl:'Shiba Inu (SHIB)', tr:'Shiba Inu (SHIB)'}, subtitle:{uk:'SHIB', en:'SHIB', pl:'SHIB', tr:'SHIB'} },
+    { id:'dai',  code:'DAI',  title:{uk:'DAI (DAI)', en:'DAI (DAI)', pl:'DAI (DAI)', tr:'DAI (DAI)'}, subtitle:{uk:'DAI', en:'DAI', pl:'DAI', tr:'DAI'} },
+  ];
+
+  const BANKS = [
+    { id:'mono',   code:'Monobank',  title:{uk:'Monobank', en:'Monobank', pl:'Monobank', tr:'Monobank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'privat', code:'PrivatBank',title:{uk:'PrivatBank', en:'PrivatBank', pl:'PrivatBank', tr:'PrivatBank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'a-bank', code:'A-Bank',    title:{uk:'A-Bank', en:'A-Bank', pl:'A-Bank', tr:'A-Bank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'oschad', code:'Oschadbank',title:{uk:'Oschadbank', en:'Oschadbank', pl:'Oschadbank', tr:'Oschadbank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'pumb',   code:'PUMB',      title:{uk:'PUMB', en:'PUMB', pl:'PUMB', tr:'PUMB'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'otp',    code:'OTP',       title:{uk:'OTP Bank', en:'OTP Bank', pl:'OTP Bank', tr:'OTP Bank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'izi',    code:'izibank',   title:{uk:'izibank', en:'izibank', pl:'izibank', tr:'izibank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'sense',  code:'Sense',     title:{uk:'Sense Bank', en:'Sense Bank', pl:'Sense Bank', tr:'Sense Bank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'reyf',   code:'Raiffeisen',title:{uk:'Raiffeisen', en:'Raiffeisen', pl:'Raiffeisen', tr:'Raiffeisen'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'ukr-sib',code:'UkrSibbank',title:{uk:'UkrSibbank', en:'UkrSibbank', pl:'UkrSibbank', tr:'UkrSibbank'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+    { id:'visa-master',code:'Visa/Master',title:{uk:'Visa / Master', en:'Visa / Master', pl:'Visa / Master', tr:'Visa / Master'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} },
+  ];
+
+  // Networks (for crypto)
+  const NETWORKS = [
+    { id:'erc20', code:'ERC20', title:{uk:'ERC20', en:'ERC20', pl:'ERC20', tr:'ERC20'}, subtitle:{uk:'USDT/USDC • ETH', en:'USDT/USDC • ETH', pl:'USDT/USDC • ETH', tr:'USDT/USDC • ETH'} },
+    { id:'bep20', code:'BEP20', title:{uk:'BEP20', en:'BEP20', pl:'BEP20', tr:'BEP20'}, subtitle:{uk:'USDT/USDC • BSC', en:'USDT/USDC • BSC', pl:'USDT/USDC • BSC', tr:'USDT/USDC • BSC'} },
+    { id:'trc20', code:'TRC20', title:{uk:'TRC20', en:'TRC20', pl:'TRC20', tr:'TRC20'}, subtitle:{uk:'USDT/USDC • TRX', en:'USDT/USDC • TRX', pl:'USDT/USDC • TRX', tr:'USDT/USDC • TRX'} },
+    { id:'sol',   code:'SOL',   title:{uk:'SOL', en:'SOL', pl:'SOL', tr:'SOL'}, subtitle:{uk:'USDC/USDT • SOL', en:'USDC/USDT • SOL', pl:'USDC/USDT • SOL', tr:'USDC/USDT • SOL'} },
+    { id:'ton',   code:'TON',   title:{uk:'TON', en:'TON', pl:'TON', tr:'TON'}, subtitle:{uk:'USDT • TON', en:'USDT • TON', pl:'USDT • TON', tr:'USDT • TON'} },
+    { id:'btc',   code:'BTC',   title:{uk:'BTC', en:'BTC', pl:'BTC', tr:'BTC'}, subtitle:{uk:'Bitcoin Network', en:'Bitcoin Network', pl:'Bitcoin Network', tr:'Bitcoin Network'} },
+    { id:'eth',   code:'ETH',   title:{uk:'ETH', en:'ETH', pl:'ETH', tr:'ETH'}, subtitle:{uk:'Ethereum Network', en:'Ethereum Network', pl:'Ethereum Network', tr:'Ethereum Network'} },
+    { id:'bsc',   code:'BSC',   title:{uk:'BSC', en:'BSC', pl:'BSC', tr:'BSC'}, subtitle:{uk:'BNB Smart Chain', en:'BNB Smart Chain', pl:'BNB Smart Chain', tr:'BNB Smart Chain'} },
+    { id:'trx',   code:'TRX',   title:{uk:'TRX', en:'TRX', pl:'TRX', tr:'TRX'}, subtitle:{uk:'TRON Network', en:'TRON Network', pl:'TRON Network', tr:'TRON Network'} },
+    { id:'arb',   code:'ARB',   title:{uk:'ARB', en:'ARB', pl:'ARB', tr:'ARB'}, subtitle:{uk:'Arbitrum', en:'Arbitrum', pl:'Arbitrum', tr:'Arbitrum'} },
+    { id:'op',    code:'OP',    title:{uk:'OP', en:'OP', pl:'OP', tr:'OP'}, subtitle:{uk:'Optimism', en:'Optimism', pl:'Optimism', tr:'Optimism'} },
+    { id:'pol',   code:'POL',   title:{uk:'POL', en:'POL', pl:'POL', tr:'POL'}, subtitle:{uk:'Polygon', en:'Polygon', pl:'Polygon', tr:'Polygon'} },
+  ];
+
+  const CARD_NET = { id:'card', code:'Card', title:{uk:'Card', en:'Card', pl:'Card', tr:'Card'}, subtitle:{uk:'UAH • Card', en:'UAH • Card', pl:'UAH • Card', tr:'UAH • Card'} };
+
+  const LANGS = {
+    uk: { code:'UA', flag:'🇺🇦', name:'UA' },
+    en: { code:'EN', flag:'🇬🇧', name:'EN' },
+    tr: { code:'TR', flag:'🇹🇷', name:'TR' },
+    pl: { code:'PL', flag:'🇵🇱', name:'PL' },
   };
 
-  // -----------------------------
-  // Helpers
-  // -----------------------------
-  function t(key) {
-    const pack = I18N[state.lang] || I18N.ua;
-    return pack[key] ?? I18N.ua[key] ?? key;
-  }
+  const I18N = {
+    uk: {
+      exchange:'Обмін',
+      exchange_sub:'Виберіть валюту та введіть суму',
+      send:'Віддаєте',
+      receive:'Отримуєте',
+      amount:'Сума',
+      you_get:'Ви отримаєте',
+      create:'Створити заявку',
+      network:'Мережа',
+      choose_asset:'Виберіть валюту',
+      choose_network:'Оберіть мережу',
+      lang:'Мова',
+      tab_home:'Головна',
+      tab_history:'Історія',
+      tab_profile:'Профіль',
+      history:'Історія',
+      history_sub:'Ваші заявки на обмін',
+      history_empty_title:'Поки що порожньо',
+      history_empty_sub:'Створіть першу на вкладці «Головна».',
+      contacts:'Контакти',
+      phone:'Телефон',
+      settings:'Налаштування',
+      card:'Номер картки',
+      name:'ПІБ',
+      wallet:'Адреса гаманця',
+      saved:'Збережені реквізити',
+      security:'Безпека',
+      support:'Підтримка',
+      currency:'Валюта акаунта',
+      save:'Зберегти',
+      ok_created:'Заявку створено',
+      fill_amount:'Введіть суму',
+      fill_card:'Введіть номер картки',
+      fill_name:'Введіть ПІБ',
+      fill_wallet:'Введіть адресу гаманця',
+    },
+    en: {
+      exchange:'Exchange',
+      exchange_sub:'Choose assets and enter amount',
+      send:'You send',
+      receive:'You receive',
+      amount:'Amount',
+      you_get:'You will get',
+      create:'Create request',
+      network:'Network',
+      choose_asset:'Choose asset',
+      choose_network:'Choose network',
+      lang:'Language',
+      tab_home:'Home',
+      tab_history:'History',
+      tab_profile:'Profile',
+      history:'History',
+      history_sub:'Your exchange requests',
+      history_empty_title:'Nothing yet',
+      history_empty_sub:'Create your first one on “Home”.',
+      contacts:'Contacts',
+      phone:'Phone',
+      settings:'Settings',
+      card:'Card number',
+      name:'Full name',
+      wallet:'Wallet address',
+      saved:'Saved details',
+      security:'Security',
+      support:'Support',
+      currency:'Account currency',
+      save:'Save',
+      ok_created:'Request created',
+      fill_amount:'Enter amount',
+      fill_card:'Enter card number',
+      fill_name:'Enter full name',
+      fill_wallet:'Enter wallet address',
+    },
+    tr: {
+      exchange:'Değişim',
+      exchange_sub:'Varlık seçin ve tutarı girin',
+      send:'Gönderiyorsunuz',
+      receive:'Alıyorsunuz',
+      amount:'Tutar',
+      you_get:'Alacaksınız',
+      create:'Talep oluştur',
+      network:'Ağ',
+      choose_asset:'Varlık seç',
+      choose_network:'Ağ seç',
+      lang:'Dil',
+      tab_home:'Ana',
+      tab_history:'Geçmiş',
+      tab_profile:'Profil',
+      history:'Geçmiş',
+      history_sub:'Değişim talepleriniz',
+      history_empty_title:'Henüz yok',
+      history_empty_sub:'İlkini “Ana” sekmesinde oluşturun.',
+      contacts:'İletişim',
+      phone:'Telefon',
+      settings:'Ayarlar',
+      card:'Kart numarası',
+      name:'Ad Soyad',
+      wallet:'Cüzdan adresi',
+      saved:'Kayıtlı bilgiler',
+      security:'Güvenlik',
+      support:'Destek',
+      currency:'Hesap para birimi',
+      save:'Kaydet',
+      ok_created:'Talep oluşturuldu',
+      fill_amount:'Tutar girin',
+      fill_card:'Kart numarası girin',
+      fill_name:'Ad soyad girin',
+      fill_wallet:'Cüzdan adresi girin',
+    },
+    pl: {
+      exchange:'Wymiana',
+      exchange_sub:'Wybierz aktywa i wpisz kwotę',
+      send:'Wysyłasz',
+      receive:'Otrzymujesz',
+      amount:'Kwota',
+      you_get:'Otrzymasz',
+      create:'Utwórz zlecenie',
+      network:'Sieć',
+      choose_asset:'Wybierz aktywo',
+      choose_network:'Wybierz sieć',
+      lang:'Język',
+      tab_home:'Główna',
+      tab_history:'Historia',
+      tab_profile:'Profil',
+      history:'Historia',
+      history_sub:'Twoje zlecenia wymiany',
+      history_empty_title:'Brak historii',
+      history_empty_sub:'Utwórz pierwsze na „Główna”.',
+      contacts:'Kontakt',
+      phone:'Telefon',
+      settings:'Ustawienia',
+      card:'Numer karty',
+      name:'Imię i nazwisko',
+      wallet:'Adres portfela',
+      saved:'Zapisane dane',
+      security:'Bezpieczeństwo',
+      support:'Wsparcie',
+      currency:'Waluta konta',
+      save:'Zapisz',
+      ok_created:'Zlecenie utworzone',
+      fill_amount:'Wpisz kwotę',
+      fill_card:'Wpisz numer karty',
+      fill_name:'Wpisz imię i nazwisko',
+      fill_wallet:'Wpisz adres portfela',
+    },
+  };
 
-  function toast(message) {
-    // lightweight toast
-    const n = document.createElement("div");
-    n.textContent = message;
-    n.style.position = "fixed";
-    n.style.left = "50%";
-    n.style.bottom = "92px";
-    n.style.transform = "translateX(-50%)";
-    n.style.background = "rgba(13,27,42,.92)";
-    n.style.color = "white";
-    n.style.padding = "10px 12px";
-    n.style.borderRadius = "14px";
-    n.style.fontWeight = "900";
-    n.style.fontSize = "13px";
-    n.style.zIndex = "999";
-    n.style.maxWidth = "92vw";
-    n.style.textAlign = "center";
-    document.body.appendChild(n);
-    setTimeout(() => n.style.opacity = "0", 1400);
-    setTimeout(() => n.remove(), 1900);
-  }
-
-  function formatAmount(v) {
-    const s = String(v || "").replace(",", ".").replace(/[^0-9.]/g, "");
-    // keep one dot
-    const parts = s.split(".");
-    if (parts.length <= 1) return parts[0];
-    return parts[0] + "." + parts.slice(1).join("").slice(0, 8);
-  }
-
-  function getNetworksFor(asset) {
-    if (!asset || asset.kind !== "crypto") return [];
-    return NETWORKS[asset.symbol] || [{ id: asset.symbol, title: asset.symbol, sub: asset.name }];
-  }
-
-  function setImgSafe(imgEl, src) {
-    imgEl.src = src || "";
-    imgEl.onerror = () => {
-      imgEl.style.opacity = "0";
+  // ---------- Assets -> image paths (your repo structure) ----------
+  const assetImg = (type, id) => {
+    // crypto folder filenames
+    const cryptoMap = {
+      usdt:'tether-usdt.png',
+      usdc:'usdc.png',
+      btc:'btc.png',
+      eth:'eth.png',
+      trx:'trx.png',
+      ton:'ton.png',
+      sol:'sol.png',
+      ltc:'ltc.png',
+      bnb:'bnb.png',
+      xrp:'xrp.png',
+      ada:'cardano.png',
+      doge:'dogecoin.png',
+      shib:'shiba.png',
+      dai:'dai.png',
     };
-    imgEl.style.opacity = "1";
-  }
 
-  function isBank(a) { return a && a.kind === "bank"; }
-  function isCrypto(a) { return a && a.kind === "crypto"; }
+    // banks folder filenames
+    const bankMap = {
+      'a-bank':'a-bank.png',
+      izi:'izi.png',
+      mono:'mono.png',
+      oschad:'oschad.png',
+      otp:'otp.png',
+      privat:'privat.png',
+      pumb:'pumb.png',
+      reyf:'reyf.png',
+      sense:'sense.png',
+      'ukr-sib':'ukr-sib.png',
+      'visa-master':'visa-master.png',
+    };
 
-  // -----------------------------
-  // Sheet (bottom picker)
-  // -----------------------------
-  let sheetContext = null; // { type:'asset'|'net', side:'send'|'recv', list:[...], onPick(item) }
+    // networks folder filenames
+    const netMap = {
+      arb:'arb.png',
+      bep20:'bep20.png',
+      bsc:'bsc.png',
+      btc:'btc.png',
+      erc20:'erc20.png',
+      eth:'eth.png',
+      op:'op.png',
+      pol:'pol.png',
+      sol:'sol.png',
+      ton:'ton.png',
+      trc20:'trc20.png',
+      trx:'trx.png',
+      card:'' // no icon needed
+    };
 
-  function openSheet({ title, placeholder, list, onPick }) {
-    sheetContext = { list, onPick };
-    el.sheetTitle.textContent = title;
-    el.sheetSearch.placeholder = placeholder;
-    el.sheetSearch.value = "";
-    renderSheetList(list);
-    el.sheet.classList.remove("sheet--hidden");
-    el.sheet.setAttribute("aria-hidden", "false");
-    setTimeout(() => el.sheetSearch.focus(), 60);
-  }
+    if (type === 'crypto') return `logos/crypto/${cryptoMap[id] || (id + '.png')}`;
+    if (type === 'bank') return `logos/banks/${bankMap[id] || (id + '.png')}`;
+    if (type === 'network') {
+      const f = netMap[id] || (id + '.png');
+      return f ? `logos/networks/${f}` : '';
+    }
+    return '';
+  };
 
-  function closeSheet() {
-    el.sheet.classList.add("sheet--hidden");
-    el.sheet.setAttribute("aria-hidden", "true");
-    sheetContext = null;
-  }
+  // ---------- State ----------
+  const state = {
+    lang: load('lang') || 'uk',
+    send: { assetId: load('sendAsset') || 'usdt', networkId: load('sendNetwork') || 'trc20' },
+    recv: { assetId: load('recvAsset') || 'mono', networkId: load('recvNetwork') || 'card' },
+    profile: load('profile') || { name:'@user', levelKey:'newbie', email:'', phone:'', currency:'UAH', avatarData:'' },
+    history: load('history') || [],
+  };
 
-  function renderSheetList(list) {
-    const q = (el.sheetSearch.value || "").trim().toLowerCase();
-    const filtered = !q ? list : list.filter(it =>
-      (it.title || it.name || "").toLowerCase().includes(q) ||
-      (it.sub || it.symbol || "").toLowerCase().includes(q)
-    );
+  // Telegram user (optional)
+  const tgUser = (() => {
+    try { return (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) || null; } catch(e) { return null; }
+  })();
 
-    el.sheetList.innerHTML = "";
-    filtered.forEach(it => {
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className = "sheet-row";
+  // ---------- UI helpers ----------
+  const toast = (msg) => {
+    const el = $('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { el.hidden = true; }, 2200);
+  };
 
-      const left = document.createElement("div");
-      left.className = "sheet-row-left";
+  const setIcon = (el, type, id, fallbackText) => {
+    el.innerHTML = '';
+    const src = assetImg(type, id);
+    if (!src) {
+      const fb = document.createElement('div');
+      fb.className = 'fallback';
+      fb.textContent = fallbackText || '?';
+      el.appendChild(fb);
+      return;
+    }
+    const img = document.createElement('img');
+    img.alt = fallbackText || id;
+    img.src = src;
+    img.onerror = () => {
+      el.innerHTML = '';
+      const fb = document.createElement('div');
+      fb.className = 'fallback';
+      fb.textContent = (fallbackText || id || '?').slice(0,3).toUpperCase();
+      el.appendChild(fb);
+    };
+    el.appendChild(img);
+  };
 
-      if (it.icon) {
-        const img = document.createElement("img");
-        img.className = "icon";
-        img.alt = "";
-        img.src = it.icon;
-        left.appendChild(img);
-      } else {
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = it.id || "—";
-        left.appendChild(badge);
-      }
+  const fmtCard = (val) => {
+    const digits = (val || '').replace(/\D/g,'').slice(0,16);
+    return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  };
 
-      const text = document.createElement("div");
-      text.style.minWidth = "0";
-      const title = document.createElement("div");
-      title.className = "sheet-row-title";
-      title.textContent = it.title || it.name || it.id;
-      const sub = document.createElement("div");
-      sub.className = "sheet-row-sub";
-      sub.textContent = it.sub || it.symbol || "";
-      text.appendChild(title);
-      text.appendChild(sub);
-      left.appendChild(text);
+  const isCryptoId = (id) => CRYPTO.some(x => x.id === id);
+  const findAsset = (id) => CRYPTO.find(x=>x.id===id) || BANKS.find(x=>x.id===id);
+  const findNet = (id) => NETWORKS.find(x=>x.id===id) || (id==='card' ? CARD_NET : null);
 
-      const arrow = document.createElement("span");
-      arrow.textContent = "›";
-      arrow.style.fontWeight = "1000";
-      arrow.style.opacity = ".55";
+  // Default networks by asset
+  const defaultNetworkForAsset = (assetId) => {
+    if (!isCryptoId(assetId)) return 'card';
+    if (assetId === 'btc') return 'btc';
+    if (assetId === 'eth') return 'eth';
+    if (assetId === 'trx') return 'trx';
+    if (assetId === 'ton') return 'ton';
+    if (assetId === 'sol') return 'sol';
+    if (assetId === 'bnb') return 'bsc';
+    // stablecoins default
+    return 'trc20';
+  };
 
-      row.appendChild(left);
-      row.appendChild(arrow);
+  const networksForAsset = (assetId) => {
+    if (!isCryptoId(assetId)) return [CARD_NET];
+    // For stablecoins allow common networks
+    if (assetId === 'usdt' || assetId === 'usdc') {
+      return NETWORKS.filter(n => ['erc20','bep20','trc20','sol','ton'].includes(n.id));
+    }
+    // For others, show their native + a couple options if exists
+    const preferred = defaultNetworkForAsset(assetId);
+    const pool = NETWORKS.filter(n => ['btc','eth','trx','ton','sol','bsc','arb','op','pol'].includes(n.id));
+    const uniq = [];
+    const push = (id) => {
+      const item = NETWORKS.find(n=>n.id===id);
+      if (item && !uniq.some(x=>x.id===id)) uniq.push(item);
+    };
+    push(preferred);
+    // extra modern chains (optional)
+    ['arb','op','pol','erc20','bep20','trc20'].forEach(push);
+    // keep only existing
+    return uniq;
+  };
 
-      row.addEventListener("click", () => {
-        if (sheetContext && sheetContext.onPick) sheetContext.onPick(it);
-        closeSheet();
+  const t = (key) => (I18N[state.lang] && I18N[state.lang][key]) || (I18N.uk[key] || key);
+
+  // ---------- Sheets (bottom modals) ----------
+  const sheet = {
+    open({ title, mode, items, onPick }) {
+      sheet.mode = mode;
+      sheet.items = items || [];
+      sheet.onPick = onPick;
+
+      $('sheetTitle').textContent = title;
+      $('sheetBackdrop').hidden = false;
+      $('sheet').hidden = false;
+
+      // Search ONLY for assets
+      const showSearch = mode === 'asset';
+      $('sheetSearchWrap').style.display = showSearch ? 'block' : 'none';
+      $('sheetSearch').value = '';
+      if (showSearch) setTimeout(() => $('sheetSearch').focus(), 10);
+
+      sheet.render('');
+    },
+    close() {
+      $('sheetBackdrop').hidden = true;
+      $('sheet').hidden = true;
+    },
+    render(q) {
+      const body = $('sheetBody');
+      body.innerHTML = '';
+      const query = (q || '').trim().toLowerCase();
+
+      const filtered = sheet.items.filter(it => {
+        if (!query) return true;
+        const s = ((it.code||'') + ' ' + (it._title||'') + ' ' + (it._sub||'')).toLowerCase();
+        return s.includes(query);
       });
 
-      el.sheetList.appendChild(row);
+      filtered.forEach(it => {
+        const row = document.createElement('button');
+        row.className = 'row';
+        row.type = 'button';
+
+        const left = document.createElement('div');
+        left.className = 'row__left';
+
+        const ic = document.createElement('span');
+        ic.className = 'icon';
+
+        if (sheet.mode === 'lang') {
+          ic.innerHTML = `<div class="fallback">${it.flag}</div>`;
+        } else if (sheet.mode === 'network') {
+          setIcon(ic, 'network', it.id, it.code);
+        } else if (sheet.mode === 'asset') {
+          setIcon(ic, it.type, it.id, it.code);
+        }
+
+        const text = document.createElement('div');
+        text.style.minWidth = '0';
+
+        const title = document.createElement('div');
+        title.className = 'row__title';
+        title.textContent = it._title || it.code;
+
+        const sub = document.createElement('div');
+        sub.className = 'row__sub';
+        sub.textContent = it._sub || '';
+
+        text.appendChild(title);
+        if (sub.textContent) text.appendChild(sub);
+
+        left.appendChild(ic);
+        left.appendChild(text);
+
+        const right = document.createElement('div');
+        right.className = 'row__right';
+        right.textContent = '›';
+
+        row.appendChild(left);
+        row.appendChild(right);
+
+        row.addEventListener('click', () => {
+          sheet.close();
+          sheet.onPick && sheet.onPick(it);
+        });
+
+        body.appendChild(row);
+      });
+    }
+  };
+
+  // ---------- UI bindings ----------
+  const updateLangUI = () => {
+    const L = LANGS[state.lang] || LANGS.uk;
+    $('langFlag').textContent = L.flag;
+    $('langCode').textContent = L.code;
+
+    // Static labels
+    $('t_exchange').textContent = t('exchange');
+    $('t_exchangeSub').textContent = t('exchange_sub');
+    $('t_send').textContent = t('send');
+    $('t_receive').textContent = t('receive');
+    $('t_youGet').textContent = t('you_get');
+    $('createBtn').textContent = t('create');
+
+    $('t_history').textContent = t('history');
+    $('t_historySub').textContent = t('history_sub');
+    $('t_historyEmptyTitle').textContent = t('history_empty_title');
+    $('t_historyEmptySub').textContent = t('history_empty_sub');
+
+    $('t_contacts').textContent = t('contacts');
+    $('t_phone').textContent = t('phone');
+    $('t_settings').textContent = t('settings');
+    $('t_card').textContent = t('card');
+    $('t_name').textContent = t('name');
+    $('t_wallet').textContent = t('wallet');
+    $('t_currency').textContent = t('currency');
+    $('t_saved').textContent = t('saved');
+    $('t_security').textContent = t('security');
+    $('t_support').textContent = t('support');
+    $('saveProfileBtn').textContent = t('save');
+
+    $('t_tabHome').textContent = t('tab_home');
+    $('t_tabHistory').textContent = t('tab_history');
+    $('t_tabProfile').textContent = t('tab_profile');
+
+    $('sheetSearch').placeholder = state.lang === 'uk' ? 'Пошук' : (state.lang === 'en' ? 'Search' : (state.lang === 'pl' ? 'Szukaj' : 'Ara'));
+  };
+
+  const updateExchangeUI = () => {
+    const sendA = findAsset(state.send.assetId);
+    const recvA = findAsset(state.recv.assetId);
+
+    // Asset pickers
+    setIcon($('sendAssetIcon'), isCryptoId(sendA.id) ? 'crypto' : 'bank', sendA.id, sendA.code);
+    $('sendAssetTitle').textContent = sendA.code;
+    $('sendAssetSub').textContent = (sendA.title[state.lang] || sendA.title.uk) || sendA.code;
+
+    setIcon($('recvAssetIcon'), isCryptoId(recvA.id) ? 'crypto' : 'bank', recvA.id, recvA.code);
+    $('recvAssetTitle').textContent = recvA.code;
+    $('recvAssetSub').textContent = (recvA.subtitle[state.lang] || recvA.subtitle.uk) || '';
+
+    // Networks
+    const sendNet = findNet(state.send.networkId) || findNet(defaultNetworkForAsset(sendA.id)) || CARD_NET;
+    const recvNet = findNet(state.recv.networkId) || findNet(defaultNetworkForAsset(recvA.id)) || CARD_NET;
+
+    // If asset type doesn't support selected net - reset
+    const sendAllowed = networksForAsset(sendA.id).some(n=>n.id===sendNet.id);
+    if (!sendAllowed) state.send.networkId = defaultNetworkForAsset(sendA.id);
+
+    const recvAllowed = networksForAsset(recvA.id).some(n=>n.id===recvNet.id) || (!isCryptoId(recvA.id) && recvNet.id==='card');
+    if (!recvAllowed) state.recv.networkId = defaultNetworkForAsset(recvA.id);
+
+    const sn = findNet(state.send.networkId) || CARD_NET;
+    const rn = findNet(state.recv.networkId) || CARD_NET;
+
+    setIcon($('sendNetworkIcon'), 'network', sn.id, sn.code);
+    $('sendNetworkTitle').textContent = sn.code;
+    $('sendNetworkSub').textContent = (sn.subtitle[state.lang] || sn.subtitle.uk) || '';
+
+    setIcon($('recvNetworkIcon'), 'network', rn.id, rn.code);
+    $('recvNetworkTitle').textContent = rn.code;
+    $('recvNetworkSub').textContent = (rn.subtitle[state.lang] || rn.subtitle.uk) || '';
+
+    $('amountUnit').textContent = sendA.code;
+
+    // Bank vs Wallet fields based on receive asset type
+    const recvIsCrypto = isCryptoId(recvA.id);
+    $('bankFields').style.display = recvIsCrypto ? 'none' : 'flex';
+    $('walletFields').style.display = recvIsCrypto ? 'flex' : 'none';
+
+    // Estimate (demo only)
+    const amt = parseFloat(($('amountInput').value || '0').replace(',', '.')) || 0;
+    const rate = estimateRate(sendA.id, recvA.id);
+    const out = amt > 0 ? (amt * rate) : 0;
+    $('estimateOut').textContent = out ? out.toFixed(recvIsCrypto ? 6 : 2) : '0';
+
+    // persist
+    save('sendAsset', state.send.assetId);
+    save('sendNetwork', state.send.networkId);
+    save('recvAsset', state.recv.assetId);
+    save('recvNetwork', state.recv.networkId);
+    save('lang', state.lang);
+  };
+
+  const estimateRate = (fromId, toId) => {
+    // Very simple demo rate table (replace later with backend / API)
+    // Base: 1 USDT ≈ 40 UAH
+    const UAH = 40;
+    const usdToUah = UAH;
+    const uahToUsd = 1/UAH;
+
+    const isFromCrypto = isCryptoId(fromId);
+    const isToCrypto = isCryptoId(toId);
+
+    if (isFromCrypto && !isToCrypto) {
+      // crypto -> bank UAH
+      if (fromId === 'btc') return 2500000; // demo
+      if (fromId === 'eth') return 120000;
+      if (fromId === 'usdc' || fromId === 'usdt') return usdToUah;
+      return usdToUah * 0.9;
+    }
+
+    if (!isFromCrypto && isToCrypto) {
+      // bank UAH -> crypto
+      if (toId === 'btc') return 1/2500000;
+      if (toId === 'eth') return 1/120000;
+      if (toId === 'usdc' || toId === 'usdt') return uahToUsd;
+      return uahToUsd * 1.1;
+    }
+
+    if (isFromCrypto && isToCrypto) {
+      // crypto -> crypto (demo)
+      if (fromId === toId) return 1;
+      // USDT/USDC as base
+      if (fromId === 'usdt' && toId === 'usdc') return 1;
+      if (fromId === 'usdc' && toId === 'usdt') return 1;
+      if (fromId === 'usdt' && toId === 'btc') return 1/62500;
+      if (fromId === 'btc' && toId === 'usdt') return 62500;
+      return 1;
+    }
+
+    // bank -> bank
+    return 1;
+  };
+
+  const updateHistoryUI = () => {
+    const list = $('historyList');
+    const empty = $('historyEmpty');
+    list.innerHTML = '';
+
+    if (!state.history.length) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    state.history.slice().reverse().forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'hitem';
+
+      const left = document.createElement('div');
+      left.className = 'hitem__left';
+
+      const a1 = findAsset(item.send.assetId);
+      const a2 = findAsset(item.recv.assetId);
+
+      const title = document.createElement('div');
+      title.className = 'hitem__title';
+      title.textContent = `${a1.code} → ${a2.code}`;
+
+      const sub = document.createElement('div');
+      sub.className = 'hitem__sub';
+      sub.textContent = `${item.amount} ${a1.code} • ${new Date(item.ts).toLocaleString()}`;
+
+      left.appendChild(title);
+      left.appendChild(sub);
+
+      const badge = document.createElement('div');
+      badge.className = 'badge' + (item.status === 'done' ? ' is-done' : '');
+      badge.textContent = item.status === 'done' ? 'Done' : 'New';
+
+      div.appendChild(left);
+      div.appendChild(badge);
+
+      list.appendChild(div);
     });
-  }
+  };
 
-  el.sheetClose.addEventListener("click", closeSheet);
-  el.sheetX.addEventListener("click", closeSheet);
-  el.sheetSearch.addEventListener("input", () => {
-    if (sheetContext) renderSheetList(sheetContext.list);
-  });
+  const updateProfileUI = () => {
+    const p = state.profile;
 
-  // -----------------------------
-  // UI rendering
-  // -----------------------------
-  function applyLang() {
-    const L = LANGS.find(x => x.id === state.lang) || LANGS[0];
-    el.langFlag.textContent = L.flag;
-    el.langCode.textContent = L.code;
+    // From telegram if exists
+    const username = tgUser && (tgUser.username ? '@' + tgUser.username : '');
+    const name = tgUser && (tgUser.first_name || '') ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : '';
+    $('profileUser').textContent = username || p.name || '@user';
+    $('profileName').textContent = name || (p.levelKey === 'newbie' ? (state.lang==='uk'?'Новачок':'Newbie') : 'User');
 
-    // labels
-    txt.exchange_title.textContent = t("exchange_title");
-    txt.exchange_sub.textContent = t("exchange_sub");
-    txt.send.textContent = t("send");
-    txt.receive.textContent = t("receive");
-    txt.amount.textContent = t("amount");
-    txt.network.textContent = t("network");
-    txt.network2.textContent = t("network");
-    txt.you_get.textContent = t("you_get");
-    txt.create.textContent = t("create");
-    txt.history_title.textContent = t("history_title");
-    txt.history_sub.textContent = t("history_sub");
-    txt.history_empty_title.textContent = t("history_empty_title");
-    txt.history_empty_sub.textContent = t("history_empty_sub");
-    txt.nav_home.textContent = t("nav_home");
-    txt.nav_history.textContent = t("nav_history");
-    txt.nav_profile.textContent = t("nav_profile");
-    txt.card_number.textContent = t("card_number");
-    txt.fullname.textContent = t("fullname");
-    txt.wallet.textContent = t("wallet");
-    txt.change_avatar.textContent = t("change_avatar");
-    txt.contacts.textContent = t("contacts");
-    txt.email.textContent = t("email");
-    txt.phone.textContent = t("phone");
-    txt.profile_settings.textContent = t("profile_settings");
-    txt.account_currency.textContent = t("account_currency");
-    txt.saved_details.textContent = t("saved_details");
-    txt.security.textContent = t("security");
-    txt.support.textContent = t("support");
-    txt.save.textContent = t("save");
+    $('emailInput').value = p.email || '';
+    $('phoneInput').value = p.phone || '';
+    $('currencyValue').textContent = p.currency || 'UAH';
 
-    el.hintText.textContent = t("hint_ready");
-    el.sheetSearch.placeholder = t("search");
-
-    // placeholders
-    el.cardNumber.placeholder = "0000 0000 0000 0000";
-    el.fullName.placeholder = state.lang === "ua" ? "Ім'я Прізвище" : (state.lang === "tr" ? "Ad Soyad" : state.lang === "pl" ? "Imię Nazwisko" : "Full name");
-    el.walletAddress.placeholder = "0x... / T... / ...";
-  }
-
-  function renderAsset(side) {
-    const a = side === "send" ? state.sendAsset : state.recvAsset;
-    const icon = side === "send" ? el.sendIcon : el.recvIcon;
-    const title = side === "send" ? el.sendTitle : el.recvTitle;
-    const sub = side === "send" ? el.sendSub : el.recvSub;
-
-    if (!a) {
-      setImgSafe(icon, "");
-      icon.style.opacity = "0";
-      title.textContent = "—";
-      sub.textContent = "—";
-      return;
-    }
-    setImgSafe(icon, a.icon);
-    title.textContent = a.title;
-    sub.textContent = a.sub;
-  }
-
-  function renderNetworks() {
-    // send net visible only if send asset is crypto
-    const sendCrypto = isCrypto(state.sendAsset);
-    el.sendNetWrap.classList.toggle("field--hidden", !sendCrypto);
-
-    if (sendCrypto) {
-      const nets = getNetworksFor(state.sendAsset);
-      if (!state.sendNet || !nets.find(n => n.id === state.sendNet.id)) {
-        state.sendNet = nets[0];
-        storage.set("ks.sendNet", state.sendNet);
-      }
-      el.sendNetBadge.textContent = state.sendNet.id;
-      el.sendNetTitle.textContent = state.sendNet.title;
-      el.sendNetSub.textContent = state.sendNet.sub;
-    }
-
-    // recv net visible only if recv asset is crypto
-    const recvCrypto = isCrypto(state.recvAsset);
-    el.recvNetWrap.classList.toggle("field--hidden", !recvCrypto);
-
-    if (recvCrypto) {
-      const nets = getNetworksFor(state.recvAsset);
-      if (!state.recvNet || !nets.find(n => n.id === state.recvNet.id)) {
-        state.recvNet = nets[0];
-        storage.set("ks.recvNet", state.recvNet);
-      }
-      el.recvNetBadge.textContent = state.recvNet.id;
-      el.recvNetTitle.textContent = state.recvNet.title;
-      el.recvNetSub.textContent = state.recvNet.sub;
-    }
-
-    // receive card fields only if receive is bank
-    const recvBank = isBank(state.recvAsset);
-    el.recvCardWrap.classList.toggle("field--hidden", !recvBank);
-
-    // receive wallet field only if receive is crypto
-    el.recvWalletWrap.classList.toggle("field--hidden", !recvCrypto);
-  }
-
-  function recalc() {
-    const amount = parseFloat(state.amount || "0");
-    if (!amount || amount <= 0) {
-      el.youGet.textContent = "0";
-      return;
-    }
-
-    // UI-only: just show same amount for now
-    // Later you can integrate real rate from backend.
-    el.youGet.textContent = String(amount);
-  }
-
-  function renderHistory() {
-    const list = state.history || [];
-    el.historyList.innerHTML = "";
-    if (!list.length) {
-      el.historyEmpty.style.display = "block";
-      return;
-    }
-    el.historyEmpty.style.display = "none";
-
-    list.slice().reverse().forEach(item => {
-      const wrap = document.createElement("div");
-      wrap.className = "item";
-
-      const top = document.createElement("div");
-      top.className = "item-top";
-
-      const title = document.createElement("div");
-      title.className = "item-title";
-      title.textContent = item.title;
-
-      const date = document.createElement("div");
-      date.className = "item-date";
-      date.textContent = item.date;
-
-      top.appendChild(title);
-      top.appendChild(date);
-
-      const row1 = document.createElement("div");
-      row1.className = "item-row";
-      row1.textContent = item.details;
-
-      const badge = document.createElement("div");
-      badge.className = "item-badge";
-      badge.textContent = item.status;
-
-      wrap.appendChild(top);
-      wrap.appendChild(row1);
-      wrap.appendChild(badge);
-      el.historyList.appendChild(wrap);
-    });
-  }
-
-  function renderProfile() {
-    const p = state.profile || {};
-    el.emailInput.value = p.email || "";
-    el.phoneInput.value = p.phone || "";
-    el.currencyValue.textContent = p.currency || "UAH";
-
-    // avatar
-    if (p.avatarData) {
-      el.avatar.textContent = "";
-      el.avatar.style.backgroundImage = `url(${p.avatarData})`;
-      el.avatar.style.backgroundSize = "cover";
-      el.avatar.style.backgroundPosition = "center";
+    // Avatar
+    const hasAvatar = !!(p.avatarData);
+    if (hasAvatar) {
+      $('avatarImg').src = p.avatarData;
+      $('avatarImg').style.display = 'block';
+      $('avatarFallback').style.display = 'none';
     } else {
-      el.avatar.style.backgroundImage = "none";
-      el.avatar.textContent = "KS";
+      $('avatarImg').style.display = 'none';
+      $('avatarFallback').style.display = 'grid';
+      const initials = (name || 'KeksSwap').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+      $('avatarFallback').textContent = initials || 'KS';
     }
-  }
 
-  // -----------------------------
-  // Page nav
-  // -----------------------------
-  function setPage(page) {
-    document.querySelectorAll(".page").forEach(p => {
-      p.classList.toggle("page--active", p.dataset.page === page);
+    // Saved count (demo: save last used details)
+    const saved = load('saved') || { cards:[], wallets:[] };
+    $('savedCount').textContent = String((saved.cards?.length||0) + (saved.wallets?.length||0));
+  };
+
+  // ---------- Tabs ----------
+  const setTab = (tab) => {
+    const map = { home:'screenHome', history:'screenHistory', profile:'screenProfile' };
+    Object.values(map).forEach(id => $(id).classList.remove('is-active'));
+    $(map[tab]).classList.add('is-active');
+
+    document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('is-active'));
+    document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('is-active');
+
+    if (tab === 'history') updateHistoryUI();
+    if (tab === 'profile') updateProfileUI();
+  };
+
+  // ---------- Open pickers ----------
+  const openAssetPicker = (side) => {
+    // Order requirement:
+    // - send ("Віддаєте"): crypto first -> banks
+    // - recv ("Отримуєте"): banks first -> crypto
+    const list = side === 'send'
+      ? [...CRYPTO.map(x=>({ ...x, type:'crypto' })), ...BANKS.map(x=>({ ...x, type:'bank' })) ]
+      : [...BANKS.map(x=>({ ...x, type:'bank' })), ...CRYPTO.map(x=>({ ...x, type:'crypto' })) ];
+
+    const items = list.map(x => ({
+      ...x,
+      _title: (x.title[state.lang] || x.title.uk || x.code),
+      _sub: (x.subtitle[state.lang] || x.subtitle.uk || ''),
+    }));
+
+    sheet.open({
+      title: t('choose_asset'),
+      mode: 'asset',
+      items,
+      onPick: (it) => {
+        if (side === 'send') {
+          state.send.assetId = it.id;
+          state.send.networkId = defaultNetworkForAsset(it.id);
+        } else {
+          state.recv.assetId = it.id;
+          state.recv.networkId = defaultNetworkForAsset(it.id);
+        }
+        updateExchangeUI();
+      }
     });
-    document.querySelectorAll(".nav-item").forEach(b => {
-      b.classList.toggle("nav-item--active", b.dataset.nav === page);
+  };
+
+  const openNetworkPicker = (side) => {
+    const assetId = side === 'send' ? state.send.assetId : state.recv.assetId;
+    const nets = networksForAsset(assetId);
+
+    const items = nets.map(n => ({
+      ...n,
+      _title: (n.title[state.lang] || n.title.uk || n.code),
+      _sub: (n.subtitle[state.lang] || n.subtitle.uk || ''),
+    }));
+
+    sheet.open({
+      title: t('choose_network'),
+      mode: 'network',
+      items,
+      onPick: (it) => {
+        if (side === 'send') state.send.networkId = it.id;
+        else state.recv.networkId = it.id;
+        updateExchangeUI();
+      }
     });
-  }
+  };
 
-  document.querySelectorAll(".nav-item").forEach(btn => {
-    btn.addEventListener("click", () => setPage(btn.dataset.nav));
-  });
+  const openLangPicker = () => {
+    const items = Object.keys(LANGS).map(k => ({
+      id:k,
+      code: LANGS[k].code,
+      flag: LANGS[k].flag,
+      _title: LANGS[k].code,
+      _sub: '',
+    }));
 
-  // -----------------------------
-  // Events
-  // -----------------------------
-  el.langBtn.addEventListener("click", () => {
-    openSheet({
-      title: "Language",
-      placeholder: t("search"),
-      list: LANGS.map(x => ({ id: x.id, title: x.code, sub: x.id.toUpperCase(), icon: null, flag: x.flag })),
+    sheet.open({
+      title: t('lang'),
+      mode: 'lang',
+      items,
       onPick: (it) => {
         state.lang = it.id;
-        storage.set("ks.lang", state.lang);
-        applyLang();
-        renderHistory(); // text might change
+        save('lang', state.lang);
+        updateLangUI();
+        updateExchangeUI();
+        updateHistoryUI();
+        updateProfileUI();
       }
     });
+  };
 
-    // render custom rows with flags
-    // after open, replace list with custom UI
-    el.sheetList.innerHTML = "";
-    LANGS.forEach(x => {
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className = "sheet-row";
+  // ---------- Actions ----------
+  const createRequest = () => {
+    const amt = ($('amountInput').value || '').trim();
+    const amountNum = parseFloat(amt.replace(',', '.'));
+    if (!amountNum || amountNum <= 0) return toast(t('fill_amount'));
 
-      const left = document.createElement("div");
-      left.className = "sheet-row-left";
+    const recvA = findAsset(state.recv.assetId);
+    const recvIsCrypto = isCryptoId(recvA.id);
 
-      const badge = document.createElement("div");
-      badge.className = "badge";
-      badge.textContent = x.flag;
-      badge.style.fontSize = "16px";
-      badge.style.letterSpacing = "0";
-      left.appendChild(badge);
+    if (!recvIsCrypto) {
+      const card = ($('cardInput').value || '').replace(/\s/g,'');
+      const name = ($('nameInput').value || '').trim();
+      if (card.length < 12) return toast(t('fill_card'));
+      if (name.length < 3) return toast(t('fill_name'));
 
-      const text = document.createElement("div");
-      text.style.minWidth = "0";
-      const title = document.createElement("div");
-      title.className = "sheet-row-title";
-      title.textContent = x.code;
-      const sub = document.createElement("div");
-      sub.className = "sheet-row-sub";
-      sub.textContent = x.id.toUpperCase();
-      text.appendChild(title);
-      text.appendChild(sub);
-      left.appendChild(text);
-
-      const arrow = document.createElement("span");
-      arrow.textContent = "›";
-      arrow.style.fontWeight = "1000";
-      arrow.style.opacity = ".55";
-
-      row.appendChild(left);
-      row.appendChild(arrow);
-
-      row.addEventListener("click", () => {
-        state.lang = x.id;
-        storage.set("ks.lang", state.lang);
-        applyLang();
-        closeSheet();
-      });
-
-      el.sheetList.appendChild(row);
-    });
-  });
-
-  el.sendAssetBtn.addEventListener("click", () => {
-    openSheet({
-      title: t("pick_asset"),
-      placeholder: t("search"),
-      list: ALL_ASSETS,
-      onPick: (asset) => {
-        state.sendAsset = asset;
-        storage.set("ks.sendAsset", asset);
-        // reset sendNet if needed
-        state.sendNet = null;
-        storage.set("ks.sendNet", state.sendNet);
-        renderAsset("send");
-        renderNetworks();
-        el.amountUnit.textContent = isBank(asset) ? (state.profile.currency || "UAH") : (asset.symbol || "—");
-      }
-    });
-  });
-
-  el.recvAssetBtn.addEventListener("click", () => {
-    openSheet({
-      title: t("pick_asset"),
-      placeholder: t("search"),
-      list: ALL_ASSETS,
-      onPick: (asset) => {
-        state.recvAsset = asset;
-        storage.set("ks.recvAsset", asset);
-        state.recvNet = null;
-        storage.set("ks.recvNet", state.recvNet);
-        renderAsset("recv");
-        renderNetworks();
-      }
-    });
-  });
-
-  el.sendNetBtn.addEventListener("click", () => {
-    const nets = getNetworksFor(state.sendAsset);
-    openSheet({
-      title: t("pick_network"),
-      placeholder: t("search"),
-      list: nets.map(n => ({ ...n, title: n.title, sub: n.sub, icon: null })),
-      onPick: (net) => {
-        state.sendNet = net;
-        storage.set("ks.sendNet", net);
-        renderNetworks();
-      }
-    });
-  });
-
-  el.recvNetBtn.addEventListener("click", () => {
-    const nets = getNetworksFor(state.recvAsset);
-    openSheet({
-      title: t("pick_network"),
-      placeholder: t("search"),
-      list: nets.map(n => ({ ...n, title: n.title, sub: n.sub, icon: null })),
-      onPick: (net) => {
-        state.recvNet = net;
-        storage.set("ks.recvNet", net);
-        renderNetworks();
-      }
-    });
-  });
-
-  el.amountInput.addEventListener("input", (e) => {
-    state.amount = formatAmount(e.target.value);
-    e.target.value = state.amount;
-    storage.set("ks.amount", state.amount);
-    recalc();
-  });
-
-  el.swapBtn.addEventListener("click", () => {
-    const a = state.sendAsset;
-    const b = state.recvAsset;
-    state.sendAsset = b;
-    state.recvAsset = a;
-    state.sendNet = null;
-    state.recvNet = null;
-    storage.set("ks.sendAsset", state.sendAsset);
-    storage.set("ks.recvAsset", state.recvAsset);
-    storage.set("ks.sendNet", state.sendNet);
-    storage.set("ks.recvNet", state.recvNet);
-
-    renderAsset("send");
-    renderAsset("recv");
-    renderNetworks();
-
-    // unit
-    el.amountUnit.textContent = state.sendAsset
-      ? (isBank(state.sendAsset) ? (state.profile.currency || "UAH") : state.sendAsset.symbol)
-      : "—";
-  });
-
-  el.createBtn.addEventListener("click", () => {
-    if (!state.sendAsset || !state.recvAsset) return toast(t("toast_pick"));
-    const amount = parseFloat(state.amount || "0");
-    if (!amount || amount <= 0) return toast(t("toast_need_amount"));
-
-    // validations:
-    if (isBank(state.recvAsset)) {
-      const cn = (el.cardNumber.value || "").replace(/\s/g, "");
-      const fn = (el.fullName.value || "").trim();
-      if (cn.length < 12 || fn.length < 3) return toast(t("toast_need_card"));
-    }
-    if (isCrypto(state.recvAsset)) {
-      const wa = (el.walletAddress.value || "").trim();
-      if (wa.length < 6) return toast(t("toast_need_wallet"));
+      // Save last used card (optional)
+      const saved = load('saved') || { cards:[], wallets:[] };
+      if (!saved.cards.includes(card)) saved.cards.unshift(card);
+      saved.cards = saved.cards.slice(0,5);
+      save('saved', saved);
+    } else {
+      const w = ($('walletInput').value || '').trim();
+      if (w.length < 8) return toast(t('fill_wallet'));
+      const saved = load('saved') || { cards:[], wallets:[] };
+      if (!saved.wallets.includes(w)) saved.wallets.unshift(w);
+      saved.wallets = saved.wallets.slice(0,5);
+      save('saved', saved);
     }
 
-    const sendPart = isBank(state.sendAsset)
-      ? `${state.sendAsset.name} (${state.profile.currency || "UAH"})`
-      : `${state.sendAsset.symbol}${state.sendNet ? " • " + state.sendNet.id : ""}`;
-
-    const recvPart = isBank(state.recvAsset)
-      ? `${state.recvAsset.name} (${state.profile.currency || "UAH"})`
-      : `${state.recvAsset.symbol}${state.recvNet ? " • " + state.recvNet.id : ""}`;
-
-    const title = `${amount} → ${recvPart}`;
-    const details = `${sendPart}  →  ${recvPart}`;
-
-    const item = {
-      id: String(Date.now()),
-      title,
-      details,
-      status: "Pending",
-      date: new Date().toLocaleString(),
-      amount,
-      send: state.sendAsset,
-      recv: state.recvAsset,
-      sendNet: state.sendNet,
-      recvNet: state.recvNet,
+    const req = {
+      id: 'KS' + Math.random().toString(16).slice(2,8).toUpperCase(),
+      ts: Date.now(),
+      amount: amountNum,
+      send: { ...state.send },
+      recv: { ...state.recv },
+      status: 'new',
     };
 
-    state.history = state.history || [];
-    state.history.push(item);
-    storage.set("ks.history", state.history);
+    state.history.push(req);
+    save('history', state.history);
 
-    toast("OK ✅");
-    renderHistory();
-    setPage("history");
-  });
+    toast(t('ok_created'));
+    $('amountInput').value = '';
+    $('estimateOut').textContent = '0';
+    updateHistoryUI();
 
-  // profile save
-  el.saveProfileBtn.addEventListener("click", () => {
-    state.profile.email = (el.emailInput.value || "").trim();
-    state.profile.phone = (el.phoneInput.value || "").trim();
-    storage.set("ks.profile", state.profile);
-    toast(t("toast_saved"));
-  });
-
-  // avatar upload
-  el.avatarInput.addEventListener("change", async (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const dataUrl = await fileToDataURL(file, 240);
-    state.profile.avatarData = dataUrl;
-    storage.set("ks.profile", state.profile);
-    renderProfile();
-    toast(t("toast_saved"));
-  });
-
-  function fileToDataURL(file, maxSize) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = () => { img.src = reader.result; };
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.86));
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // -----------------------------
-  // Init Telegram WebApp
-  // -----------------------------
-  function initTelegram() {
-    if (!TG) return;
     try {
-      TG.ready();
-      TG.expand();
-      TG.setHeaderColor("#e9f6ff");
-      TG.setBackgroundColor("#e9f6ff");
-
-      const u = TG.initDataUnsafe && TG.initDataUnsafe.user ? TG.initDataUnsafe.user : null;
-      if (u) {
-        const username = u.username ? "@" + u.username : (u.first_name || "@user");
-        const level = u.is_premium ? "Premium" : (state.lang === "ua" ? "Новачок" : "Newbie");
-        document.getElementById("profileName").textContent = username;
-        document.getElementById("profileLevel").textContent = level;
-
-        // avatar fallback initials
-        if (!state.profile.avatarData) {
-          const initials = (u.first_name || "K").slice(0,1) + (u.last_name || "S").slice(0,1);
-          el.avatar.textContent = initials.toUpperCase();
-        }
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
       }
-    } catch {}
-  }
+    } catch(e){}
+  };
 
-  // -----------------------------
-  // Boot
-  // -----------------------------
-  function boot() {
-    // restore amount
-    const storedAmount = storage.get("ks.amount", "");
-    if (storedAmount) {
-      state.amount = storedAmount;
-      el.amountInput.value = storedAmount;
+  const swapSides = () => {
+    // Swap assets & networks
+    const a = JSON.parse(JSON.stringify(state.send));
+    state.send = JSON.parse(JSON.stringify(state.recv));
+    state.recv = a;
+
+    // Fix networks if swapped types differ
+    state.send.networkId = defaultNetworkForAsset(state.send.assetId);
+    state.recv.networkId = defaultNetworkForAsset(state.recv.assetId);
+
+    updateExchangeUI();
+
+    try {
+      if (window.Telegram && Telegram.WebApp && Telegram.WebApp.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      }
+    } catch(e){}
+  };
+
+  const saveProfile = () => {
+    state.profile.email = ($('emailInput').value || '').trim();
+    state.profile.phone = ($('phoneInput').value || '').trim();
+    save('profile', state.profile);
+    toast('OK');
+    updateProfileUI();
+  };
+
+  const pickAvatar = () => $('avatarFile').click();
+
+  const onAvatarFile = async (file) => {
+    if (!file) return;
+    // Limit size ~ 300kb
+    const dataUrl = await fileToDataURL(file);
+    state.profile.avatarData = dataUrl;
+    save('profile', state.profile);
+    updateProfileUI();
+  };
+
+  const fileToDataURL = (file) => new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+
+  // ---------- Events ----------
+  const bind = () => {
+    // Tabs
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => setTab(btn.dataset.tab));
+    });
+
+    // Pickers
+    $('sendAssetBtn').addEventListener('click', () => openAssetPicker('send'));
+    $('recvAssetBtn').addEventListener('click', () => openAssetPicker('recv'));
+
+    $('sendNetworkBtn').addEventListener('click', () => openNetworkPicker('send'));
+    $('recvNetworkBtn').addEventListener('click', () => openNetworkPicker('recv'));
+
+    $('langBtn').addEventListener('click', openLangPicker);
+
+    // Sheet close
+    $('sheetBackdrop').addEventListener('click', sheet.close);
+    $('sheetCloseBtn').addEventListener('click', sheet.close);
+    $('sheetSearch').addEventListener('input', (e) => sheet.render(e.target.value));
+
+    // Amount / card format
+    $('amountInput').addEventListener('input', updateExchangeUI);
+    $('cardInput').addEventListener('input', (e) => {
+      const pos = e.target.selectionStart;
+      e.target.value = fmtCard(e.target.value);
+      e.target.selectionStart = e.target.selectionEnd = pos;
+    });
+
+    $('swapBtn').addEventListener('click', swapSides);
+    $('createBtn').addEventListener('click', createRequest);
+
+    // Profile
+    $('saveProfileBtn').addEventListener('click', saveProfile);
+    $('avatarEditBtn').addEventListener('click', pickAvatar);
+    $('avatarFile').addEventListener('change', (e) => onAvatarFile(e.target.files && e.target.files[0]));
+
+    // Tiles (simple demo actions)
+    $('currencyBtn').addEventListener('click', () => {
+      const opts = ['UAH','USD','EUR'];
+      const next = opts[(opts.indexOf(state.profile.currency || 'UAH') + 1) % opts.length];
+      state.profile.currency = next;
+      save('profile', state.profile);
+      updateProfileUI();
+      toast(next);
+    });
+
+    $('savedBtn').addEventListener('click', () => {
+      const saved = load('saved') || { cards:[], wallets:[] };
+      const msg = [
+        saved.cards?.length ? ('Cards: ' + saved.cards.map(c=>c.replace(/(\d{4})\d+(\d{4})/, '$1••••$2')).join(', ')) : 'Cards: -',
+        saved.wallets?.length ? ('Wallets: ' + saved.wallets.map(w=>w.slice(0,6)+'…'+w.slice(-4)).join(', ')) : 'Wallets: -',
+      ].join('\n');
+      toast(state.lang==='uk' ? 'Див. збережені реквізити' : 'Saved');
+      try {
+        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.showPopup) {
+          Telegram.WebApp.showPopup({ title:'Saved', message: msg, buttons:[{type:'close'}] });
+        } else {
+          alert(msg);
+        }
+      } catch(e){ alert(msg); }
+    });
+
+    $('supportBtn').addEventListener('click', () => {
+      const handle = '@keksswap_support';
+      try {
+        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.openTelegramLink) {
+          Telegram.WebApp.openTelegramLink('https://t.me/' + handle.replace('@',''));
+        } else {
+          toast(handle);
+        }
+      } catch(e){ toast(handle); }
+    });
+
+    $('securityBtn').addEventListener('click', () => toast(state.lang==='uk' ? 'Скоро додамо PIN' : 'PIN soon'));
+  };
+
+  // ---------- Init ----------
+  const init = () => {
+    // Profile defaults from Telegram
+    if (tgUser && tgUser.username && (!state.profile.name || state.profile.name === '@user')) {
+      state.profile.name = '@' + tgUser.username;
+      save('profile', state.profile);
     }
 
-    // default assets if empty
-    if (!state.sendAsset) state.sendAsset = CRYPTO[0]; // USDT
-    if (!state.recvAsset) state.recvAsset = BANKS[0] || CRYPTO[1] || CRYPTO[0]; // UAH card
+    updateLangUI();
 
-    // persist defaults
-    storage.set("ks.sendAsset", state.sendAsset);
-    storage.set("ks.recvAsset", state.recvAsset);
+    // Ensure networks valid on start
+    state.send.networkId = state.send.networkId || defaultNetworkForAsset(state.send.assetId);
+    state.recv.networkId = state.recv.networkId || defaultNetworkForAsset(state.recv.assetId);
 
-    // Render
-    applyLang();
-    renderAsset("send");
-    renderAsset("recv");
-    renderNetworks();
-    el.amountUnit.textContent = isBank(state.sendAsset) ? (state.profile.currency || "UAH") : (state.sendAsset.symbol || "—");
+    bind();
+    updateExchangeUI();
+    updateHistoryUI();
+    updateProfileUI();
+  };
 
-    renderHistory();
-    renderProfile();
-    recalc();
-
-    initTelegram();
-  }
-
-  boot();
+  init();
 })();

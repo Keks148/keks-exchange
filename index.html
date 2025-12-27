@@ -3,240 +3,230 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#eaf5ff" />
   <title>KeksSwap</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- Telegram Mini App (works inside Telegram, safe to ignore elsewhere) -->
+  <script>
+    try {
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        Telegram.WebApp.setHeaderColor && Telegram.WebApp.setHeaderColor('#eaf5ff');
+        Telegram.WebApp.setBackgroundColor && Telegram.WebApp.setBackgroundColor('#eaf5ff');
+      }
+    } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Prevent iOS zoom on inputs */
+    input, select, textarea { font-size: 16px; }
+  </style>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app" class="app">
-    <!-- Header -->
+  <div class="app">
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" src="logos/keks-logo.png" alt="KEKS SWAP" />
+        <img class="brand__logo" src="logos/keks-logo.png" alt="KeksSwap" onerror="this.style.display='none'">
+        <div class="brand__text">
+          <div class="brand__name">KeksSwap</div>
+          <div class="brand__tag">Обмін крипти ↔ банки</div>
+        </div>
       </div>
 
-      <button id="langBtn" class="lang-btn" type="button" aria-label="Language">
-        <span class="flag" id="langFlag">🇺🇦</span>
-        <span class="lang-code" id="langCode">UA</span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" /></svg>
+      <button class="lang-btn" id="langBtn" type="button" aria-label="Language">
+        <span class="lang-btn__flag" id="langFlag">🇺🇦</span>
+        <span class="lang-btn__code" id="langCode">UA</span>
+        <span class="chev">▾</span>
       </button>
     </header>
 
-    <!-- Pages -->
-    <main class="pages">
-      <!-- Home / Exchange -->
-      <section class="page page--active" data-page="home">
-        <div class="card">
-          <div class="card-head">
-            <h1 id="t_exchange_title">Обмін</h1>
-            <p id="t_exchange_sub" class="muted">Виберіть валюту та введіть суму</p>
-          </div>
+    <main class="content" id="content">
+      <!-- Home -->
+      <section class="screen is-active" id="screenHome">
+        <div class="card hero">
+          <h1 class="h1" id="t_exchange">Обмін</h1>
+          <p class="sub" id="t_exchangeSub">Виберіть валюту та введіть суму</p>
 
-          <div class="block">
+          <div class="field">
             <div class="label" id="t_send">Віддаєте</div>
-            <button class="select" id="sendAssetBtn" type="button">
-              <div class="select-left">
-                <img id="sendIcon" class="icon" alt="" />
-                <div class="select-text">
-                  <div class="select-title" id="sendTitle">—</div>
-                  <div class="select-sub" id="sendSub">—</div>
-                </div>
-              </div>
-              <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
+
+            <button class="picker" id="sendAssetBtn" type="button">
+              <span class="picker__left">
+                <span class="icon" id="sendAssetIcon"></span>
+                <span class="picker__text">
+                  <span class="picker__title" id="sendAssetTitle">USDT</span>
+                  <span class="picker__subtitle" id="sendAssetSub">Tether (USDT)</span>
+                </span>
+              </span>
+              <span class="chev">▾</span>
             </button>
 
-            <div id="sendNetWrap" class="field field--hidden">
-              <div class="label" id="t_network">Мережа</div>
-              <button class="select select--small" id="sendNetBtn" type="button">
-                <div class="select-left">
-                  <div class="badge" id="sendNetBadge">—</div>
-                  <div class="select-text">
-                    <div class="select-title" id="sendNetTitle">—</div>
-                    <div class="select-sub" id="sendNetSub">—</div>
-                  </div>
-                </div>
-                <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
-              </button>
-            </div>
+            <button class="picker is-secondary" id="sendNetworkBtn" type="button">
+              <span class="picker__left">
+                <span class="icon icon--small" id="sendNetworkIcon"></span>
+                <span class="picker__text">
+                  <span class="picker__title" id="sendNetworkTitle">TRC20</span>
+                  <span class="picker__subtitle" id="sendNetworkSub">USDT • TRX</span>
+                </span>
+              </span>
+              <span class="chev">▾</span>
+            </button>
 
-            <div class="label" id="t_amount">Сума</div>
-            <div class="amount">
-              <input id="amountInput" inputmode="decimal" autocomplete="off" placeholder="0" />
-              <span class="amount-unit" id="amountUnit">—</span>
+            <div class="input-row">
+              <input class="input" id="amountInput" inputmode="decimal" placeholder="0" />
+              <span class="chip" id="amountUnit">USDT</span>
             </div>
           </div>
 
           <div class="swap-row">
-            <button id="swapBtn" class="swap-btn" type="button" aria-label="Swap">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M7 7h11l-2-2m2 2l-2 2M17 17H6l2 2m-2-2l2-2" />
-              </svg>
+            <button class="swap-btn" id="swapBtn" type="button" aria-label="Swap">
+              <span class="swap-ic">⇄</span>
             </button>
           </div>
 
-          <div class="block">
+          <div class="field">
             <div class="label" id="t_receive">Отримуєте</div>
-            <button class="select" id="recvAssetBtn" type="button">
-              <div class="select-left">
-                <img id="recvIcon" class="icon" alt="" />
-                <div class="select-text">
-                  <div class="select-title" id="recvTitle">—</div>
-                  <div class="select-sub" id="recvSub">—</div>
-                </div>
-              </div>
-              <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
+
+            <button class="picker" id="recvAssetBtn" type="button">
+              <span class="picker__left">
+                <span class="icon" id="recvAssetIcon"></span>
+                <span class="picker__text">
+                  <span class="picker__title" id="recvAssetTitle">Monobank</span>
+                  <span class="picker__subtitle" id="recvAssetSub">UAH • Card</span>
+                </span>
+              </span>
+              <span class="chev">▾</span>
             </button>
 
-            <div id="recvNetWrap" class="field field--hidden">
-              <div class="label" id="t_network2">Мережа</div>
-              <button class="select select--small" id="recvNetBtn" type="button">
-                <div class="select-left">
-                  <div class="badge" id="recvNetBadge">—</div>
-                  <div class="select-text">
-                    <div class="select-title" id="recvNetTitle">—</div>
-                    <div class="select-sub" id="recvNetSub">—</div>
-                  </div>
-                </div>
-                <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
-              </button>
+            <button class="picker is-secondary" id="recvNetworkBtn" type="button">
+              <span class="picker__left">
+                <span class="icon icon--small" id="recvNetworkIcon"></span>
+                <span class="picker__text">
+                  <span class="picker__title" id="recvNetworkTitle">Card</span>
+                  <span class="picker__subtitle" id="recvNetworkSub">UAH • Card</span>
+                </span>
+              </span>
+              <span class="chev">▾</span>
+            </button>
+
+            <div id="bankFields" class="stack">
+              <div class="label" id="t_card">Номер картки</div>
+              <input class="input" id="cardInput" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="23" />
+              <div class="label" id="t_name">ПІБ</div>
+              <input class="input" id="nameInput" placeholder="Ім'я Прізвище" />
             </div>
 
-            <div id="recvCardWrap" class="field field--hidden">
-              <div class="label" id="t_card_number">Номер картки</div>
-              <input id="cardNumber" class="input" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" />
-              <div class="label" id="t_fullname">ПІБ</div>
-              <input id="fullName" class="input" autocomplete="name" placeholder="Ім'я Прізвище" />
-            </div>
-
-            <div id="recvWalletWrap" class="field field--hidden">
+            <div id="walletFields" class="stack" style="display:none">
               <div class="label" id="t_wallet">Адреса гаманця</div>
-              <input id="walletAddress" class="input" autocomplete="off" placeholder="0x... / T... / ..."/>
+              <input class="input" id="walletInput" placeholder="0x… / T… / …" />
             </div>
 
-            <div class="result">
-              <div class="label" id="t_you_get">Ви отримаєте</div>
-              <div class="result-value" id="youGet">0</div>
+            <div class="get-row">
+              <div class="get-title" id="t_youGet">Ви отримаєте</div>
+              <div class="get-val" id="estimateOut">0</div>
             </div>
 
-            <button id="createBtn" class="primary" type="button">
-              <span id="t_create">Створити заявку</span>
-            </button>
-
-            <div class="hint" id="hintText"></div>
+            <button class="primary" id="createBtn" type="button">Створити заявку</button>
           </div>
         </div>
       </section>
 
       <!-- History -->
-      <section class="page" data-page="history">
+      <section class="screen" id="screenHistory">
         <div class="card">
-          <div class="card-head">
-            <h1 id="t_history_title">Історія</h1>
-            <p id="t_history_sub" class="muted">Ваші заявки на обмін</p>
-          </div>
-
-          <div id="historyList" class="list"></div>
-          <div id="historyEmpty" class="empty">
-            <div class="empty-title" id="t_history_empty_title">Поки що заявок немає</div>
-            <div class="empty-sub" id="t_history_empty_sub">Створіть першу на вкладці «Головна».</div>
+          <h2 class="h2" id="t_history">Історія</h2>
+          <p class="sub" id="t_historySub">Ваші заявки на обмін</p>
+          <div class="history" id="historyList"></div>
+          <div class="empty" id="historyEmpty" style="display:none">
+            <div class="empty__title" id="t_historyEmptyTitle">Поки що порожньо</div>
+            <div class="empty__sub" id="t_historyEmptySub">Створіть першу на вкладці «Головна».</div>
           </div>
         </div>
       </section>
 
       <!-- Profile -->
-      <section class="page" data-page="profile">
+      <section class="screen" id="screenProfile">
         <div class="card">
-          <div class="profile-head">
+          <div class="profile">
             <div class="avatar-wrap">
-              <div class="avatar" id="avatar">KS</div>
-              <label class="avatar-btn" for="avatarInput" id="t_change_avatar">Змінити</label>
-              <input id="avatarInput" type="file" accept="image/*" hidden>
+              <img id="avatarImg" class="avatar" alt="Avatar" />
+              <div id="avatarFallback" class="avatar avatar--fallback">KS</div>
+              <input id="avatarFile" class="avatarFile" type="file" accept="image/*" />
+              <button class="avatarEdit" id="avatarEditBtn" type="button">Змінити</button>
             </div>
 
-            <div class="profile-meta">
-              <div class="profile-name" id="profileName">@user</div>
-              <div class="profile-level muted" id="profileLevel">Новачок</div>
+            <div class="profileMeta">
+              <div class="profileName" id="profileName">Новачок</div>
+              <div class="profileUser" id="profileUser">@user</div>
             </div>
           </div>
 
-          <div class="section-title" id="t_profile_contacts">Контакти</div>
+          <div class="sectionTitle" id="t_contacts">Контакти</div>
+          <div class="stack">
+            <div class="label">Email</div>
+            <input class="input" id="emailInput" placeholder="name@email.com" />
+            <div class="label" id="t_phone">Телефон</div>
+            <input class="input" id="phoneInput" inputmode="tel" placeholder="+380…" />
+          </div>
+
+          <div class="sectionTitle" id="t_settings">Налаштування</div>
           <div class="grid">
-            <div class="field">
-              <div class="label" id="t_email">Email</div>
-              <input id="emailInput" class="input" type="email" placeholder="name@email.com" autocomplete="email"/>
-            </div>
-            <div class="field">
-              <div class="label" id="t_phone">Телефон</div>
-              <input id="phoneInput" class="input" type="tel" placeholder="+380..." autocomplete="tel"/>
-            </div>
-          </div>
-
-          <div class="section-title" id="t_profile_settings">Налаштування</div>
-          <div class="menu">
-            <button class="menu-item" id="currencyBtn" type="button">
-              <span id="t_account_currency">Валюта акаунта</span>
-              <span class="menu-right"><span id="currencyValue">UAH</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+            <button class="tile" id="currencyBtn" type="button">
+              <div class="tile__title" id="t_currency">Валюта акаунта</div>
+              <div class="tile__sub" id="currencyValue">UAH</div>
             </button>
-
-            <button class="menu-item" id="savedBtn" type="button">
-              <span id="t_saved_details">Збережені реквізити</span>
-              <span class="menu-right"><svg class="chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+            <button class="tile" id="savedBtn" type="button">
+              <div class="tile__title" id="t_saved">Збережені реквізити</div>
+              <div class="tile__sub" id="savedCount">0</div>
             </button>
-
-            <button class="menu-item" id="securityBtn" type="button">
-              <span id="t_security">Безпека</span>
-              <span class="menu-right"><svg class="chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+            <button class="tile" id="securityBtn" type="button">
+              <div class="tile__title" id="t_security">Безпека</div>
+              <div class="tile__sub" id="t_securitySub">PIN / Lock</div>
             </button>
-
-            <button class="menu-item" id="supportBtn" type="button">
-              <span id="t_support">Підтримка</span>
-              <span class="menu-right"><svg class="chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+            <button class="tile" id="supportBtn" type="button">
+              <div class="tile__title" id="t_support">Підтримка</div>
+              <div class="tile__sub" id="t_supportSub">@keksswap_support</div>
             </button>
           </div>
 
-          <button id="saveProfileBtn" class="secondary" type="button">
-            <span id="t_save">Зберегти</span>
-          </button>
+          <button class="secondary" id="saveProfileBtn" type="button">Зберегти</button>
         </div>
       </section>
     </main>
 
-    <!-- Bottom nav -->
-    <nav class="bottom-nav" aria-label="Navigation">
-      <button class="nav-item nav-item--active" data-nav="home" type="button">
-        <span class="nav-ico">🏠</span>
-        <span class="nav-txt" id="t_nav_home">Головна</span>
+    <nav class="tabs">
+      <button class="tab is-active" data-tab="home" type="button">
+        <span class="tab__ic">🏠</span><span class="tab__tx" id="t_tabHome">Головна</span>
       </button>
-      <button class="nav-item" data-nav="history" type="button">
-        <span class="nav-ico">🕒</span>
-        <span class="nav-txt" id="t_nav_history">Історія</span>
+      <button class="tab" data-tab="history" type="button">
+        <span class="tab__ic">🕓</span><span class="tab__tx" id="t_tabHistory">Історія</span>
       </button>
-      <button class="nav-item" data-nav="profile" type="button">
-        <span class="nav-ico">👤</span>
-        <span class="nav-txt" id="t_nav_profile">Профіль</span>
+      <button class="tab" data-tab="profile" type="button">
+        <span class="tab__ic">👤</span><span class="tab__tx" id="t_tabProfile">Профіль</span>
       </button>
     </nav>
-  </div>
 
-  <!-- Bottomsheet modal -->
-  <div id="sheet" class="sheet sheet--hidden" aria-hidden="true">
-    <div class="sheet-backdrop" id="sheetClose"></div>
-    <div class="sheet-panel" role="dialog" aria-modal="true" aria-label="Picker">
-      <div class="sheet-head">
-        <div class="sheet-title" id="sheetTitle">—</div>
-        <button class="sheet-x" id="sheetX" type="button" aria-label="Close">✕</button>
+    <!-- Bottom sheet -->
+    <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+    <div class="sheet" id="sheet" hidden>
+      <div class="sheet__head">
+        <div class="sheet__drag"></div>
+        <div class="sheet__title" id="sheetTitle">Виберіть</div>
+        <button class="sheet__close" id="sheetCloseBtn" type="button" aria-label="Close">✕</button>
       </div>
-      <div class="sheet-search">
-        <input id="sheetSearch" class="input" placeholder="Search" autocomplete="off" />
+
+      <!-- Search (used ONLY for currency/bank/crypto list; hidden for language/network) -->
+      <div class="sheet__search" id="sheetSearchWrap">
+        <input class="input" id="sheetSearch" placeholder="Пошук" />
       </div>
-      <div id="sheetList" class="sheet-list"></div>
+
+      <div class="sheet__body" id="sheetBody"></div>
     </div>
+
+    <div class="toast" id="toast" hidden></div>
   </div>
 
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
