@@ -1,528 +1,602 @@
-/* ===========================
-   KeksSwap – full replacement
-   - Top: logo left, no X
-   - Language right, transparent button
-   - Compact amount input (x2 lower)
-   - Bottom nav: Home/History/Profile (no Services)
-   - Modal clicks fixed (z-index/pointer)
-   - Telegram avatar + username
-   - Full i18n: UA/EN/TR/PL
-   =========================== */
+/* KeksSwap Mini App (no frameworks) */
 
-const tg = window.Telegram?.WebApp;
-try { tg?.ready(); } catch(e){}
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
 const state = {
-  lang: "UA",
-  giveAsset: "USDT",
-  getAsset: "USDC",
-  giveNet: "TRC20",
-  getNet: "ERC20",
-  amount: "",
+  lang: localStorage.getItem('ks_lang') || 'ua',
+  accCurrency: localStorage.getItem('ks_accCurrency') || 'UAH',
+  email: localStorage.getItem('ks_email') || '',
+  phone: localStorage.getItem('ks_phone') || '',
+  give: { asset: 'USDT', net: 'TRC20' },
+  get:  { asset: 'USDC', net: 'ERC20' },
+  bank: 'MONO',
 };
 
-const ASSETS = [
-  { code:"BTC", name:{UA:"Bitcoin",EN:"Bitcoin",TR:"Bitcoin",PL:"Bitcoin"}, icon:"logos/crypto/btc.png", nets:["BTC"] },
-  { code:"ETH", name:{UA:"Ethereum",EN:"Ethereum",TR:"Ethereum",PL:"Ethereum"}, icon:"logos/crypto/eth.png", nets:["ERC20","ARBITRUM","OPTIMISM","POLYGON","BEP20"] },
-  { code:"USDT", name:{UA:"Tether",EN:"Tether",TR:"Tether",PL:"Tether"}, icon:"logos/crypto/usdt.png", nets:["TRC20","ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","TON"] },
-  { code:"USDC", name:{UA:"USD Coin",EN:"USD Coin",TR:"USD Coin",PL:"USD Coin"}, icon:"logos/crypto/usdc.png", nets:["ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM"] },
-  { code:"TRX", name:{UA:"Tron",EN:"Tron",TR:"Tron",PL:"Tron"}, icon:"logos/crypto/trx.png", nets:["TRC20"] },
-  { code:"SOL", name:{UA:"Solana",EN:"Solana",TR:"Solana",PL:"Solana"}, icon:"logos/crypto/sol.png", nets:["SOL"] },
-  { code:"TON", name:{UA:"Toncoin",EN:"Toncoin",TR:"Toncoin",PL:"Toncoin"}, icon:"logos/crypto/ton.png", nets:["TON"] },
+const assets = [
+  { code:'BTC', name:'Bitcoin (BTC)', icon:'logos/crypto/btc.png', nets:['BTC'] },
+  { code:'ETH', name:'Ethereum (ETH)', icon:'logos/crypto/eth.png', nets:['ERC20','ARB','OP','POL','BEP20'] },
+  { code:'LTC', name:'Litecoin (LTC)', icon:'logos/crypto/ltc.png', nets:['LTC'] },
+  { code:'SOL', name:'Solana (SOL)', icon:'logos/crypto/sol.png', nets:['SOL'] },
+  { code:'TON', name:'Toncoin (TON)', icon:'logos/crypto/ton.png', nets:['TON'] },
+  { code:'TRX', name:'Tron (TRX)', icon:'logos/crypto/trx.png', nets:['TRC20'] },
+  { code:'USDT', name:'Tether (USDT)', icon:'logos/crypto/tether-usdt.png', nets:['TRC20','ERC20','BEP20'] },
+  { code:'USDC', name:'USD Coin (USDC)', icon:'logos/crypto/usdc.png', nets:['ERC20','ARB','OP','POL'] },
 ];
 
-const NETWORKS = {
-  BTC:     { key:"BTC",     title:"BTC",     sub:(asset)=>`${asset} • BTC`,    icon:"logos/networks/btc.png" },
-  SOL:     { key:"SOL",     title:"SOL",     sub:(asset)=>`${asset} • SOL`,    icon:"logos/networks/sol.png" },
-  TON:     { key:"TON",     title:"TON",     sub:(asset)=>`${asset} • TON`,    icon:"logos/networks/ton.png" },
-  TRC20:   { key:"TRC20",   title:"TRC20",   sub:(asset)=>`${asset} • TRX`,    icon:"logos/networks/trc20.png" },
-  ERC20:   { key:"ERC20",   title:"ERC20",   sub:(asset)=>`${asset} • ETH`,    icon:"logos/networks/erc20.png" },
-  BEP20:   { key:"BEP20",   title:"BEP20",   sub:(asset)=>`${asset} • BNB`,    icon:"logos/networks/bep20.png" },
-  POLYGON: { key:"POLYGON", title:"Polygon", sub:(asset)=>`${asset} • POL`,    icon:"logos/networks/pol.png" },
-  ARBITRUM:{ key:"ARBITRUM",title:"Arbitrum",sub:(asset)=>`${asset} • ARB`,    icon:"logos/networks/arb.png" },
-  OPTIMISM:{ key:"OPTIMISM",title:"Optimism",sub:(asset)=>`${asset} • OP`,     icon:"logos/networks/op.png" },
+const networks = {
+  BTC:  { code:'BTC',  name:'BTC',  sub:'BTC • BTC',  icon:'' },
+  LTC:  { code:'LTC',  name:'LTC',  sub:'LTC • LTC',  icon:'' },
+  SOL:  { code:'SOL',  name:'SOL',  sub:'SOL • SOL',  icon:'logos/networks/sol.png' },
+  TON:  { code:'TON',  name:'TON',  sub:'TON • TON',  icon:'logos/networks/ton.png' },
+  TRC20:{ code:'TRC20',name:'TRC20',sub:'USDT • TRX', icon:'logos/networks/trc20.png' },
+  ERC20:{ code:'ERC20',name:'ERC20',sub:'USDC • ETH', icon:'logos/networks/erc20.png' },
+  BEP20:{ code:'BEP20',name:'BEP20',sub:'BSC • BNB',  icon:'logos/networks/bep20.png' },
+  ARB:  { code:'ARB',  name:'ARB',  sub:'Arbitrum',   icon:'logos/networks/arb.png' },
+  OP:   { code:'OP',   name:'OP',   sub:'Optimism',   icon:'logos/networks/op.png' },
+  POL:  { code:'POL',  name:'POL',  sub:'Polygon',    icon:'logos/networks/pol.png' },
 };
 
-/* i18n */
-const I18N = {
-  UA:{
-    swapTitle:"Обмін",
-    give:"Віддаєте",
-    get:"Отримуєте",
-    enterAmount:"Введіть суму",
-    example:"Наприклад: 10 000",
-    youReceive:"Ви отримаєте",
-    createOrder:"Створити заявку",
+const banks = [
+  { code:'A_BANK', name:'A-Bank', icon:'logos/banks/a-bank.png' },
+  { code:'IZI', name:'izibank', icon:'logos/banks/izi.png' },
+  { code:'MONO', name:'Monobank', icon:'logos/banks/mono.png' },
+  { code:'OSCHAD', name:'Ощадбанк', icon:'logos/banks/oschad.png' },
+  { code:'OTP', name:'OTP Bank', icon:'logos/banks/otp.png' },
+  { code:'PRIVAT', name:'ПриватБанк', icon:'logos/banks/privat.png' },
+  { code:'PUMB', name:'ПУМБ', icon:'logos/banks/pumb.png' },
+  { code:'REYF', name:'Raiffeisen', icon:'logos/banks/reyf.png' },
+  { code:'SENSE', name:'Sense Bank', icon:'logos/banks/sense.png' },
+  // { code:'UKRSIB', name:'UKRSIBBANK', icon:'logos/banks/ukr-sib.png' }, // если надо — раскомментируй
+  { code:'VISA', name:'Visa / MasterCard', icon:'logos/banks/visa-master.png' },
+];
 
-    tabHome:"Головна",
-    tabHistory:"Історія",
-    tabProfile:"Профіль",
-
-    historyTitle:"Історія",
-    historyEmptyTitle:"Поки що немає операцій",
-    historyEmptySub:"Тут з’являться ваші заявки та їх статус.",
-
-    level0:"Рівень 0",
-    upgrade:"Підвищити",
-    myData:"Мої дані",
-    tgAccount:"Telegram-акаунт",
-    email:"Email-адрес",
-    phone:"Номер телефону",
-    add:"Додати",
-    notAdded:"Не додано",
-    settings:"Параметри",
-    security:"Безпека",
-    securitySub:"Налаштування акаунта",
-    language:"Мова",
-    logout:"Вийти",
-
-    chooseCurrency:"Виберіть валюту",
-    chooseNetwork:"Оберіть мережу",
-    onlyAvailable:"Показуємо тільки мережі, які доступні для цієї валюти — щоб не плутати.",
+const i18n = {
+  ua:{
+    tabHome:'Головна', tabHistory:'Історія', tabProfile:'Профіль',
+    give:'Віддаєте', get:'Отримуєте',
+    enterAmount:'Введіть суму', example:'Наприклад: 10 000',
+    youGet:'Ви отримаєте', createOrder:'Створити заявку',
+    history:'Історія', historyEmpty:'Тут буде історія заявок.',
+    newbie:'Новичок',
+    refProgram:'Реферальна програма',
+    promoCodes:'Акції і промокоди',
+    prefs:'ПРЕФЕРЕНЦІЇ', params:'ПАРАМЕТРИ', about:'О НАС',
+    savedReq:'Збережені реквізити',
+    accCurrency:'Валюта аккаунта',
+    language:'Мова',
+    security:'Безпека',
+    devices:'Пристрої',
+    officialAcc:'Офіційні акаунти',
+    faq:'Часті питання',
+    info:'Інформація',
+    support:'Звернутися в підтримку',
+    logout:'Вийти з аккаунта',
+    apply:'Застосувати',
+    savedHint:'Збереження реквізитів буде доступне в історії заявок.',
+    goHistory:'Перейти в історію',
+    cards:'Карти', wallets:'Гаманці', phones:'Телефони',
+    auth:'АВТОРИЗАЦІЯ',
+    add:'Додати',
+    phone:'Номер телефона',
+    loginApp:'ВХІД В ДОДАТОК',
+    pin:'Код-пароль',
+    hideBalance:'Сховати баланс',
+    current:'ТЕКУЩЕЕ',
+    deviceHint:'При відсутності активності 5 днів сесія буде завершена для безпеки.',
+    refText:'Запросіть друзів і отримуйте бонуси.',
+    link:'Посилання', qr:'QR-код',
+    promoHint:'Тут будуть акції та бонуси.',
+    supportHint:'Опиши проблему — ми допоможемо.',
+    send:'Надіслати',
+    cancel:'Скасувати', save:'Зберегти',
+    payToBank:'Оплата на карту',
+    chooseBank:'Оберіть банк',
+    cardNumber:'Номер картки',
+    cardHolder:'ПІБ отримувача',
   },
-  EN:{
-    swapTitle:"Exchange",
-    give:"You give",
-    get:"You get",
-    enterAmount:"Enter amount",
-    example:"Example: 10 000",
-    youReceive:"You will receive",
-    createOrder:"Create request",
-
-    tabHome:"Home",
-    tabHistory:"History",
-    tabProfile:"Profile",
-
-    historyTitle:"History",
-    historyEmptyTitle:"No operations yet",
-    historyEmptySub:"Your requests and statuses will appear here.",
-
-    level0:"Level 0",
-    upgrade:"Upgrade",
-    myData:"My data",
-    tgAccount:"Telegram account",
-    email:"Email address",
-    phone:"Phone number",
-    add:"Add",
-    notAdded:"Not added",
-    settings:"Settings",
-    security:"Security",
-    securitySub:"Account settings",
-    language:"Language",
-    logout:"Log out",
-
-    chooseCurrency:"Choose currency",
-    chooseNetwork:"Choose network",
-    onlyAvailable:"We show only networks available for this asset to avoid confusion.",
-  },
-  TR:{
-    swapTitle:"Takas",
-    give:"Veriyorsunuz",
-    get:"Alıyorsunuz",
-    enterAmount:"Tutar girin",
-    example:"Örnek: 10 000",
-    youReceive:"Alacaksınız",
-    createOrder:"Talep oluştur",
-
-    tabHome:"Ana",
-    tabHistory:"Geçmiş",
-    tabProfile:"Profil",
-
-    historyTitle:"Geçmiş",
-    historyEmptyTitle:"Henüz işlem yok",
-    historyEmptySub:"Talepleriniz ve durumları burada görünecek.",
-
-    level0:"Seviye 0",
-    upgrade:"Yükselt",
-    myData:"Bilgilerim",
-    tgAccount:"Telegram hesabı",
-    email:"E-posta",
-    phone:"Telefon",
-    add:"Ekle",
-    notAdded:"Eklenmedi",
-    settings:"Ayarlar",
-    security:"Güvenlik",
-    securitySub:"Hesap ayarları",
-    language:"Dil",
-    logout:"Çıkış",
-
-    chooseCurrency:"Para birimi seçin",
-    chooseNetwork:"Ağ seçin",
-    onlyAvailable:"Karışıklık olmasın diye sadece bu varlık için uygun ağları gösteriyoruz.",
-  },
-  PL:{
-    swapTitle:"Wymiana",
-    give:"Oddajesz",
-    get:"Otrzymujesz",
-    enterAmount:"Wpisz kwotę",
-    example:"Przykład: 10 000",
-    youReceive:"Otrzymasz",
-    createOrder:"Utwórz zlecenie",
-
-    tabHome:"Główna",
-    tabHistory:"Historia",
-    tabProfile:"Profil",
-
-    historyTitle:"Historia",
-    historyEmptyTitle:"Brak operacji",
-    historyEmptySub:"Twoje zlecenia i statusy pojawią się tutaj.",
-
-    level0:"Poziom 0",
-    upgrade:"Podnieś",
-    myData:"Moje dane",
-    tgAccount:"Konto Telegram",
-    email:"Adres e-mail",
-    phone:"Numer telefonu",
-    add:"Dodaj",
-    notAdded:"Nie dodano",
-    settings:"Ustawienia",
-    security:"Bezpieczeństwo",
-    securitySub:"Ustawienia konta",
-    language:"Język",
-    logout:"Wyloguj",
-
-    chooseCurrency:"Wybierz walutę",
-    chooseNetwork:"Wybierz sieć",
-    onlyAvailable:"Pokazujemy tylko sieci dostępne dla tej waluty, aby uniknąć pomyłek.",
+  ru:{
+    tabHome:'Главная', tabHistory:'История', tabProfile:'Профиль',
+    give:'Отдаёте', get:'Получаете',
+    enterAmount:'Введите сумму', example:'Например: 10 000',
+    youGet:'Вы получите', createOrder:'Создать заявку',
+    history:'История', historyEmpty:'Здесь будет история заявок.',
+    newbie:'Новичок',
+    refProgram:'Реферальная программа',
+    promoCodes:'Акции и промокоды',
+    prefs:'ПРЕДПОЧТЕНИЯ', params:'ПАРАМЕТРЫ', about:'О НАС',
+    savedReq:'Сохранённые реквизиты',
+    accCurrency:'Валюта аккаунта',
+    language:'Язык',
+    security:'Безопасность',
+    devices:'Устройства',
+    officialAcc:'Официальные аккаунты',
+    faq:'Часто задаваемые вопросы',
+    info:'Информация',
+    support:'Обратиться в поддержку',
+    logout:'Выйти из аккаунта',
+    apply:'Применить',
+    savedHint:'Сохранение реквизитов будет доступно в истории заявок.',
+    goHistory:'Перейти в историю',
+    cards:'Карты', wallets:'Кошельки', phones:'Телефоны',
+    auth:'АВТОРИЗАЦИЯ',
+    add:'Добавить',
+    phone:'Номер телефона',
+    loginApp:'ВХОД В ПРИЛОЖЕНИЕ',
+    pin:'Код-пароль',
+    hideBalance:'Скрывать баланс',
+    current:'ТЕКУЩЕЕ',
+    deviceHint:'При отсутствии активности 5 дней сессия будет завершена для безопасности.',
+    refText:'Пригласите друзей и получайте бонусы.',
+    link:'Ссылка', qr:'QR-код',
+    promoHint:'Здесь будут акции и бонусы.',
+    supportHint:'Опишите проблему — мы поможем.',
+    send:'Отправить',
+    cancel:'Отмена', save:'Сохранить',
+    payToBank:'Оплата на карту',
+    chooseBank:'Выберите банк',
+    cardNumber:'Номер карты',
+    cardHolder:'ФИО получателя',
   }
 };
 
+/* ---------- helpers ---------- */
 function t(key){
-  return (I18N[state.lang] && I18N[state.lang][key]) || (I18N.UA[key]) || key;
+  const dict = i18n[state.lang] || i18n.ua;
+  return dict[key] ?? key;
 }
 
 function applyI18n(){
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const k = el.getAttribute("data-i18n");
+  $$('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
     el.textContent = t(k);
   });
-  document.getElementById("langVal").textContent = state.lang;
+  $('#langCode').textContent = state.lang.toUpperCase();
+  $('#accCurrencyVal').textContent = state.accCurrency;
+  $('#languageVal').textContent = (state.lang === 'ua') ? 'Українська' : 'Русский';
 }
 
-/* Telegram user -> avatar */
-function initTelegramProfile(){
-  const avatar = document.getElementById("tgAvatar");
-  const name = document.getElementById("tgName");
-  const username = document.getElementById("tgUsername");
+function formatNum(n){
+  if (!isFinite(n)) return '0';
+  const s = Math.floor(n*100)/100;
+  return String(s).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+}
 
-  let u = null;
-  try { u = tg?.initDataUnsafe?.user || null; } catch(e){}
+function getAsset(code){ return assets.find(a=>a.code===code) || assets[0]; }
+function getNet(code){ return networks[code] || {code, name:code, sub:'', icon:''}; }
+function getBank(code){ return banks.find(b=>b.code===code) || banks[2]; }
 
-  if(u){
-    const uname = u.username ? "@"+u.username : (u.first_name || "Telegram");
-    name.textContent = uname;
-    username.textContent = uname;
+function safeImg(imgEl, src){
+  imgEl.src = src;
+  imgEl.onerror = ()=>{ imgEl.src = ''; };
+}
 
-    // photo_url in WebApp user (if provided)
-    if(u.photo_url){
-      avatar.src = u.photo_url;
-    }else{
-      avatar.src = "";
-    }
-  }else{
-    // Fallback
-    name.textContent = "@telegram";
-    username.textContent = "@telegram";
-    avatar.src = "";
+/* ---------- UI render ---------- */
+function renderExchange(){
+  const giveA = getAsset(state.give.asset);
+  const getA  = getAsset(state.get.asset);
+
+  safeImg($('#giveAssetIcon'), giveA.icon);
+  $('#giveAssetName').textContent = giveA.name;
+  $('#giveAssetCode').textContent = giveA.code;
+  $('#giveAssetChip').textContent = giveA.code;
+
+  safeImg($('#getAssetIcon'), getA.icon);
+  $('#getAssetName').textContent = getA.name;
+  $('#getAssetCode').textContent = getA.code;
+
+  const giveN = getNet(state.give.net);
+  const getN  = getNet(state.get.net);
+
+  safeImg($('#giveNetIcon'), giveN.icon || '');
+  $('#giveNetName').textContent = giveN.name;
+  $('#giveNetSub').textContent = giveN.sub || `${giveA.code} • ${giveN.code}`;
+
+  safeImg($('#getNetIcon'), getN.icon || '');
+  $('#getNetName').textContent = getN.name;
+  $('#getNetSub').textContent = getN.sub || `${getA.code} • ${getN.code}`;
+
+  // bank
+  const b = getBank(state.bank);
+  safeImg($('#bankIcon'), b.icon);
+  $('#bankName').textContent = b.name;
+
+  recalc();
+}
+
+function recalc(){
+  const val = ($('#giveAmount').value || '').replace(/\s+/g,'').replace(',','.');
+  const num = parseFloat(val);
+  if (!isFinite(num) || num <= 0){
+    $('#resultAmount').textContent = '0';
+    return;
   }
 
-  // fallback avatar if no src
-  avatar.onerror = () => { avatar.src = ""; };
-  if(!avatar.src){
-    // simple placeholder via inline SVG data-uri
-    const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'>
-      <rect rx='28' ry='28' width='120' height='120' fill='#d9f0ff'/>
-      <circle cx='60' cy='48' r='18' fill='#7dbff0'/>
-      <rect x='26' y='72' width='68' height='28' rx='14' fill='#7dbff0'/>
-    </svg>`);
-    avatar.src = `data:image/svg+xml,${svg}`;
-  }
+  // простой пример курса (без “комиссии” в UI)
+  // можно потом поменять на реальные расчёты
+  let rate = 1.0;
+
+  if (state.give.asset === 'USDT' && state.get.asset === 'USDC') rate = 0.985;
+  else if (state.give.asset === 'USDC' && state.get.asset === 'USDT') rate = 1.012;
+  else if (state.give.asset === state.get.asset) rate = 1.0;
+  else rate = 0.9;
+
+  const out = num * rate;
+  $('#resultAmount').textContent = formatNum(out);
 }
 
-/* Tabs */
-function setTab(tab){
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab === tab);
-  });
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(`page-${tab}`).classList.add("active");
+/* ---------- bottom sheet ---------- */
+const overlay = $('#sheetOverlay');
+const sheet = $('#sheet');
+const sheetTitle = $('#sheetTitle');
+const sheetBody = $('#sheetBody');
+
+let sheetCtx = null; // {type:'asset'|'net'|'bank', target:'give'|'get'}
+
+function openSheet(title, html, ctx){
+  sheetCtx = ctx;
+  sheetTitle.textContent = title;
+  sheetBody.innerHTML = html;
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  overlay.setAttribute('aria-hidden','false');
+  sheet.setAttribute('aria-hidden','false');
 }
 
-/* Amount format */
-function formatSpaces(numStr){
-  // keep digits + dot/comma
-  let s = numStr.replace(/[^\d.,]/g,"").replace(/,/g,".");
-  const parts = s.split(".");
-  let intPart = parts[0] || "";
-  intPart = intPart.replace(/^0+(?=\d)/,"");
-  intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  if(parts.length > 1){
-    let dec = parts[1].slice(0, 8);
-    return `${intPart}${dec ? "."+dec : ""}`;
-  }
-  return intPart || "0";
+function closeSheet(){
+  overlay.classList.add('hidden');
+  sheet.classList.add('hidden');
+  overlay.setAttribute('aria-hidden','true');
+  sheet.setAttribute('aria-hidden','true');
+  sheetBody.innerHTML = '';
+  sheetCtx = null;
 }
 
-function parseNumber(str){
-  const s = (str||"").toString().replace(/\s/g,"").replace(/,/g,".");
-  const n = Number(s);
-  return Number.isFinite(n) ? n : 0;
+function buildAssetList(){
+  return `
+    <div class="sheet-list">
+      ${assets.map(a=>`
+        <button class="sheet-item" type="button" data-asset="${a.code}">
+          <span class="ic"><img src="${a.icon}" alt=""></span>
+          <span>
+            <div class="name">${a.name}</div>
+            <div class="sub">${a.code}</div>
+          </span>
+          <span class="right">›</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
 }
 
-/* Dummy rate (placeholder) */
-function calc(){
-  const a = parseNumber(state.amount);
-  // placeholder: 0.985 rate
-  const rate = 0.985;
-  const out = a ? (a*rate) : 0;
-  document.getElementById("resultNum").textContent = (out ? out.toLocaleString("en-US", {maximumFractionDigits: 8}) : "0").replace(/,/g," ");
-  document.getElementById("resultCur").textContent = state.getAsset;
-}
-
-/* UI update */
-function getAsset(code){
-  return ASSETS.find(x=>x.code===code) || ASSETS[0];
-}
-function setAssetUI(prefix, code){
-  const a = getAsset(code);
-  document.getElementById(`${prefix}AssetName`).textContent = `${a.name[state.lang] || a.name.UA} (${a.code})`;
-  document.getElementById(`${prefix}AssetCode`).textContent = a.code;
-  const ic = document.getElementById(`${prefix}AssetIcon`);
-  ic.src = a.icon;
-  ic.style.display = "";
-}
-
-function setNetUI(prefix, netKey, assetCode){
-  const n = NETWORKS[netKey];
-  document.getElementById(`${prefix}NetName`).textContent = n.title;
-  document.getElementById(`${prefix}NetSub`).textContent = n.sub(assetCode);
-  const ic = document.getElementById(`${prefix}NetIcon`);
-  ic.src = n.icon;
-  ic.style.display = "";
-}
-
-function syncUI(){
-  setAssetUI("give", state.giveAsset);
-  setAssetUI("get", state.getAsset);
-  setNetUI("give", state.giveNet, state.giveAsset);
-  setNetUI("get", state.getNet, state.getAsset);
-
-  document.getElementById("amountChip").textContent = state.giveAsset;
-  document.getElementById("resultCur").textContent = state.getAsset;
-  document.getElementById("langCode").textContent = state.lang;
-  document.getElementById("langVal").textContent = state.lang;
-  calc();
-}
-
-/* Modal */
-const overlay = document.getElementById("overlay");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modalTitle");
-const modalSub = document.getElementById("modalSub");
-const modalList = document.getElementById("modalList");
-
-function openModal(title, sub, items, onPick){
-  modalTitle.textContent = title;
-  modalSub.textContent = sub || "";
-  modalList.innerHTML = "";
-
-  items.forEach(it=>{
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "modal-item";
-    btn.innerHTML = `
-      <div class="modal-item-left">
-        <img class="select-icon" src="${it.icon || ""}" alt="" onerror="this.style.display='none'">
-        <div style="min-width:0">
-          <div class="modal-item-title">${it.title}</div>
-          ${it.sub ? `<div class="modal-item-sub">${it.sub}</div>` : ``}
-        </div>
-      </div>
-      <div class="modal-item-right">›</div>
+function buildNetList(forAssetCode){
+  const a = getAsset(forAssetCode);
+  const list = (a.nets || []).map(n=>{
+    const net = getNet(n);
+    const icon = net.icon || '';
+    const sub = net.sub || `${a.code} • ${n}`;
+    return `
+      <button class="sheet-item" type="button" data-net="${n}">
+        <span class="ic">${icon ? `<img src="${icon}" alt="">` : `<div style="font-weight:900">${n}</div>`}</span>
+        <span>
+          <div class="name">${net.name}</div>
+          <div class="sub">${sub}</div>
+        </span>
+        <span class="right">›</span>
+      </button>
     `;
-    btn.addEventListener("click", ()=>{
-      onPick(it);
-      closeModal();
-    });
-    modalList.appendChild(btn);
-  });
+  }).join('');
 
-  overlay.classList.remove("hidden");
-  modal.classList.remove("hidden");
-  overlay.setAttribute("aria-hidden","false");
-  modal.setAttribute("aria-hidden","false");
+  return `
+    <div class="muted" style="margin:0 6px 10px">${state.lang==='ua' ? 'Показуємо тільки мережі, доступні для цієї валюти — щоб не плутати.' : 'Показываем только сети, доступные для этой валюты — чтобы не путать.'}</div>
+    <div class="sheet-list">${list}</div>
+  `;
 }
 
-function closeModal(){
-  overlay.classList.add("hidden");
-  modal.classList.add("hidden");
-  overlay.setAttribute("aria-hidden","true");
-  modal.setAttribute("aria-hidden","true");
+function buildBankList(){
+  return `
+    <div class="sheet-list">
+      ${banks.map(b=>`
+        <button class="sheet-item" type="button" data-bank="${b.code}">
+          <span class="ic"><img src="${b.icon}" alt=""></span>
+          <span>
+            <div class="name">${b.name}</div>
+            <div class="sub">${b.code}</div>
+          </span>
+          <span class="right">›</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
 }
 
-/* Language sheet */
-const langSheet = document.getElementById("langSheet");
-function openLang(){
-  overlay.classList.remove("hidden");
-  langSheet.classList.remove("hidden");
-  overlay.setAttribute("aria-hidden","false");
-  langSheet.setAttribute("aria-hidden","false");
-}
-function closeLang(){
-  overlay.classList.add("hidden");
-  langSheet.classList.add("hidden");
-  overlay.setAttribute("aria-hidden","true");
-  langSheet.setAttribute("aria-hidden","true");
-}
+/* ---------- input modal (email/phone) ---------- */
+const inputModal = $('#inputModal');
+const inputTitle = $('#inputTitle');
+const inputValue = $('#inputValue');
 
-/* Helpers: ensure selected net exists for selected asset */
-function ensureNetForAsset(assetCode, currentNet){
-  const a = getAsset(assetCode);
-  if(a.nets.includes(currentNet)) return currentNet;
-  return a.nets[0];
+let inputCtx = null; // 'email'|'phone'
+
+function openInput(title, placeholder, value, ctx){
+  inputCtx = ctx;
+  inputTitle.textContent = title;
+  inputValue.placeholder = placeholder;
+  inputValue.value = value || '';
+  inputModal.classList.remove('hidden');
+  inputModal.setAttribute('aria-hidden','false');
+  setTimeout(()=>inputValue.focus(), 50);
 }
 
-/* Events */
-document.querySelectorAll(".tab").forEach(b=>{
-  b.addEventListener("click", ()=> setTab(b.dataset.tab));
-});
+function closeInput(){
+  inputModal.classList.add('hidden');
+  inputModal.setAttribute('aria-hidden','true');
+  inputCtx = null;
+}
 
-document.getElementById("modalClose").addEventListener("click", closeModal);
-overlay.addEventListener("click", ()=>{ closeModal(); closeLang(); });
+/* ---------- tabs ---------- */
+function showTab(tab){
+  $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  $$('.screen').forEach(s=>s.classList.toggle('active', s.id === `screen-${tab}`));
+}
 
-document.getElementById("langBtn").addEventListener("click", openLang);
-document.getElementById("langClose").addEventListener("click", closeLang);
-document.querySelectorAll(".sheet-item").forEach(b=>{
-  b.addEventListener("click", ()=>{
-    state.lang = b.dataset.lang;
-    applyI18n();
-    syncUI();
-    closeLang();
-  });
-});
-
-document.getElementById("giveAssetBtn").addEventListener("click", ()=>{
-  const items = ASSETS.map(a=>({
-    key:a.code,
-    title:`${a.name[state.lang] || a.name.UA} (${a.code})`,
-    sub:a.code,
-    icon:a.icon
-  }));
-  openModal(t("chooseCurrency"), "", items, (it)=>{
-    state.giveAsset = it.key;
-    state.giveNet = ensureNetForAsset(state.giveAsset, state.giveNet);
-    document.getElementById("amountChip").textContent = state.giveAsset;
-    syncUI();
-  });
-});
-
-document.getElementById("getAssetBtn").addEventListener("click", ()=>{
-  const items = ASSETS.map(a=>({
-    key:a.code,
-    title:`${a.name[state.lang] || a.name.UA} (${a.code})`,
-    sub:a.code,
-    icon:a.icon
-  }));
-  openModal(t("chooseCurrency"), "", items, (it)=>{
-    state.getAsset = it.key;
-    state.getNet = ensureNetForAsset(state.getAsset, state.getNet);
-    syncUI();
-  });
-});
-
-function openNetPicker(prefix){
-  const assetCode = prefix === "give" ? state.giveAsset : state.getAsset;
-  const a = getAsset(assetCode);
-  const items = a.nets.map(nk=>{
-    const n = NETWORKS[nk];
-    return {
-      key:nk,
-      title:n.title,
-      sub:n.sub(assetCode),
-      icon:n.icon
-    };
-  });
-  openModal(t("chooseNetwork"), t("onlyAvailable"), items, (it)=>{
-    if(prefix === "give") state.giveNet = it.key;
-    else state.getNet = it.key;
-    syncUI();
+function showProfilePage(page){
+  $$('#profileRouter .profile-page').forEach(p=>{
+    const key = p.getAttribute('data-page');
+    const isRoot = p.id === 'profileRoot';
+    if (page === 'root') p.classList.toggle('active', isRoot);
+    else p.classList.toggle('active', key === page);
   });
 }
 
-document.getElementById("giveNetBtn").addEventListener("click", ()=> openNetPicker("give"));
-document.getElementById("getNetBtn").addEventListener("click", ()=> openNetPicker("get"));
-
-document.getElementById("swapBtn").addEventListener("click", ()=>{
-  // swap assets + nets
-  const a = state.giveAsset;
-  const n = state.giveNet;
-
-  state.giveAsset = state.getAsset;
-  state.giveNet = state.getNet;
-
-  state.getAsset = a;
-  state.getNet = n;
-
-  // ensure nets still valid for swapped assets
-  state.giveNet = ensureNetForAsset(state.giveAsset, state.giveNet);
-  state.getNet = ensureNetForAsset(state.getAsset, state.getNet);
-
-  syncUI();
-});
-
-const amountInput = document.getElementById("amountInput");
-amountInput.addEventListener("input", ()=>{
-  const formatted = formatSpaces(amountInput.value);
-  amountInput.value = formatted;
-  state.amount = formatted;
-  calc();
-});
-
-document.getElementById("createOrderBtn").addEventListener("click", ()=>{
-  // Placeholder: show simple alert, replace with real order creation
-  const msg = `Order: ${state.giveAsset} ${state.amount || "0"} (${state.giveNet}) → ${state.getAsset} (${state.getNet})`;
-  if(tg?.showPopup){
-    tg.showPopup({title:"KeksSwap", message: msg, buttons:[{type:"ok"}]});
-  }else{
-    alert(msg);
-  }
-});
-
-/* Profile rows placeholders */
-document.getElementById("kycBtn").addEventListener("click", ()=>{
-  const msg = (state.lang==="UA") ? "KYC/Верифікація буде тут." :
-              (state.lang==="EN") ? "KYC/Verification will be here." :
-              (state.lang==="TR") ? "KYC/Doğrulama burada olacak." :
-              "KYC/Weryfikacja będzie tutaj.";
-  if(tg?.showPopup){
-    tg.showPopup({title:"KeksSwap", message: msg, buttons:[{type:"ok"}]});
-  }else alert(msg);
-});
-
-document.getElementById("rowLang").addEventListener("click", openLang);
-
-/* Init */
-(function init(){
-  // language by Telegram
+/* ---------- Telegram user ---------- */
+function initTelegramUser(){
   try{
-    const tl = tg?.initDataUnsafe?.user?.language_code;
-    if(tl){
-      const up = tl.toUpperCase();
-      if(up.startsWith("PL")) state.lang="PL";
-      else if(up.startsWith("TR")) state.lang="TR";
-      else if(up.startsWith("EN")) state.lang="EN";
-      else if(up.startsWith("UK") || up.startsWith("UA")) state.lang="UA";
+    const tg = window.Telegram?.WebApp;
+    if (!tg) return;
+
+    tg.ready();
+    tg.expand?.();
+
+    const u = tg.initDataUnsafe?.user;
+    if (!u) return;
+
+    const username = u.username ? '@'+u.username : (u.first_name || 'User');
+    $('#tgName').textContent = username;
+
+    // avatar
+    const photo = u.photo_url;
+    if (photo){
+      $('#tgAvatar').src = photo;
+      $('#tgAvatar').classList.remove('hidden');
+      $('#avatarFallback').classList.add('hidden');
+    } else {
+      const initials = ((u.first_name||'K')[0] + (u.last_name||'S')[0]).toUpperCase();
+      $('#avatarFallback').textContent = initials;
     }
   }catch(e){}
+}
 
-  document.getElementById("langCode").textContent = state.lang;
+/* ---------- profile render ---------- */
+function renderProfileSecurity(){
+  const e = state.email;
+  const p = state.phone;
+
+  if (e){
+    $('#emailRight').textContent = e;
+    $('#emailRight').classList.remove('plus');
+  } else {
+    $('#emailRight').innerHTML = `+ <span data-i18n="add">${t('add')}</span>`;
+    $('#emailRight').classList.add('plus');
+  }
+
+  if (p){
+    $('#phoneRight').textContent = p;
+    $('#phoneRight').classList.remove('plus');
+  } else {
+    $('#phoneRight').innerHTML = `+ <span data-i18n="add">${t('add')}</span>`;
+    $('#phoneRight').classList.add('plus');
+  }
+}
+
+/* ---------- events ---------- */
+function bindEvents(){
+  // language dropdown
+  $('#langBtn').addEventListener('click', ()=>{
+    $('#langMenu').classList.toggle('hidden');
+  });
+  document.addEventListener('click', (e)=>{
+    if (!e.target.closest('.topbar-right')){
+      $('#langMenu').classList.add('hidden');
+    }
+  });
+  $$('.lang-item').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.lang = btn.dataset.lang;
+      localStorage.setItem('ks_lang', state.lang);
+      $('#langMenu').classList.add('hidden');
+      applyI18n();
+      renderExchange();
+      renderProfileSecurity();
+    });
+  });
+
+  // tabs
+  $$('.tab').forEach(b=>{
+    b.addEventListener('click', ()=> showTab(b.dataset.tab));
+  });
+
+  // exchange amount
+  $('#giveAmount').addEventListener('input', recalc);
+
+  // swap
+  $('#swapBtn').addEventListener('click', ()=>{
+    const tmpA = state.give.asset; state.give.asset = state.get.asset; state.get.asset = tmpA;
+    const tmpN = state.give.net;   state.give.net   = state.get.net;   state.get.net   = tmpN;
+    renderExchange();
+  });
+
+  // pickers
+  $('#giveAssetBtn').addEventListener('click', ()=>{
+    openSheet(state.lang==='ua' ? 'Виберіть валюту' : 'Выберите валюту', buildAssetList(), {type:'asset', target:'give'});
+  });
+  $('#getAssetBtn').addEventListener('click', ()=>{
+    openSheet(state.lang==='ua' ? 'Виберіть валюту' : 'Выберите валюту', buildAssetList(), {type:'asset', target:'get'});
+  });
+
+  $('#giveNetBtn').addEventListener('click', ()=>{
+    openSheet(state.lang==='ua' ? 'Оберіть мережу' : 'Выберите сеть', buildNetList(state.give.asset), {type:'net', target:'give'});
+  });
+  $('#getNetBtn').addEventListener('click', ()=>{
+    openSheet(state.lang==='ua' ? 'Оберіть мережу' : 'Выберите сеть', buildNetList(state.get.asset), {type:'net', target:'get'});
+  });
+
+  $('#bankBtn').addEventListener('click', ()=>{
+    openSheet(state.lang==='ua' ? 'Оберіть банк' : 'Выберите банк', buildBankList(), {type:'bank'});
+  });
+
+  // sheet close
+  $('#sheetClose').addEventListener('click', closeSheet);
+  overlay.addEventListener('click', closeSheet);
+
+  // sheet clicks
+  sheetBody.addEventListener('click', (e)=>{
+    const assetBtn = e.target.closest('[data-asset]');
+    const netBtn = e.target.closest('[data-net]');
+    const bankBtn = e.target.closest('[data-bank]');
+
+    if (assetBtn && sheetCtx?.type === 'asset'){
+      const code = assetBtn.dataset.asset;
+      if (sheetCtx.target === 'give'){
+        state.give.asset = code;
+        const a = getAsset(code);
+        if (!a.nets.includes(state.give.net)) state.give.net = a.nets[0];
+      } else {
+        state.get.asset = code;
+        const a = getAsset(code);
+        if (!a.nets.includes(state.get.net)) state.get.net = a.nets[0];
+      }
+      closeSheet();
+      renderExchange();
+      return;
+    }
+
+    if (netBtn && sheetCtx?.type === 'net'){
+      const code = netBtn.dataset.net;
+      if (sheetCtx.target === 'give') state.give.net = code;
+      else state.get.net = code;
+      closeSheet();
+      renderExchange();
+      return;
+    }
+
+    if (bankBtn && sheetCtx?.type === 'bank'){
+      state.bank = bankBtn.dataset.bank;
+      closeSheet();
+      renderExchange();
+      return;
+    }
+  });
+
+  // profile routing
+  $('#openProfileRoot').addEventListener('click', ()=> showProfilePage('root'));
+
+  $$('#profileRoot .item[data-route]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showProfilePage(btn.dataset.route);
+      renderProfileSecurity();
+      applyI18n();
+    });
+  });
+
+  $$('#profileRouter [data-back]').forEach(btn=>{
+    btn.addEventListener('click', ()=> showProfilePage('root'));
+  });
+
+  // saved tabs
+  $$('.chip[data-savedtab]').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      $$('.chip[data-savedtab]').forEach(x=>x.classList.remove('active'));
+      ch.classList.add('active');
+    });
+  });
+
+  // currency pick
+  $$('[data-currency]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.accCurrency = btn.dataset.currency;
+      localStorage.setItem('ks_accCurrency', state.accCurrency);
+      $('#accCurrencyVal').textContent = state.accCurrency;
+      showProfilePage('root');
+    });
+  });
+
+  // language pick in profile
+  $$('[data-langpick]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.lang = btn.dataset.langpick;
+      localStorage.setItem('ks_lang', state.lang);
+      applyI18n();
+      renderExchange();
+      renderProfileSecurity();
+      showProfilePage('root');
+    });
+  });
+
+  // security add email/phone
+  $('#emailItem').addEventListener('click', ()=>{
+    openInput('Email', 'name@mail.com', state.email, 'email');
+  });
+  $('#phoneItem').addEventListener('click', ()=>{
+    openInput(t('phone'), '+380...', state.phone, 'phone');
+  });
+
+  $('#inputCancel').addEventListener('click', closeInput);
+  $('#inputModal').addEventListener('click', (e)=>{
+    if (e.target === $('#inputModal')) closeInput();
+  });
+
+  $('#inputSave').addEventListener('click', ()=>{
+    const v = inputValue.value.trim();
+    if (inputCtx === 'email'){
+      state.email = v;
+      localStorage.setItem('ks_email', v);
+    }
+    if (inputCtx === 'phone'){
+      state.phone = v;
+      localStorage.setItem('ks_phone', v);
+    }
+    closeInput();
+    renderProfileSecurity();
+  });
+
+  // order button
+  $('#createOrderBtn').addEventListener('click', ()=>{
+    // здесь позже сделаем создание заявки/отправку
+    alert(state.lang==='ua' ? 'Заявку створено (демо).' : 'Заявка создана (демо).');
+  });
+
+  // logout
+  $('#logoutBtn').addEventListener('click', ()=>{
+    alert(state.lang==='ua' ? 'Вихід (демо).' : 'Выход (демо).');
+  });
+}
+
+/* ---------- init ---------- */
+function init(){
+  // init values
+  $('#langCode').textContent = state.lang.toUpperCase();
+  $('#accCurrencyVal').textContent = state.accCurrency;
+
   applyI18n();
-  initTelegramProfile();
+  initTelegramUser();
 
-  // default nets valid
-  state.giveNet = ensureNetForAsset(state.giveAsset, state.giveNet);
-  state.getNet = ensureNetForAsset(state.getAsset, state.getNet);
+  // set bank default
+  const b = getBank(state.bank);
+  if (!b) state.bank = banks[0]?.code || 'MONO';
 
-  syncUI();
-  setTab("exchange");
-})();
+  renderExchange();
+  renderProfileSecurity();
+  bindEvents();
+}
+
+init();
