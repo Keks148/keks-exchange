@@ -191,7 +191,7 @@
   }
 
   // --- UI helpers ---
-  function setText(id, v){ $(id).textContent = v; }
+  function setText(id, v){ const el = document.getElementById(id); if (el) el.textContent = v; }
 
   function setImg(imgEl, src, fallbackText){
     imgEl.onerror = () => {
@@ -627,5 +627,8 @@ $('sheetBackdrop').addEventListener('click', (e)=>{ e.preventDefault(); e.stopPr
 
   // initial render
   render();
-})();$('sheet').addEventListener('pointerdown', (e)=>{ e.stopPropagation(); });
+
+  // Safety: ensure sheets are closed on first paint (some WebViews may flash them)
+  sheet.close();
+})();
 
