@@ -226,88 +226,135 @@
 
   // --- Bottom sheet ---
   const sheet = {
-    mode:null,
-    onPick:null,
-    open(mode, title, items, opts={}){
-      this.mode = mode;
-      this.onPick = opts.onPick || null;
+  type: null,
+  title: '',
+  items: [],
+  query: '',
+  onPick: null,
+  searchEnabled: true,
+  isOpen: false,
+  closing: false,
+  lastCloseAt: 0,
 
-      $('sheetTitle').textContent = title;
-      $('sheetList').innerHTML = '';
-
-      // Search only for assets
-      const allowSearch = (mode === 'asset');
-      $('sheetSearchWrap').hidden = !allowSearch;
-      $('sheetSearch').value = '';
-      $('sheetSearch').oninput = null;
-
-      const render = (filter='')=>{
-        const list = $('sheetList');
-        list.innerHTML = '';
-        const f = filter.trim().toLowerCase();
-        items
-          .filter(it=>{
-            if(!f) return true;
-            const a = (it.title?.[state.lang] || it.title?.uk || it.code || '').toLowerCase();
-            const b = (it.code || '').toLowerCase();
-            return a.includes(f) || b.includes(f);
-          })
-          .forEach(it=>{
-            const btn = document.createElement('button');
-            btn.className = 'item';
-            btn.type = 'button';
-            btn.innerHTML = `
-              <img class="item__icon" alt="" />
-              <div class="item__meta">
-                <div class="item__title"></div>
-                <div class="item__sub"></div>
-              </div>
-              <div class="item__arrow">›</div>
-            `;
-            const img = btn.querySelector('img');
-            const titleEl = btn.querySelector('.item__title');
-            const subEl = btn.querySelector('.item__sub');
-
-            const titleText = (it.title?.[state.lang] || it.title?.uk || it.code || '');
-            titleEl.textContent = titleText;
-            subEl.textContent = it.sub || '';
-
-            if (it.icon){
-              setImg(img, it.icon, (it.code||'').toUpperCase());
-            } else {
-              // if no icon, trigger fallback immediately
-              setImg(img, 'missing.png', (it.code||'?'));
-            }
-
-            btn.addEventListener('click', ()=>{
-              this.close();
-              opts.onPick?.(it);
-            });
-            list.appendChild(btn);
-          });
-      };
-
-      if (allowSearch){
-        $('sheetSearch').oninput = (e)=>render(e.target.value);
-      }
-      render('');
-
-      $('sheetBackdrop').hidden = false;
-      $('sheet').hidden = false;
-
-      document.body.style.overflow = 'hidden';
-    },
-    close(){
-      $('sheetBackdrop').hidden = true;
-      $('sheet').hidden = true;
-      document.body.style.overflow = '';
-      this.mode = null;
-      this.onPick = null;
+  open(type, title, items, onPick, opts = {}) {
+    // Backward compatibility: allow 4th arg as config object { onPick, search, ... }
+    if (onPick && typeof onPick === 'object') {
+      opts = onPick || {};
+      onPick = opts.onPick;
     }
-  };
 
-  $('sheetClose').addEventListener('click', ()=>sheet.close());
-  $('sheetBackdrop').addEventListener('click', ()=>sheet.close());
+    // Prevent immediate re-open from "click-through" when closing
+    const now = Date.now();
+    if (now - this.lastCloseAt < 250 || this.closing) return;
+
+    this.type = type;
+    this.title = title || '';
+    this.items = Array.isArray(items) ? items : [];
+    this.query = '';
+    this.onPick = typeof onPick === 'function' ? onPick : null;
+    this.searchEnabled = opts.search !== false;
+
+    $('sheetTitle').textContent = this.title;
+
+    // Search visibility
+    const wrap = $('sheetSearchWrap');
+    if (this.searchEnabled) {
+      wrap.hidden = false;
+      $('sheetSearch').value = '';
+      $('sheetSearch').placeholder = opts.searchPlaceholder || t('search');
+      // Focus only for long lists (avoid keyboard pop for small lists like Language / Network)
+      if ((opts.autofocus ?? true) && this.items.length >= 8) {
+        setTimeout(() => $('sheetSearch').focus({ preventScroll: true }), 0);
+      }
+    } else {
+      wrap.hidden = true;
+      $('sheetSearch').value = '';
+    }
+
+    // Show
+    $('sheetBackdrop').hidden = false;
+    $('sheet').hidden = false;
+    document.body.style.overflow = 'hidden';
+    this.isOpen = true;
+    this.closing = false;
+
+    this.render();
+  },
+
+  close() {
+    if (!this.isOpen) return;
+    this.closing = true;
+    this.lastCloseAt = Date.now();
+
+    // Hide immediately (no animation — more reliable on mobile)
+    $('sheet').hidden = true;
+    $('sheetBackdrop').hidden = true;
+
+    document.body.style.overflow = '';
+    this.isOpen = false;
+
+    // Small delay to avoid accidental re-open due to fast taps
+    setTimeout(() => { this.closing = false; }, 220);
+  },
+
+  render() {
+    const list = $('sheetList');
+    list.innerHTML = '';
+
+    const q = (this.query || '').trim().toLowerCase();
+    const items = q
+      ? this.items.filter((it) => {
+          const a = (it.title || '').toLowerCase();
+          const b = (it.subtitle || '').toLowerCase();
+          const c = (it.code || '').toLowerCase();
+          return a.includes(q) || b.includes(q) || c.includes(q);
+        })
+      : this.items;
+
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.className = 'sheetEmpty';
+      empty.textContent = t('nothing_found');
+      list.appendChild(empty);
+      return;
+    }
+
+    for (const it of items) {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'sheetItem';
+      row.setAttribute('aria-label', it.title);
+
+      row.innerHTML = `
+        <div class="sheetIconWrap">
+          ${it.icon ? `<img class="sheetIcon" src="${it.icon}" alt="" />` : `<div class="sheetIconFallback">${(it.code || '').slice(0, 3)}</div>`}
+        </div>
+        <div class="sheetMeta">
+          <div class="sheetTitleRow">
+            <div class="sheetItemTitle">${escapeHtml(it.title || '')}</div>
+            ${it.badge ? `<span class="sheetBadge">${escapeHtml(it.badge)}</span>` : ``}
+          </div>
+          ${it.subtitle ? `<div class="sheetItemSubtitle">${escapeHtml(it.subtitle)}</div>` : ``}
+        </div>
+        <div class="sheetChevron">›</div>
+      `;
+
+      row.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const cb = this.onPick;
+        this.close();
+        if (cb) setTimeout(() => cb(it), 0);
+      });
+
+      list.appendChild(row);
+    }
+  }
+};;
+
+  $('sheetClose').addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); });
+  $('sheetBackdrop').addEventListener('pointerdown', (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); });
+$('sheetBackdrop').addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); });
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && !$('sheet').hidden) sheet.close();
   });
@@ -412,8 +459,7 @@
       sub:'',
       icon:l.flag
     }));
-    sheet.open('language', tt('sheetLanguage'), items, {
-      onPick:(it)=>{
+    sheet.open('language', tt('sheetLanguage'), items, { search: false, autofocus: false, onPick:(it)=>{
         state.lang = it.id;
         render();
       }
@@ -482,8 +528,7 @@
     const items = networksForCrypto(c.id).map(n=>({
       id:n.id, code:n.code, title:n.title, icon:n.icon, sub: n.title[state.lang] || n.title.uk
     }));
-    sheet.open('network', tt('sheetNetwork'), items, {
-      onPick:(it)=>{
+    sheet.open('network', tt('sheetNetwork'), items, { search: false, autofocus: false, onPick:(it)=>{
         state.give.net = it.id;
         render();
       }
@@ -496,8 +541,7 @@
     const items = networksForCrypto(c.id).map(n=>({
       id:n.id, code:n.code, title:n.title, icon:n.icon, sub: n.title[state.lang] || n.title.uk
     }));
-    sheet.open('network', tt('sheetNetwork'), items, {
-      onPick:(it)=>{
+    sheet.open('network', tt('sheetNetwork'), items, { search: false, autofocus: false, onPick:(it)=>{
         state.get.net = it.id;
         render();
       }
@@ -583,4 +627,5 @@
 
   // initial render
   render();
-})();
+})();$('sheet').addEventListener('pointerdown', (e)=>{ e.stopPropagation(); });
+
