@@ -347,3 +347,52 @@ body{
 .hidden{display:none !important}
 
 .brand__tag{display:none;}
+
+
+/* Ensure native [hidden] always hides (some webviews can be quirky) */
+[hidden]{display:none !important;}
+
+/* Brand mark (inline SVG) */
+.brandMark{
+  width:44px;height:44px;flex:0 0 44px;
+  display:grid;place-items:center;
+  border-radius:14px;
+  background: rgba(255,255,255,.55);
+  border:1px solid rgba(15,23,42,.06);
+  overflow:hidden;
+}
+.brandMark svg{width:38px;height:38px;display:block}
+
+/* Telegram avatar image */
+.avatarImg{
+  width:100%;height:100%;
+  border-radius:999px;
+  object-fit:cover;
+  display:block;
+}
+
+/* Bottom tabs: monochrome icons */
+.tabIcon{
+  width:22px;height:22px;
+  color:#0f172a;
+}
+.tabIconWrap{display:grid;place-items:center;}
+.tabBtn .tabLabel{font-weight:600}
+.tabBtn.isActive .tabIcon{color:#0b66ff}
+
+/* Language button: no pill background */
+.langBtn{
+  background: transparent !important;
+  border: 1px solid rgba(15,23,42,.10) !important;
+  box-shadow:none !important;
+}
+
+/* Sheets: smoother + tappable close */
+.sheet{
+  will-change: transform, opacity;
+}
+.sheetClose{
+  touch-action: manipulation;
+}
+
+.noScroll{overflow:hidden !important;}
