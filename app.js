@@ -21,50 +21,6 @@
 
   const $ = (id)=>document.getElementById(id);
 
-const getTelegramUser = () => {
-  try {
-    const tg = window.Telegram && window.Telegram.WebApp;
-    if (!tg) return null;
-    tg.ready && tg.ready();
-    const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
-    return u || null;
-  } catch (e) { return null; }
-};
-
-const applyTelegramProfile = () => {
-  const u = getTelegramUser();
-  if (!u) return;
-  const name = [u.first_name, u.last_name].filter(Boolean).join(" ").trim();
-  const uname = u.username ? "@" + u.username : "@user";
-
-  const avatarImg = $("avatarImg");
-  const avatarText = $("avatarText");
-  const nameEl = $("profileName");
-  const userEl = $("profileUser");
-
-  if (nameEl && name) nameEl.textContent = name;
-  if (userEl) userEl.textContent = uname;
-
-  const initials = (name || "KS")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0,2)
-    .map(s => s[0].toUpperCase())
-    .join("");
-
-  if (avatarText) {
-    avatarText.textContent = initials || "KS";
-    avatarText.hidden = false;
-  }
-
-  const photo = u.photo_url;
-  if (avatarImg && photo) {
-    avatarImg.src = photo;
-    avatarImg.hidden = false;
-    if (avatarText) avatarText.hidden = true;
-  }
-};
-
   const LANGS = [
     { id:'uk', code:'UA', name:{uk:'Українська', en:'Ukrainian', pl:'Ukraiński', tr:'Ukraynaca'}, flag:'assets/flags/ua.svg' },
     { id:'en', code:'EN', name:{uk:'English', en:'English', pl:'English', tr:'English'}, flag:'assets/flags/gb.svg' },
@@ -394,24 +350,7 @@ const applyTelegramProfile = () => {
       list.appendChild(row);
     }
   }
-};
-// Hard reset sheets on boot (prevents "stuck open" on mobile webviews)
-const forceCloseSheets = () => {
-  try{
-    $("sheetBackdrop").hidden = true;
-    $("sheet").hidden = true;
-    $("sheet").classList.remove("isOpen");
-    document.body.classList.remove("noScroll");
-  }catch(e){}
-};
-forceCloseSheets();
-
-// Use pointer/touch events for reliable closing in mobile webviews
-["pointerdown","touchstart"].forEach(evt => {
-  $("sheetClose").addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); }, {passive:false});
-  $("sheetBackdrop").addEventListener(evt, (e)=>{ e.preventDefault(); sheet.close(); }, {passive:false});
-});
-;
+};;
 
   $('sheetClose').addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); });
   $('sheetBackdrop').addEventListener('pointerdown', (e)=>{ e.preventDefault(); e.stopPropagation(); sheet.close(); });

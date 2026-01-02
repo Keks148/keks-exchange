@@ -107,9 +107,9 @@
 
       <!-- Bottom nav -->
       <nav class="bottomNav">
-        <button class="tab is-active" data-tab="home" type="button"><svg class="tabIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 21V10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 22v-7h6v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span id="tabHome">Головна</span></button>
+        <button class="tab is-active" data-tab="home" type="button">🏠<span id="tabHome">Головна</span></button>
         <button class="tab" data-tab="history" type="button">🕒<span id="tabHistory">Історія</span></button>
-        <button class="tab" data-tab="profile" type="button"><svg class="tabIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="tabProfile">Профіль</span></button>
+        <button class="tab" data-tab="profile" type="button">👤<span id="tabProfile">Профіль</span></button>
       </nav>
 
       <!-- Screens -->
@@ -123,10 +123,7 @@
         <div class="screenTitle" id="titleProfile">Профіль</div>
         <div class="profileCard">
           <div class="profileTop">
-            <div class="avatar" id="avatar">
-              <img id="avatarImg" class="avatarImg" alt="" loading="lazy" hidden />
-              <span id="avatarText">KS</span>
-            </div>
+            <div class="avatar" id="avatar">KS</div>
             <div class="profileMeta">
               <div class="profileName" id="profileName">Новачок</div>
               <div class="profileUser" id="profileUser">@user</div>
@@ -164,7 +161,7 @@
 
     <!-- Search (only for assets, not for language/network) -->
     <div class="sheetSearch" id="sheetSearchWrap" hidden>
-      <input class="sheetSearchInput" id="sheetSearch" hidden placeholder="Пошук" />
+      <input class="sheetSearchInput" id="sheetSearch" placeholder="Пошук" />
     </div>
 
     <div class="sheetList" id="sheetList"></div>
