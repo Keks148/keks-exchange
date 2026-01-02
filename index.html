@@ -1,149 +1,177 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="uk">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<title>KeksSwap</title>
-<link href="style.css" rel="stylesheet"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>KeksSwap</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="app" id="app">
-<!-- Header -->
-<header class="topbar">
-<div class="brand">
-<img alt="KeksSwap" class="brand__logo" src="logos/keks-logo.png"/>
+  <div id="app" class="app">
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand__logo" src="logos/keks-logo.png" alt="KeksSwap" />
+        <div class="brand__text">
+          <div class="brand__name">KeksSwap</div>
+          <!-- tag removed (no extra text near logo) -->
+        </div>
+      </div>
 
-</div>
-<button aria-label="Language" class="langBtn" id="langBtn" type="button">
-<img alt="UA" class="langBtn__flag" id="langFlag" src="assets/flags/ua.svg"/>
-<span class="langBtn__code" id="langCode">UA</span>
-<span class="chev">▾</span>
-</button>
-</header>
-<!-- Main -->
-<main class="content">
-<!-- Exchange card -->
-<section class="card">
-<div class="card__title" id="titleExchange">Обмін</div>
-<div class="card__subtitle" id="subtitleExchange">Виберіть валюту та введіть суму</div>
-<div class="fieldGroup">
-<div class="label" id="lblGive">Віддаєте</div>
-<button class="picker" id="giveAssetBtn" type="button">
-<img alt="" class="picker__icon" id="giveIcon"/>
-<div class="picker__text">
-<div class="picker__main" id="giveMain">USD Coin (USDC)</div>
-<div class="picker__sub" id="giveSub">USDC</div>
-</div>
-<span class="chev">▾</span>
-</button>
-<div class="label" id="lblGiveNet">Мережа</div>
-<button class="picker" id="giveNetBtn" type="button">
-<img alt="" class="picker__icon" id="giveNetIcon"/>
-<div class="picker__text">
-<div class="picker__main" id="giveNetMain">ERC20</div>
-<div class="picker__sub" id="giveNetSub">USDT/USDC · ETH</div>
-</div>
-<span class="chev">▾</span>
-</button>
-<div class="label" id="lblAmount">Сума</div>
-<div class="amountRow">
-<input class="amountInput" id="amountInput" inputmode="decimal" placeholder="0"/>
-<span class="amountUnit" id="amountUnit">USDC</span>
-</div>
-</div>
-<button aria-label="Swap" class="swapBtn" id="swapBtn" type="button">⇄</button>
-<div class="fieldGroup">
-<div class="label" id="lblGet">Отримуєте</div>
-<button class="picker" id="getAssetBtn" type="button">
-<img alt="" class="picker__icon" id="getIcon"/>
-<div class="picker__text">
-<div class="picker__main" id="getMain">Monobank</div>
-<div class="picker__sub" id="getSub">UAH · Card</div>
-</div>
-<span class="chev">▾</span>
-</button>
-<div class="label" id="lblGetNetWrap">Мережа</div>
-<button class="picker" id="getNetBtn" type="button">
-<img alt="" class="picker__icon" id="getNetIcon"/>
-<div class="picker__text">
-<div class="picker__main" id="getNetMain">BEP20</div>
-<div class="picker__sub" id="getNetSub">USDT/USDC · BSC</div>
-</div>
-<span class="chev">▾</span>
-</button>
-<div class="label" id="lblCard">Номер картки</div>
-<input class="textInput" id="cardInput" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000"/>
-<div class="label" id="lblName">ПІБ</div>
-<input class="textInput" id="nameInput" placeholder="Ім'я Прізвище"/>
-<div class="label" id="lblWalletWrap">Адреса гаманця</div>
-<input class="textInput" id="walletInput" placeholder="0x... / T... / ..."/>
-</div>
-<div class="resultRow">
-<div class="resultLabel" id="lblResult">Ви отримаєте</div>
-<div class="resultValue"><span id="resultValue">0</span></div>
-</div>
-<button class="primaryBtn" id="createBtn" type="button">Створити заявку</button>
-<div class="hint" id="hintText">
+      <button class="langBtn" id="langBtn" type="button" aria-label="Language">
+        <img class="langBtn__flag" id="langFlag" alt="UA" src="assets/flags/ua.svg" />
+        <span class="langBtn__code" id="langCode">UA</span>
+        <span class="chev">▾</span>
+      </button>
+    </header>
+
+    <!-- Main -->
+    <main class="content">
+      <!-- Exchange card -->
+      <section class="card">
+        <div class="card__title" id="titleExchange">Обмін</div>
+        <div class="card__subtitle" id="subtitleExchange">Виберіть валюту та введіть суму</div>
+
+        <div class="fieldGroup">
+          <div class="label" id="lblGive">Віддаєте</div>
+          <button class="picker" id="giveAssetBtn" type="button">
+            <img class="picker__icon" id="giveIcon" alt="" />
+            <div class="picker__text">
+              <div class="picker__main" id="giveMain">USD Coin (USDC)</div>
+              <div class="picker__sub" id="giveSub">USDC</div>
+            </div>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="label" id="lblGiveNet">Мережа</div>
+          <button class="picker" id="giveNetBtn" type="button">
+            <img class="picker__icon" id="giveNetIcon" alt="" />
+            <div class="picker__text">
+              <div class="picker__main" id="giveNetMain">ERC20</div>
+              <div class="picker__sub" id="giveNetSub">USDT/USDC · ETH</div>
+            </div>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="label" id="lblAmount">Сума</div>
+          <div class="amountRow">
+            <input class="amountInput" id="amountInput" inputmode="decimal" placeholder="0" />
+            <span class="amountUnit" id="amountUnit">USDC</span>
+          </div>
+        </div>
+
+        <button class="swapBtn" id="swapBtn" type="button" aria-label="Swap">⇄</button>
+
+        <div class="fieldGroup">
+          <div class="label" id="lblGet">Отримуєте</div>
+          <button class="picker" id="getAssetBtn" type="button">
+            <img class="picker__icon" id="getIcon" alt="" />
+            <div class="picker__text">
+              <div class="picker__main" id="getMain">Monobank</div>
+              <div class="picker__sub" id="getSub">UAH · Card</div>
+            </div>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="label" id="lblGetNetWrap">Мережа</div>
+          <button class="picker" id="getNetBtn" type="button">
+            <img class="picker__icon" id="getNetIcon" alt="" />
+            <div class="picker__text">
+              <div class="picker__main" id="getNetMain">BEP20</div>
+              <div class="picker__sub" id="getNetSub">USDT/USDC · BSC</div>
+            </div>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="label" id="lblCard">Номер картки</div>
+          <input class="textInput" id="cardInput" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" />
+
+          <div class="label" id="lblName">ПІБ</div>
+          <input class="textInput" id="nameInput" placeholder="Ім'я Прізвище" />
+
+          <div class="label" id="lblWalletWrap">Адреса гаманця</div>
+          <input class="textInput" id="walletInput" placeholder="0x... / T... / ..." />
+        </div>
+
+        <div class="resultRow">
+          <div class="resultLabel" id="lblResult">Ви отримаєте</div>
+          <div class="resultValue"><span id="resultValue">0</span></div>
+        </div>
+
+        <button class="primaryBtn" id="createBtn" type="button">Створити заявку</button>
+
+        <div class="hint" id="hintText">
           Це демо інтерфейс. Розрахунок курсу та інтеграцію API додамо наступним кроком.
         </div>
-</section>
-<!-- Bottom nav -->
-<nav class="bottomNav">
-<button class="tab is-active" data-tab="home" type="button"><svg aria-hidden="true" class="tabIcon" viewbox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 21V10.5z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path><path d="M9 22v-7h6v7" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg><span id="tabHome">Головна</span></button>
-<button class="tab" data-tab="history" type="button">🕒<span id="tabHistory">Історія</span></button>
-<button class="tab" data-tab="profile" type="button"><svg aria-hidden="true" class="tabIcon" viewbox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12z" fill="none" stroke="currentColor" stroke-width="2"></path><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg><span id="tabProfile">Профіль</span></button>
-</nav>
-<!-- Screens -->
-<section class="screen" hidden="" id="screenHistory">
-<div class="screenTitle" id="titleHistory">Історія</div>
-<div class="screenSub" id="subHistory">Ваші заявки на обмін</div>
-<div class="empty" id="emptyHistory">Поки що порожньо</div>
-</section>
-<section class="screen" hidden="" id="screenProfile">
-<div class="screenTitle" id="titleProfile">Профіль</div>
-<div class="profileCard">
-<div class="profileTop">
-<div class="avatar" id="avatar">
-<img alt="" class="avatarImg" hidden="" id="avatarImg" loading="lazy"/>
-<span id="avatarText">KS</span>
-</div>
-<div class="profileMeta">
-<div class="profileName" id="profileName">Новачок</div>
-<div class="profileUser" id="profileUser">@user</div>
-</div>
-<button class="ghostBtn" id="editProfileBtn" type="button">Змінити</button>
-</div>
-<div class="label" id="lblEmail">Email</div>
-<input class="textInput" id="emailInput" placeholder="name@email.com"/>
-<div class="label" id="lblPhone">Телефон</div>
-<input class="textInput" id="phoneInput" placeholder="+380..."/>
-<div class="grid2">
-<button class="tile" id="tileCurrency" type="button">Валюта акаунта<span class="tileSub" id="tileCurrencySub">UAH</span></button>
-<button class="tile" id="tileSaved" type="button">Збережені реквізити<span class="tileSub">0</span></button>
-<button class="tile" id="tileSecurity" type="button">Безпека<span class="tileSub">PIN</span></button>
-<button class="tile" id="tileSupport" type="button">Підтримка<span class="tileSub">24/7</span></button>
-</div>
-<button class="primaryBtn" id="saveProfileBtn" type="button">Зберегти</button>
-</div>
-</section>
-</main>
-</div>
-<!-- Bottom sheet -->
-<div class="sheetBackdrop" hidden="" id="sheetBackdrop"></div>
-<div aria-modal="true" class="sheet" hidden="" id="sheet" role="dialog">
-<div class="sheetHandle"></div>
-<div class="sheetHead">
-<div class="sheetTitle" id="sheetTitle">Виберіть</div>
-<button aria-label="Close" class="sheetClose" id="sheetClose" type="button">✕</button>
-</div>
-<!-- Search (only for assets, not for language/network) -->
-<div class="sheetSearch" hidden="" id="sheetSearchWrap">
-<input class="sheetSearchInput" hidden="" id="sheetSearch" placeholder="Пошук"/>
-</div>
-<div class="sheetList" id="sheetList"></div>
-</div>
-<div class="toast" hidden="" id="toast"></div>
-<script src="app.js"></script>
+      </section>
+
+      <!-- Bottom nav -->
+      <nav class="bottomNav">
+        <button class="tab is-active" data-tab="home" type="button"><svg class="tabIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 21V10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 22v-7h6v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span id="tabHome">Головна</span></button>
+        <button class="tab" data-tab="history" type="button">🕒<span id="tabHistory">Історія</span></button>
+        <button class="tab" data-tab="profile" type="button"><svg class="tabIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="tabProfile">Профіль</span></button>
+      </nav>
+
+      <!-- Screens -->
+      <section class="screen" id="screenHistory" hidden>
+        <div class="screenTitle" id="titleHistory">Історія</div>
+        <div class="screenSub" id="subHistory">Ваші заявки на обмін</div>
+        <div class="empty" id="emptyHistory">Поки що порожньо</div>
+      </section>
+
+      <section class="screen" id="screenProfile" hidden>
+        <div class="screenTitle" id="titleProfile">Профіль</div>
+        <div class="profileCard">
+          <div class="profileTop">
+            <div class="avatar" id="avatar">
+              <img id="avatarImg" class="avatarImg" alt="" loading="lazy" hidden />
+              <span id="avatarText">KS</span>
+            </div>
+            <div class="profileMeta">
+              <div class="profileName" id="profileName">Новачок</div>
+              <div class="profileUser" id="profileUser">@user</div>
+            </div>
+            <button class="ghostBtn" id="editProfileBtn" type="button">Змінити</button>
+          </div>
+
+          <div class="label" id="lblEmail">Email</div>
+          <input class="textInput" id="emailInput" placeholder="name@email.com" />
+
+          <div class="label" id="lblPhone">Телефон</div>
+          <input class="textInput" id="phoneInput" placeholder="+380..." />
+
+          <div class="grid2">
+            <button class="tile" id="tileCurrency" type="button">Валюта акаунта<span class="tileSub" id="tileCurrencySub">UAH</span></button>
+            <button class="tile" id="tileSaved" type="button">Збережені реквізити<span class="tileSub">0</span></button>
+            <button class="tile" id="tileSecurity" type="button">Безпека<span class="tileSub">PIN</span></button>
+            <button class="tile" id="tileSupport" type="button">Підтримка<span class="tileSub">24/7</span></button>
+          </div>
+
+          <button class="primaryBtn" id="saveProfileBtn" type="button">Зберегти</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div class="sheetBackdrop" id="sheetBackdrop" hidden></div>
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true">
+    <div class="sheetHandle"></div>
+    <div class="sheetHead">
+      <div class="sheetTitle" id="sheetTitle">Виберіть</div>
+      <button class="sheetClose" id="sheetClose" type="button" type="button" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Search (only for assets, not for language/network) -->
+    <div class="sheetSearch" id="sheetSearchWrap" hidden>
+      <input class="sheetSearchInput" id="sheetSearch" hidden placeholder="Пошук" />
+    </div>
+
+    <div class="sheetList" id="sheetList"></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
