@@ -1,39 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KeksSwap</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>KeksSwap</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header class="top">
-  <img src="logo.png" class="logo">
-  <div class="lang">UA</div>
-</header>
+  <div class="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <!-- Logo only (no extra text near logo) -->
+        <img class="brand__logo" src="logos/keks-logo.png" alt="KeksSwap" />
+      </div>
 
-<main>
-  <div class="card">
-    <h1>Обмін</h1>
+      <!-- spacer keeps language button on the right after hiding title -->
+      <div class="topbar__spacer" aria-hidden="true"></div>
 
-    <div class="field">Віддаєте</div>
-    <button class="select">USDT</button>
+      <button class="langBtn" id="langBtn" type="button" aria-haspopup="dialog" aria-controls="sheet">
+        <span class="langBtn__flag" id="langFlag">🇺🇦</span>
+        <span class="langBtn__code" id="langCode">UA</span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
 
-    <div class="field">Мережа</div>
-    <button class="select">ERC20</button>
+    <!-- Content -->
+    <main class="content">
+      <!-- HOME -->
+      <section class="page page--active" id="pageHome" aria-label="Home">
+        <div class="card hero">
+          <div class="hero__title" id="homeTitle">Обмін</div>
+          <div class="hero__sub" id="homeSub">Виберіть валюту та введіть суму</div>
 
-    <div class="field">Сума</div>
-    <input type="number" placeholder="0">
+          <div class="field">
+            <div class="label" id="lblSend">Віддаєте</div>
+            <button class="select" type="button" id="sendAssetBtn">
+              <div class="select__iconWrap"><img id="sendAssetIcon" class="select__icon" alt="" /></div>
+              <div class="select__text">
+                <div class="select__main" id="sendAssetMain">USDT</div>
+                <div class="select__sub" id="sendAssetSub">Tether</div>
+              </div>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
 
-    <button class="swap">⇅</button>
+          <div class="field">
+            <div class="label" id="lblNet">Мережа</div>
+            <button class="select" type="button" id="sendNetBtn">
+              <div class="select__iconWrap"><img id="sendNetIcon" class="select__icon" alt="" /></div>
+              <div class="select__text">
+                <div class="select__main" id="sendNetMain">TRC20</div>
+                <div class="select__sub" id="sendNetSub">USDT/USDC • TRX</div>
+              </div>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
 
-    <div class="field">Отримуєте</div>
-    <button class="select">Monobank</button>
+          <div class="field">
+            <div class="label" id="lblAmount">Сума</div>
+            <div class="amount">
+              <input class="amount__input" id="amountInput" inputmode="decimal" placeholder="0" />
+              <button class="amount__chip" id="amountUnit" type="button">USDT</button>
+            </div>
+            <div class="hint" id="rateHint">≈ курс та комісії буде показано тут</div>
+          </div>
 
-    <button class="submit">Створити заявку</button>
+          <div class="swapRow">
+            <button class="swapBtn" type="button" id="swapBtn" aria-label="Swap">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 7h11l-2-2m2 2l-2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17 17H6l2 2m-2-2l2-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="field">
+            <div class="label" id="lblReceive">Отримуєте</div>
+            <button class="select" type="button" id="recvBankBtn">
+              <div class="select__iconWrap"><img id="recvBankIcon" class="select__icon" alt="" /></div>
+              <div class="select__text">
+                <div class="select__main" id="recvBankMain">Monobank</div>
+                <div class="select__sub" id="recvBankSub">UAH • Card</div>
+              </div>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <div class="grid2">
+            <div class="field">
+              <div class="label" id="lblCard">Номер картки</div>
+              <input class="input" id="cardInput" inputmode="numeric" placeholder="0000 0000 0000 0000" />
+            </div>
+            <div class="field">
+              <div class="label" id="lblName">ПІБ</div>
+              <input class="input" id="nameInput" placeholder="Ім'я Прізвище" />
+            </div>
+          </div>
+
+          <button class="primary" id="createBtn" type="button">Створити заявку</button>
+          <div class="tiny" id="disclaimer">Демо-версія інтерфейсу (без реальних операцій).</div>
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="page" id="pageHistory" aria-label="History">
+        <div class="card">
+          <div class="sectionTitle">Історія</div>
+          <div class="list" id="historyList"></div>
+          <button class="ghost" type="button" id="seedHistoryBtn">Додати демо-історію</button>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section class="page" id="pageProfile" aria-label="Profile">
+        <div class="card">
+          <div class="sectionTitle">Профіль</div>
+
+          <div class="profileHead">
+            <div class="avatar" id="tgAvatar">KS</div>
+            <div class="profileText">
+              <div class="profileName" id="tgName">Новачок</div>
+              <div class="profileUser" id="tgUser">@user</div>
+            </div>
+            <button class="pill" type="button" id="editProfileBtn">Змінити</button>
+          </div>
+
+          <div class="field">
+            <div class="label">Email</div>
+            <input class="input" id="emailInput" placeholder="name@email.com" />
+          </div>
+
+          <div class="field">
+            <div class="label">Телефон</div>
+            <input class="input" id="phoneInput" inputmode="tel" placeholder="+380..." />
+          </div>
+
+          <div class="grid2">
+            <button class="tile" type="button" id="accCurrencyBtn">
+              <div class="tile__title">Валюта акаунта</div>
+              <div class="tile__value" id="accCurrencyVal">UAH</div>
+            </button>
+            <button class="tile" type="button" id="savedReqBtn">
+              <div class="tile__title">Збережені реквізити</div>
+              <div class="tile__value" id="savedReqVal">0</div>
+            </button>
+            <button class="tile" type="button" id="securityBtn">
+              <div class="tile__title">Безпека</div>
+              <div class="tile__value">PIN</div>
+            </button>
+            <button class="tile" type="button" id="supportBtn">
+              <div class="tile__title">Підтримка</div>
+              <div class="tile__value">24/7</div>
+            </button>
+          </div>
+
+          <button class="primary" id="saveProfileBtn" type="button">Зберегти</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom nav -->
+    <nav class="bottomNav" aria-label="Bottom navigation">
+      <button class="tab tab--active" type="button" data-tab="home" aria-current="page">
+        <span class="tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 10.5l9-7 9 7V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="tab__label">Головна</span>
+      </button>
+      <button class="tab" type="button" data-tab="history">
+        <span class="tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 8v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 12a9 9 0 1 1-3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tab__label">Історія</span>
+      </button>
+      <button class="tab" type="button" data-tab="profile">
+        <span class="tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </span>
+        <span class="tab__label">Профіль</span>
+      </button>
+    </nav>
   </div>
-</main>
 
-<script src="script.js"></script>
+  <!-- Sheet / modal (single instance) -->
+  <div class="sheetBackdrop" id="sheetBackdrop" hidden></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="sheet__handle" aria-hidden="true"></div>
+    <div class="sheet__header">
+      <div class="sheet__title" id="sheetTitle">Виберіть</div>
+      <button class="sheet__close" id="sheetClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="sheet__body">
+      <div class="sheet__list" id="sheetList"></div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- Telegram WebApp (optional) -->
+  <script>
+    // Prevent pull-to-refresh glitches on mobile.
+    document.addEventListener('touchmove', function(e){
+      if (document.body.classList.contains('noScroll')) e.preventDefault();
+    }, { passive: false });
+  </script>
+  <script src="app.js"></script>
 </body>
 </html>
