@@ -36,8 +36,21 @@
   ];
 
   const BANKS = [
-    { id:'card', name:'Card', sub:'UAH · Card', icon:'' },
-    { id:'iban', name:'IBAN', sub:'UAH/EUR · IBAN', icon:'' },
+    { id:'mono',  name:'Monobank', sub:'UAH', icon:'logos/banks/mono.png' },
+    { id:'privat',name:'PrivatBank', sub:'UAH', icon:'logos/banks/privat.png' },
+    { id:'oschad',name:'Oschadbank', sub:'UAH', icon:'logos/banks/oschad.png' },
+    { id:'a-bank',name:'A-Bank', sub:'UAH', icon:'logos/banks/a-bank.png' },
+    { id:'pumb',  name:'PUMB', sub:'UAH', icon:'logos/banks/pumb.png' },
+    { id:'otp',   name:'OTP Bank', sub:'UAH', icon:'logos/banks/otp.png' },
+    { id:'sense', name:'Sense Bank', sub:'UAH', icon:'logos/banks/sense.png' },
+    { id:'ukr-sib',name:'UKRSIBBANK', sub:'UAH', icon:'logos/banks/ukr-sib.png' },
+    { id:'izi',   name:'izibank', sub:'UAH', icon:'logos/banks/izi.png' },
+    { id:'visa',  name:'Visa/Mastercard', sub:'UAH', icon:'logos/banks/visa-master.png' }
+  ];
+
+  const RECV_METHODS = [
+    { id:'card', titleUA:'Карта', titleEN:'Card', subUA:'UAH • Card', subEN:'UAH • Card' },
+    { id:'iban', titleUA:'IBAN', titleEN:'IBAN', subUA:'UAH/EUR • IBAN', subEN:'UAH/EUR • IBAN' },
   ];
 
   const LANGS = [
@@ -63,6 +76,9 @@
   const sendAssetBtn = $('#sendAssetBtn');
   const sendNetBtn = $('#sendNetBtn');
   const recvBankBtn = $('#recvBankBtn');
+  const recvMethodBtn = $('#recvMethodBtn');
+  const recvMethodMain = $('#recvMethodMain');
+  const recvMethodSub = $('#recvMethodSub');
   const amountUnit = $('#amountUnit');
 
   const sendAssetIcon = $('#sendAssetIcon');
@@ -76,6 +92,10 @@
   const recvBankIcon = $('#recvBankIcon');
   const recvBankMain = $('#recvBankMain');
   const recvBankSub = $('#recvBankSub');
+
+  const lblMethod = $('#lblMethod');
+  const lblPay = $('#lblPay');
+  const payInput = $('#payInput');
 
   const amountInput = $('#amountInput');
   const rateHint = $('#rateHint');
@@ -105,6 +125,7 @@
     sendAsset: 'usdt',
     sendNetwork: 'trc20',
     recvBank: 'mono',
+    recvMethod: 'card',
     sheetMode: null
   };
 
@@ -157,6 +178,7 @@
       mode==='asset'? (state.lang==='en'?'Choose asset':'Оберіть валюту') :
       mode==='network'? (state.lang==='en'?'Choose network':'Оберіть мережу') :
       mode==='bank'? (state.lang==='en'?'Choose bank':'Оберіть банк') :
+      mode==='method'? (state.lang==='en'?'Choose method':'Оберіть спосіб') :
       (state.lang==='en'?'Choose':'Виберіть');
 
     renderSheetList(mode);
@@ -185,7 +207,8 @@
       mode==='lang' ? LANGS.map(l=>({ id:l.id, main:l.label, sub:l.code, icon:'', flag:l.flag })) :
       mode==='asset' ? ASSETS.map(a=>({ id:a.id, main:`${a.code}`, sub:a.name, icon:a.icon })) :
       mode==='network' ? availableNetworks().map(n=>({ id:n.id, main:n.code, sub:n.sub || n.name, icon:n.icon })) :
-      mode==='bank' ? BANKS.map(b=>({ id:b.id, main:(b.id==='card' ? (state.lang==='en'?'Card':'Карта') : 'IBAN'), sub:(b.id==='card'?'UAH · Card':'UAH/EUR · IBAN'), icon:b.icon })) :
+      mode==='bank' ? BANKS.map(b=>({ id:b.id, main:b.name, sub:b.sub, icon:b.icon })) :
+      mode==='method' ? RECV_METHODS.map(m=>({ id:m.id, main:m.name, sub:m.sub, icon:'' })) :
       []
     );
 
@@ -266,6 +289,12 @@
       persist();
       return;
     }
+    if(mode==='method'){
+      state.recvMethod = id;
+      applySelections();
+      persist();
+      return;
+    }
   }
 
   function availableNetworks(){
@@ -286,19 +315,18 @@
     safeImg(sendNetIcon, n.icon, n.code);
 
     const b = getBank(state.recvBank);
-    recvBankMain.textContent = (b.id==='card' ? (state.lang==='en'?'Card':'Карта') : 'IBAN');
-    recvBankSub.textContent = (b.id==='card' ? 'UAH · Card' : 'UAH/EUR · IBAN');
+    recvBankMain.textContent = b.name;
+    recvBankSub.textContent = b.sub || '';
     safeImg(recvBankIcon, b.icon, b.name.slice(0,3));
 
-    
+    // Receive method
+    const m = RECV_METHODS.find(x=>x.id===state.recvMethod) || RECV_METHODS[0];
+    recvMethodMain.textContent = m.name;
+    recvMethodSub.textContent = m.sub || '';
 
-    // Receive method inputs: Card vs IBAN
-    const isIban = state.recvBank === 'iban';
-    $('#lblCard').textContent = isIban ? 'IBAN' : (state.lang==='en'?'Card number':'Номер картки');
-    $('#cardInput').placeholder = isIban ? 'UA00 XXXX XXXX XXXX XXXX XXXX' : '0000 0000 0000 0000';
-    $('#cardInput').inputMode = isIban ? 'text' : 'numeric';
-    $('#cardInput').setAttribute('autocomplete', isIban ? 'off' : 'cc-number');
-amountUnit.textContent = a.code;
+    updatePayFields();
+
+    amountUnit.textContent = a.code;
 
     updateRateHint();
   }
@@ -316,7 +344,7 @@ amountUnit.textContent = a.code;
     $('#lblNet').textContent  = state.lang==='en' ? 'Network' : 'Мережа';
     $('#lblAmount').textContent = state.lang==='en' ? 'Amount' : 'Сума';
     $('#lblReceive').textContent = state.lang==='en' ? 'You receive' : 'Отримуєте';
-    $('#lblCard').textContent = state.lang==='en' ? 'Card number' : 'Номер картки';
+    $('#lblMethod').textContent = state.lang==='en' ? 'Method' : 'Спосіб';
     $('#lblName').textContent = state.lang==='en' ? 'Full name' : 'ПІБ';
     createBtn.textContent = state.lang==='en' ? 'Create request' : 'Створити заявку';
     $('#disclaimer').textContent = state.lang==='en' ? 'Demo UI (no real operations).' : 'Демо-версія інтерфейсу (без реальних операцій).';
@@ -329,7 +357,25 @@ amountUnit.textContent = a.code;
     $('#editProfileBtn').textContent = state.lang==='en' ? 'Edit' : 'Змінити';
     $('#saveProfileBtn').textContent = state.lang==='en' ? 'Save' : 'Зберегти';
 
+    updatePayFields();
     updateRateHint();
+  }
+
+  function updatePayFields(){
+    const isEn = state.lang === 'en';
+    const payLabel = document.getElementById('lblPay');
+    const input = payInput;
+    if(state.recvMethod === 'iban'){
+      payLabel.textContent = 'IBAN';
+      input.placeholder = isEn ? 'IBAN (e.g. UA00...)' : 'IBAN (наприклад UA00...)';
+      input.inputMode = 'text';
+      input.autocapitalize = 'characters';
+    }else{
+      payLabel.textContent = isEn ? 'Card number' : 'Номер картки';
+      input.placeholder = '0000 0000 0000 0000';
+      input.inputMode = 'numeric';
+      input.autocapitalize = 'off';
+    }
   }
 
   function updateRateHint(){
@@ -461,6 +507,7 @@ amountUnit.textContent = a.code;
     sendAssetBtn.addEventListener('click', ()=> openSheet('asset'));
     sendNetBtn.addEventListener('click', ()=> openSheet('network'));
     recvBankBtn.addEventListener('click', ()=> openSheet('bank'));
+    recvMethodBtn.addEventListener('click', ()=> openSheet('method'));
     amountUnit.addEventListener('click', ()=> openSheet('asset'));
 
     // Close sheet (always works)
@@ -498,7 +545,8 @@ amountUnit.textContent = a.code;
     seedHistoryBtn.addEventListener('click', seedHistory);
 
     // Basic input formatting (card)
-    $('#cardInput').addEventListener('input', (e)=>{
+    $('#payInput').addEventListener('input', (e)=>{
+      if(state.recvMethod !== 'card') return;
       const digits = e.target.value.replace(/\D+/g,'').slice(0,16);
       e.target.value = digits.replace(/(\d{4})(?=\d)/g,'$1 ').trim();
     });
