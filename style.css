@@ -427,7 +427,21 @@ body{
 }
 .sheet__close svg{ width:22px; height:22px; }
 
-.sheet__body{ padding: 6px 10px 14px; max-height: 68vh; overflow:auto; -webkit-overflow-scrolling: touch; }
+.sheet__body{
+.sheet__list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex: 1;
+  min-height: 0;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-bottom: 18px;
+}
+  flex-direction: column;
+  min-height: 0;
+}
 .sheet__list{ display:flex; flex-direction:column; gap:10px; 
   overflow:auto;
   -webkit-overflow-scrolling: touch;
