@@ -161,7 +161,12 @@
   function openSheet(mode){
     state.sheetMode = mode;
 
-    sheetTitle.textContent = getSheetTitle(mode);
+    sheetTitle.textContent =
+      mode==='lang' ? (state.lang==='en'?'Language':'Мова') :
+      mode==='asset'? (state.lang==='en'?'Choose asset':'Оберіть валюту') :
+      mode==='network'? (state.lang==='en'?'Choose network':'Оберіть мережу') :
+      mode==='bank'? (state.lang==='en'?'Choose bank':'Оберіть банк') :
+      (state.lang==='en'?'Choose':'Виберіть');
 
     renderSheetList(mode);
 
@@ -468,12 +473,6 @@
 
     // Swap (demo)
     swapBtn.addEventListener('click', ()=>{
-  swapBtn.classList.remove('is-animating');
-  // force reflow
-  void swapBtn.offsetWidth;
-  swapBtn.classList.add('is-animating');
-  setTimeout(()=>swapBtn.classList.remove('is-animating'), 480);
-
       // Simple: swap asset <-> bank doesn't make sense, so we just shake the button + toast
       swapBtn.animate([
         { transform:'translateX(0)' },
