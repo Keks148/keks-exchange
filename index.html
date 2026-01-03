@@ -204,8 +204,11 @@
   <script>
     // Prevent pull-to-refresh glitches on mobile.
     document.addEventListener('touchmove', function(e){
-      if (document.body.classList.contains('noScroll')) e.preventDefault();
-    }, { passive: false });
+  if (!document.body.classList.contains('noScroll')) return;
+  // Allow scrolling inside bottom sheet lists; block background page scroll
+  const allow = e.target.closest('.sheet__list');
+  if (!allow) e.preventDefault();
+}, { passive: false });
   </script>
   <script src="app.js"></script>
 </body>
