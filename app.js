@@ -44,7 +44,6 @@
     { id:'otp',   name:'OTP Bank', sub:'UAH • Card', icon:'logos/banks/otp.png' },
     { id:'sense', name:'Sense Bank', sub:'UAH • Card', icon:'logos/banks/sense.png' },
     { id:'ukr-sib',name:'UKRSIBBANK', sub:'UAH • Card', icon:'logos/banks/ukr-sib.png' },
-    { id:'revolut',name:'Revolut', sub:'EUR • SEPA', icon:'logos/banks/revf.png' }, // if missing, fallback
     { id:'izi',   name:'izibank', sub:'UAH • Card', icon:'logos/banks/izi.png' },
     { id:'visa',  name:'Visa/Mastercard', sub:'UAH • Card', icon:'logos/banks/visa-master.png' }
   ];
