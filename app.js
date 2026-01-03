@@ -36,16 +36,8 @@
   ];
 
   const BANKS = [
-    { id:'mono',  name:'Monobank', sub:'UAH • Card', icon:'logos/banks/mono.png' },
-    { id:'privat',name:'PrivatBank', sub:'UAH • Card', icon:'logos/banks/privat.png' },
-    { id:'oschad',name:'Oschadbank', sub:'UAH • Card', icon:'logos/banks/oschad.png' },
-    { id:'a-bank',name:'A-Bank', sub:'UAH • Card', icon:'logos/banks/a-bank.png' },
-    { id:'pumb',  name:'PUMB', sub:'UAH • Card', icon:'logos/banks/pumb.png' },
-    { id:'otp',   name:'OTP Bank', sub:'UAH • Card', icon:'logos/banks/otp.png' },
-    { id:'sense', name:'Sense Bank', sub:'UAH • Card', icon:'logos/banks/sense.png' },
-    { id:'ukr-sib',name:'UKRSIBBANK', sub:'UAH • Card', icon:'logos/banks/ukr-sib.png' },
-    { id:'izi',   name:'izibank', sub:'UAH • Card', icon:'logos/banks/izi.png' },
-    { id:'visa',  name:'Visa/Mastercard', sub:'UAH • Card', icon:'logos/banks/visa-master.png' }
+    { id:'card', name:'Card', sub:'UAH · Card', icon:'' },
+    { id:'iban', name:'IBAN', sub:'UAH/EUR · IBAN', icon:'' },
   ];
 
   const LANGS = [
@@ -193,7 +185,7 @@
       mode==='lang' ? LANGS.map(l=>({ id:l.id, main:l.label, sub:l.code, icon:'', flag:l.flag })) :
       mode==='asset' ? ASSETS.map(a=>({ id:a.id, main:`${a.code}`, sub:a.name, icon:a.icon })) :
       mode==='network' ? availableNetworks().map(n=>({ id:n.id, main:n.code, sub:n.sub || n.name, icon:n.icon })) :
-      mode==='bank' ? BANKS.map(b=>({ id:b.id, main:b.name, sub:b.sub, icon:b.icon })) :
+      mode==='bank' ? BANKS.map(b=>({ id:b.id, main:(b.id==='card' ? (state.lang==='en'?'Card':'Карта') : 'IBAN'), sub:(b.id==='card'?'UAH · Card':'UAH/EUR · IBAN'), icon:b.icon })) :
       []
     );
 
@@ -294,11 +286,19 @@
     safeImg(sendNetIcon, n.icon, n.code);
 
     const b = getBank(state.recvBank);
-    recvBankMain.textContent = b.name;
-    recvBankSub.textContent = b.sub || '';
+    recvBankMain.textContent = (b.id==='card' ? (state.lang==='en'?'Card':'Карта') : 'IBAN');
+    recvBankSub.textContent = (b.id==='card' ? 'UAH · Card' : 'UAH/EUR · IBAN');
     safeImg(recvBankIcon, b.icon, b.name.slice(0,3));
 
-    amountUnit.textContent = a.code;
+    
+
+    // Receive method inputs: Card vs IBAN
+    const isIban = state.recvBank === 'iban';
+    $('#lblCard').textContent = isIban ? 'IBAN' : (state.lang==='en'?'Card number':'Номер картки');
+    $('#cardInput').placeholder = isIban ? 'UA00 XXXX XXXX XXXX XXXX XXXX' : '0000 0000 0000 0000';
+    $('#cardInput').inputMode = isIban ? 'text' : 'numeric';
+    $('#cardInput').setAttribute('autocomplete', isIban ? 'off' : 'cc-number');
+amountUnit.textContent = a.code;
 
     updateRateHint();
   }
